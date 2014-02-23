@@ -3,5 +3,4 @@ go:
    - 1.0
    - 1.1 
 script: 
-   - cd tests/
-   - go test
+   - make test
