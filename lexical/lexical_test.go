@@ -10,7 +10,7 @@ func TestGetNextChar(t *testing.T) {
     setUp()
     source = "gopher"
 
-    var expected uint8
+    var expected int32
     expected = 'g'
     char := nextChar()
     assertChar(t, expected, char)
@@ -28,7 +28,7 @@ func TestEndOfFile(t *testing.T) {
     setUp()
     source = "go"
 
-    var expected uint8
+    var expected int32
     expected = 'g'
     char := nextChar()
     assertChar(t, expected, char)
@@ -44,28 +44,112 @@ func TestEndOfFile(t *testing.T) {
 
 func TestRecognizeAnToken(t *testing.T) {
     setUp()
-    source = "select"
+    source = "*"
 
     var token uint8
-    token = Token()
+    token, _ = Token()
 
-    assertToken(t, token, T_SELECT)
+    assertToken(t, token, T_WILD_CARD)
 }
 
 func TestRecognizeASequenceOfTokens(t *testing.T) {
     setUp()
-    source = "select * from"
+    source = "*,>"
 
     var token uint8
-    token = Token()
-    assertToken(t, token, T_SELECT)
 
-    token = Token()
+    token, _ = Token()
     assertToken(t, token, T_WILD_CARD)
 
-    token = Token()
+    token, _ = Token()
+    assertToken(t, token, T_COMMA)
+
+    token, _ = Token()
+    assertToken(t, token, T_GREATER)
+}
+
+func TestRecognizeTokensWithLexemesOfTwoChars(t *testing.T) {
+    setUp()
+    source = ">= <="
+
+    var token uint8
+
+    token, _ = Token()
+    assertToken(t, token, T_GREATER_OR_EQUAL)
+
+    token, _ = Token()
+    assertToken(t, token, T_SMALLER_OR_EQUAL)
+}
+
+func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
+    setUp()
+    source = "=    <    >=   !="
+
+    var token uint8
+
+    token, _ = Token()
+    assertToken(t, token, T_EQUAL)
+
+    token, _ = Token()
+    assertToken(t, token, T_SMALLER)    
+
+    token, _ = Token()
+    assertToken(t, token, T_GREATER_OR_EQUAL)
+
+    token, _ = Token()
+    assertToken(t, token, T_NOT_EQUAL)
+}
+
+func TestErrorUnrecognizeChar(t* testing.T) {
+    setUp()
+    source = "!"
+
+    _, error := Token()
+    if (error == nil) {
+        t.Errorf("Expected error with char '!' ")
+    }
+}
+
+func TestReservedWords(t* testing.T) {
+    setUp()
+    source = "SELECT from WHEre"
+
+    var token uint8
+
+    token, _ = Token()
+    assertToken(t, token, T_SELECT)
+
+    token, _ = Token()
     assertToken(t, token, T_FROM)
 
+    token, _ = Token()
+    assertToken(t, token, T_WHERE)
+}
+
+func TestNotReservedWords(t *testing.T) {
+    setUp()
+
+    source = "users commits"
+
+    var token uint8
+
+    token, _ = Token()
+    assertToken(t, token, T_LITERAL)
+
+    token, _ = Token()
+    assertToken(t, token, T_LITERAL)
+
+}
+
+func TestNumbers(t *testing.T) {
+    setUp()
+
+    source = "314 555"
+
+    var token uint8
+
+    token, _ = Token()
+    assertToken(t, token, T_NUMERIC)
 }
 
 func assertToken(t *testing.T, expected uint8, found uint8) {
@@ -74,7 +158,7 @@ func assertToken(t *testing.T, expected uint8, found uint8) {
     }
 }
 
-func assertChar(t *testing.T, expected uint8, found uint8) {
+func assertChar(t *testing.T, expected int32, found int32) {
     if found != expected {
         t.Errorf("Char '%s' is not '%s'", string(found), string(expected));
     }

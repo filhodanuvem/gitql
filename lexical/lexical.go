@@ -1,40 +1,130 @@
 package lexical 
 
+import "unicode"
+import "strings"
+
 var source string 
 var currentPointer = 0
+
+type TokenError struct {
+    char int32
+}
+
+func (error *TokenError) Error() string {
+    return "Unexpected token"+string(error.char)
+}
+
+func newTokenError(char int32) (*TokenError) {
+    error := new(TokenError)
+    error.char = char 
+
+    return error
+}
 
 func New(s string) {
     source = s
 }
 
-func Token() uint8 {
-    // return T_SELECT;
-
+func Token() (uint8, *TokenError) {
     var lexeme string
-    for char := nextChar(); char != 0; char = nextChar() {
-        lexeme = lexeme + string(char)
-        if lexeme == " " {
-            lexeme = ""
-            continue
-        }
-
-        if lexeme == "select" {
-            return T_SELECT
-        }
-
-        if lexeme == "*" {
-            return T_WILD_CARD
-        }
-
-        if lexeme == "from" {
-            return T_FROM 
+    var char int32
+    state := S_START;
+    for char = nextChar(); 1 == 1; {
+        switch state {
+            case S_START :
+                if unicode.IsLetter(char) {
+                    state = S_ID
+                    break
+                } else if unicode.IsNumber(char) {
+                    state = S_NUMERIC
+                } else {
+                    lexeme = lexeme + string(char)
+                    switch lexeme {
+                        case "*" : 
+                            state = S_WILD_CARD
+                            break
+                        case ",":
+                            state = S_COMMA
+                        case ";":
+                            state = S_SEMICOLON
+                        case ">":
+                            state = S_GREATER
+                        case "<":
+                            state = S_SMALLER
+                        case "=":
+                            state = S_EQUAL
+                        case "!" : 
+                            state = S_NOT_EQUAL
+                        case " ":
+                            lexeme = ""
+                            char = nextChar()
+                            state = S_START
+                        default: 
+                            return 0, newTokenError(char);
+                    }
+                }
+                break;
+            case S_ID: 
+                for unicode.IsLetter(char) || unicode.IsNumber(char) {
+                    lexeme = lexeme + string(char)
+                    char = nextChar()
+                }
+                return lexemeToToken(lexeme), nil
+            case S_NUMERIC: 
+                for unicode.IsNumber(char) {
+                    lexeme = lexeme + string(char)
+                    char = nextChar()
+                }
+                // @TODO insert to symbol table
+                return T_NUMERIC, nil
+            case S_WILD_CARD: return T_WILD_CARD, nil
+            case S_COMMA: return T_COMMA, nil
+            case S_SEMICOLON: return T_SEMICOLON, nil
+            case S_GREATER: 
+                lexeme = string(nextChar())
+                if lexeme == "=" {
+                    state = S_GREATER_OR_EQUAL
+                    break
+                }
+                return T_GREATER, nil
+            case S_GREATER_OR_EQUAL: return T_GREATER_OR_EQUAL, nil
+            case S_SMALLER: 
+                lexeme = string(nextChar())
+                if lexeme == "=" {
+                    state = S_SMALLER_OR_EQUAL
+                    break
+                }
+                return T_SMALLER, nil
+            case S_SMALLER_OR_EQUAL: return T_SMALLER_OR_EQUAL, nil
+            case S_EQUAL: return T_EQUAL, nil
+            case S_NOT_EQUAL: 
+                char = nextChar()
+                lexeme = string(char)
+                if lexeme == "=" {
+                    return T_NOT_EQUAL, nil
+                }
+                return 0, newTokenError(char)
+            default:
+                return 0, newTokenError(char)
         }
     }
-
-    return 0
+    return 0, nil
 }
 
-func nextChar() uint8 {
+func lexemeToToken(lexeme string) (uint8){
+    switch strings.ToLower(lexeme) {
+        case "select" : return T_SELECT
+        case "from" : return T_FROM
+        case "where" : return T_WHERE
+        case "order" : return T_ORDER
+        case "by" : return T_BY
+        case "limit" : return T_LIMIT
+    }
+    // @TODO insert to symbol table
+    return T_LITERAL
+}
+
+func nextChar() int32 {
     defer func() {
         currentPointer = currentPointer + 1
     }()
@@ -43,7 +133,7 @@ func nextChar() uint8 {
         return 0;
     } 
 
-    return source[currentPointer]
+    return int32(source[currentPointer])
 }
 
 func rewind() {
