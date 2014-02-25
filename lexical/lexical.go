@@ -5,6 +5,7 @@ import "strings"
 
 var source string 
 var currentPointer = 0
+var CurrentLexeme string
 
 type TokenError struct {
     char int32
@@ -27,6 +28,9 @@ func New(s string) {
 
 func Token() (uint8, *TokenError) {
     var lexeme string
+    defer func() {
+        CurrentLexeme = lexeme 
+    }()
     var char int32
     state := S_START;
     for char = nextChar(); 1 == 1; {

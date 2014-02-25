@@ -44,12 +44,12 @@ func TestEndOfFile(t *testing.T) {
 
 func TestRecognizeAnToken(t *testing.T) {
     setUp()
-    source = "*"
+    source = ";"
 
     var token uint8
     token, _ = Token()
 
-    assertToken(t, token, T_WILD_CARD)
+    assertToken(t, token, T_SEMICOLON)
 }
 
 func TestRecognizeASequenceOfTokens(t *testing.T) {
@@ -150,6 +150,37 @@ func TestNumbers(t *testing.T) {
 
     token, _ = Token()
     assertToken(t, token, T_NUMERIC)
+}
+
+func TestCurrentLexeme(t *testing.T) {
+    setUp()
+
+    source = "select * users"
+
+    var token uint8
+
+    token, _ = Token()
+    assertToken(t, token, T_SELECT)
+
+    if (CurrentLexeme != "select") {
+        t.Errorf("%s is not select", CurrentLexeme)
+    }
+
+    token, _ = Token()
+    assertToken(t, token, T_WILD_CARD)
+
+    if (CurrentLexeme != "*") {
+        t.Errorf("%s is not *", CurrentLexeme)
+    }
+
+
+    token, _ = Token()
+    assertToken(t, token, T_LITERAL)
+
+    if (CurrentLexeme != "users") {
+        t.Errorf("%s is not users", CurrentLexeme)
+    }
+
 }
 
 func assertToken(t *testing.T, expected uint8, found uint8) {
