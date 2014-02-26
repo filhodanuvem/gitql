@@ -7,3 +7,7 @@ type NodeMain interface {
 type NodeProgram struct {
     child NodeMain
 }
+
+type NodeSelect struct {
+    WildCard bool
+}

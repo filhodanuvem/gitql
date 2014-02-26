@@ -4,7 +4,7 @@ import "unicode"
 import "strings"
 
 var source string 
-var currentPointer = 0
+var currentPointer int
 var CurrentLexeme string
 
 type TokenError struct {
@@ -15,7 +15,7 @@ func (error *TokenError) Error() string {
     return "Unexpected token"+string(error.char)
 }
 
-func newTokenError(char int32) (*TokenError) {
+func throwTokenError(char int32) (*TokenError) {
     error := new(TokenError)
     error.char = char 
 
@@ -24,6 +24,7 @@ func newTokenError(char int32) (*TokenError) {
 
 func New(s string) {
     source = s
+    currentPointer = 0
 }
 
 func Token() (uint8, *TokenError) {
@@ -64,7 +65,7 @@ func Token() (uint8, *TokenError) {
                             char = nextChar()
                             state = S_START
                         default: 
-                            return 0, newTokenError(char);
+                            return 0, throwTokenError(char);
                     }
                 }
                 break;
@@ -107,12 +108,12 @@ func Token() (uint8, *TokenError) {
                 if lexeme == "=" {
                     return T_NOT_EQUAL, nil
                 }
-                return 0, newTokenError(char)
+                return 0, throwTokenError(char)
             default:
-                return 0, newTokenError(char)
+                return 0, throwTokenError(char)
         }
     }
-    return 0, nil
+    return T_EOF, throwTokenError(char)
 }
 
 func lexemeToToken(lexeme string) (uint8){

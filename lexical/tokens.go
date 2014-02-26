@@ -20,3 +20,4 @@ const T_EQUAL = 17;
 const T_NOT_EQUAL = 18; 
 const T_LITERAL = 19; 
 const T_NUMERIC = 20; 
+const T_EOF = 0;
