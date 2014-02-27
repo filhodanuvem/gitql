@@ -10,4 +10,5 @@ type NodeProgram struct {
 
 type NodeSelect struct {
     WildCard bool
+    params []string
 }

@@ -29,7 +29,7 @@ func TestInvalidFirstNode(t *testing.T) {
 }
 
 func TestValidFirstNode(t *testing.T) {
-    New("select")
+    New("select * from users")
     ast, error := AST()
 
     if error != nil {
@@ -42,7 +42,7 @@ func TestValidFirstNode(t *testing.T) {
 }
 
 func TestUsingWildCard(t *testing.T) {
-    New("select *")
+    New("select * from users")
     ast, error := AST()
 
     if error != nil {
@@ -58,3 +58,38 @@ func TestUsingWildCard(t *testing.T) {
         t.Errorf("Expected wildcard setted")
     }
 }
+
+func TestUsingOneFieldName(t *testing.T) {
+    New("select name from files")
+
+    ast, error := AST()
+
+    if error != nil {
+        t.Errorf(error.Error())
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    
+    if len(selectNode.params) != 1 {
+        t.Errorf("Expected exactly one field and found %d", len(selectNode.params))
+    }
+
+    if selectNode.params[0] != "name" {
+        t.Errorf("Expected param 'name' and found '%s'", selectNode.params[0])
+    }
+}
+
+// func TestUsingFieldNames(t *testing.T) {
+//     New("select name, created_at from files")
+
+//     ast, error := AST()
+
+//     if error != nil {
+//         t.Errorf(error.Error())
+//     }
+
+//     selectNode := ast.child.(*NodeSelect)
+//     if len(selectNode.params) != 2 {
+//         t.Errorf("Expected exactly two fields and found %d", len(selectNode.params))
+//     }
+// }

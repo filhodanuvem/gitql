@@ -49,7 +49,15 @@ func g_program() (NodeMain, gitql.CompileError) {
     }
 
     s := new(NodeSelect)
-    s.WildCard = true
+    params, error := g_table_params()
+    if error != nil {
+        return nil, error
+    }
+
+    if len(params) == 1 && params[0] == "*" {
+        s.WildCard = true    
+    }
+    s.params = params
 
     return s, nil
 }
@@ -60,17 +68,42 @@ func g_table_params() ([]string, gitql.CompileError){
         return nil, error
     }
 
-    if token != lexical.T_LITERAL && token != lexical.T_WILD_CARD {
-        return nil, throwSyntaxError(lexical.T_LITERAL, token)
-    }
-
     if token == lexical.T_WILD_CARD {
         return []string{"*"}, nil
     }
 
-    return g_table_params_rest()
+    var fields = []string{}
+    if token == lexical.T_LITERAL {
+        fields = append(fields, lexical.CurrentLexeme)
+
+        return fields, g_table_params_rest(fields, 1)
+    }
+    return nil, throwSyntaxError(lexical.T_LITERAL, token)
+    
 }
 
-func g_table_params_rest() ([]string, gitql.CompileError){
-    return nil, nil
+func g_table_params_rest(fields []string, count int) (gitql.CompileError){
+    token, errorToken := lexical.Token()
+    if errorToken != nil {
+        return errorToken
+    }
+
+    if lexical.T_COMMA == token {
+        token, errorToken = lexical.Token()
+        if errorToken != nil {
+            return errorToken
+        }
+        if token != lexical.T_LITERAL {
+            return throwSyntaxError(lexical.T_LITERAL, token)
+        }
+
+        fields = append(fields, lexical.CurrentLexeme)
+        errorSyntax := g_table_params_rest(fields, count + 1)
+        if errorSyntax != nil {
+            return errorSyntax
+        }
+    }
+    
+
+    return nil
 }

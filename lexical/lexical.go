@@ -1,7 +1,10 @@
 package lexical 
 
-import "unicode"
-import "strings"
+import (
+    "unicode"
+    "strings"
+    "fmt"
+)
 
 var source string 
 var currentPointer int
@@ -12,7 +15,7 @@ type TokenError struct {
 }
 
 func (error *TokenError) Error() string {
-    return "Unexpected token"+string(error.char)
+    return fmt.Sprintf("Unexpected char '%s' with source '%s'", string(error.char), source)
 }
 
 func throwTokenError(char int32) (*TokenError) {
@@ -110,7 +113,7 @@ func Token() (uint8, *TokenError) {
                 }
                 return 0, throwTokenError(char)
             default:
-                return 0, throwTokenError(char)
+                break
         }
     }
     return T_EOF, throwTokenError(char)
@@ -135,7 +138,7 @@ func nextChar() int32 {
     }()
 
     if currentPointer >= len(source) {
-        return 0;
+        return T_EOF;
     } 
 
     return int32(source[currentPointer])
