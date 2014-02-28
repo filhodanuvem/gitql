@@ -16,7 +16,7 @@ func (e *SyntaxError) Error() string {
     if e.found == lexical.T_LITERAL {
         appendix = fmt.Sprintf("(%s)", lexical.CurrentLexeme)
     }
-    return fmt.Sprintf("Expected %d and found %d%s", e.expected, e.found, appendix)
+    return fmt.Sprintf("Expected %s and found %s%s", lexical.TokenName(e.expected), lexical.TokenName(e.found), appendix)
 }
 
 func (s *NodeSelect) Run() {
@@ -63,9 +63,9 @@ func g_program() (NodeMain, gitql.CompileError) {
 }
 
 func g_table_params() ([]string, gitql.CompileError){
-    token, error := lexical.Token()
-    if error != nil {
-        return nil, error
+    token, errorToken := lexical.Token()
+    if errorToken != nil {
+        return nil, errorToken
     }
 
     if token == lexical.T_WILD_CARD {
@@ -74,36 +74,41 @@ func g_table_params() ([]string, gitql.CompileError){
 
     var fields = []string{}
     if token == lexical.T_LITERAL {
-        fields = append(fields, lexical.CurrentLexeme)
+        fields := append(fields, lexical.CurrentLexeme)
 
-        return fields, g_table_params_rest(fields, 1)
+        fields, errorSyntax := g_table_params_rest(&fields, 1)
+
+        return fields, errorSyntax
     }
     return nil, throwSyntaxError(lexical.T_LITERAL, token)
     
 }
 
-func g_table_params_rest(fields []string, count int) (gitql.CompileError){
+func g_table_params_rest(fields *[]string, count int) ([]string, gitql.CompileError){
     token, errorToken := lexical.Token()
     if errorToken != nil {
-        return errorToken
+        return *fields, errorToken
     }
 
     if lexical.T_COMMA == token {
+
         token, errorToken = lexical.Token()
         if errorToken != nil {
-            return errorToken
+            return *fields, errorToken
         }
         if token != lexical.T_LITERAL {
-            return throwSyntaxError(lexical.T_LITERAL, token)
+            return *fields, throwSyntaxError(lexical.T_LITERAL, token)
         }
 
-        fields = append(fields, lexical.CurrentLexeme)
-        errorSyntax := g_table_params_rest(fields, count + 1)
+        n := append(*fields, lexical.CurrentLexeme)
+        fields = &n
+        
+        n, errorSyntax := g_table_params_rest(fields, count + 1)
+        fields = &n
         if errorSyntax != nil {
-            return errorSyntax
+            return *fields, errorSyntax
         }
     }
-    
 
-    return nil
+    return *fields, nil
 }

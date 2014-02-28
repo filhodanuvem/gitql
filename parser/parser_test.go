@@ -79,17 +79,17 @@ func TestUsingOneFieldName(t *testing.T) {
     }
 }
 
-// func TestUsingFieldNames(t *testing.T) {
-//     New("select name, created_at from files")
+func TestUsingFieldNames(t *testing.T) {
+    New("select name, created_at from files")
 
-//     ast, error := AST()
+    ast, error := AST()
 
-//     if error != nil {
-//         t.Errorf(error.Error())
-//     }
+    if error != nil {
+        t.Errorf(error.Error())
+    }
 
-//     selectNode := ast.child.(*NodeSelect)
-//     if len(selectNode.params) != 2 {
-//         t.Errorf("Expected exactly two fields and found %d", len(selectNode.params))
-//     }
-// }
+    selectNode := ast.child.(*NodeSelect)
+    if len(selectNode.params) != 2 {
+        t.Errorf("Expected exactly two fields and found %d", len(selectNode.params))
+    }
+}
