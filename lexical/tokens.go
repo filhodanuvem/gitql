@@ -14,10 +14,10 @@ const T_GREATER = 11;
 const T_SMALLER = 12; 
 const T_GREATER_OR_EQUAL = 13; 
 const T_SMALLER_OR_EQUAL= 14; 
-const T_EQUAL = 17; 
-const T_NOT_EQUAL = 18; 
-const T_LITERAL = 19; 
-const T_NUMERIC = 20; 
+const T_EQUAL = 15; 
+const T_NOT_EQUAL = 16; 
+const T_LITERAL = 17; 
+const T_NUMERIC = 18; 
 const T_EOF = 0;
 
 var tokenNameMap map[uint8]string; 

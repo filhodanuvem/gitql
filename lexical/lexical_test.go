@@ -45,6 +45,7 @@ func TestEndOfFile(t *testing.T) {
 func TestRecognizeAnToken(t *testing.T) {
     setUp()
     source = ";"
+    char = nextChar()
 
     var token uint8
     token, _ = Token()
@@ -55,6 +56,7 @@ func TestRecognizeAnToken(t *testing.T) {
 func TestRecognizeASequenceOfTokens(t *testing.T) {
     setUp()
     source = "*,>"
+    char = nextChar()
 
     var token uint8
 
@@ -71,6 +73,7 @@ func TestRecognizeASequenceOfTokens(t *testing.T) {
 func TestRecognizeTokensWithLexemesOfTwoChars(t *testing.T) {
     setUp()
     source = ">= <="
+    char = nextChar()
 
     var token uint8
 
@@ -84,6 +87,7 @@ func TestRecognizeTokensWithLexemesOfTwoChars(t *testing.T) {
 func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
     setUp()
     source = "=    <    >=   !="
+    char = nextChar()
 
     var token uint8
 
@@ -103,6 +107,7 @@ func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
 func TestErrorUnrecognizeChar(t* testing.T) {
     setUp()
     source = "!"
+    char = nextChar()
 
     _, error := Token()
     if (error == nil) {
@@ -113,6 +118,7 @@ func TestErrorUnrecognizeChar(t* testing.T) {
 func TestReservedWords(t* testing.T) {
     setUp()
     source = "SELECT from WHEre"
+    char = nextChar()
 
     var token uint8
 
@@ -130,6 +136,7 @@ func TestNotReservedWords(t *testing.T) {
     setUp()
 
     source = "users commits"
+    char = nextChar()
 
     var token uint8
 
@@ -145,6 +152,7 @@ func TestNumbers(t *testing.T) {
     setUp()
 
     source = "314 555"
+    char = nextChar()
 
     var token uint8
 
@@ -154,8 +162,8 @@ func TestNumbers(t *testing.T) {
 
 func TestCurrentLexeme(t *testing.T) {
     setUp()
-
     source = "select * users"
+    char = nextChar()
 
     var token uint8
 
@@ -180,12 +188,26 @@ func TestCurrentLexeme(t *testing.T) {
     if (CurrentLexeme != "users") {
         t.Errorf("%s is not users", CurrentLexeme)
     }
+}
 
+func TestRepetitiveTokens(t *testing.T) {
+    setUp()
+
+    source = "select name, age from users"
+    char = nextChar()
+    
+    var token uint8
+
+    tokens := []uint8{T_SELECT, T_LITERAL, T_COMMA, T_LITERAL, T_FROM, T_LITERAL}
+    for i := range tokens {
+        token, _ = Token()
+        assertToken(t, token, tokens[i])
+    }
 }
 
 func assertToken(t *testing.T, expected uint8, found uint8) {
     if (expected != found) {
-        t.Errorf("Token %d is not %d", found, expected)
+        t.Errorf("Token %s is not %s, lexeme: %s", TokenName(found), TokenName(expected), CurrentLexeme)
     }
 }
 

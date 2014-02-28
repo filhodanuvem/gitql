@@ -25,9 +25,11 @@ func throwTokenError(char int32) (*TokenError) {
     return error
 }
 
+var char int32
 func New(s string) {
     source = s
     currentPointer = 0
+    char = nextChar()
 }
 
 func Token() (uint8, *TokenError) {
@@ -35,9 +37,8 @@ func Token() (uint8, *TokenError) {
     defer func() {
         CurrentLexeme = lexeme 
     }()
-    var char int32
     state := S_START;
-    for char = nextChar(); 1 == 1; {
+    for true {
         switch state {
             case S_START :
                 if unicode.IsLetter(char) {
@@ -53,27 +54,34 @@ func Token() (uint8, *TokenError) {
                             break
                         case ",":
                             state = S_COMMA
+                            break
                         case ";":
                             state = S_SEMICOLON
+                            break
                         case ">":
                             state = S_GREATER
+                            break
                         case "<":
                             state = S_SMALLER
+                            break
                         case "=":
                             state = S_EQUAL
+                            break
                         case "!" : 
                             state = S_NOT_EQUAL
+                            break
                         case " ":
                             lexeme = ""
                             char = nextChar()
                             state = S_START
+                            break
                         default: 
                             return 0, throwTokenError(char);
                     }
                 }
                 break;
             case S_ID: 
-                for unicode.IsLetter(char) || unicode.IsNumber(char) {
+                for unicode.IsLetter(char) || unicode.IsNumber(char) || string(char) == "_" {
                     lexeme = lexeme + string(char)
                     char = nextChar()
                 }
@@ -85,26 +93,40 @@ func Token() (uint8, *TokenError) {
                 }
                 // @TODO insert to symbol table
                 return T_NUMERIC, nil
-            case S_WILD_CARD: return T_WILD_CARD, nil
-            case S_COMMA: return T_COMMA, nil
-            case S_SEMICOLON: return T_SEMICOLON, nil
+            case S_WILD_CARD: 
+                char = nextChar()
+                return T_WILD_CARD, nil
+            case S_COMMA: 
+                char = nextChar()
+                return T_COMMA, nil
+            case S_SEMICOLON: 
+                char = nextChar()
+                return T_SEMICOLON, nil
             case S_GREATER: 
-                lexeme = string(nextChar())
+                char = nextChar()
+                lexeme = string(char)
                 if lexeme == "=" {
                     state = S_GREATER_OR_EQUAL
                     break
                 }
                 return T_GREATER, nil
-            case S_GREATER_OR_EQUAL: return T_GREATER_OR_EQUAL, nil
+            case S_GREATER_OR_EQUAL: 
+                char = nextChar()
+                return T_GREATER_OR_EQUAL, nil
             case S_SMALLER: 
-                lexeme = string(nextChar())
+                char = nextChar()
+                lexeme = string(char)
                 if lexeme == "=" {
                     state = S_SMALLER_OR_EQUAL
                     break
                 }
                 return T_SMALLER, nil
-            case S_SMALLER_OR_EQUAL: return T_SMALLER_OR_EQUAL, nil
-            case S_EQUAL: return T_EQUAL, nil
+            case S_SMALLER_OR_EQUAL: 
+                char = nextChar()
+                return T_SMALLER_OR_EQUAL, nil
+            case S_EQUAL: 
+                char = nextChar()
+                return T_EQUAL, nil
             case S_NOT_EQUAL: 
                 char = nextChar()
                 lexeme = string(char)
