@@ -10,5 +10,18 @@ type NodeProgram struct {
 
 type NodeSelect struct {
     WildCard bool
-    params []string
+    fields []string
+    tables []string
+}
+
+func (s *NodeSelect) Run() {
+    return 
+}
+
+type NodeEmpty struct {
+
+}
+
+func (e *NodeEmpty) Run() {
+    return 
 }

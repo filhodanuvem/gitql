@@ -2,9 +2,10 @@ package parser
 
 import (
     "fmt"
-    "github.com/cloudson/gitql"
     "github.com/cloudson/gitql/lexical"
 )
+
+var look_ahead uint8
 
 type SyntaxError struct {
     expected uint8
@@ -19,11 +20,7 @@ func (e *SyntaxError) Error() string {
     return fmt.Sprintf("Expected %s and found %s%s", lexical.TokenName(e.expected), lexical.TokenName(e.found), appendix)
 }
 
-func (s *NodeSelect) Run() {
-    return 
-}
-
-func throwSyntaxError(expectedToken uint8, foundToken uint8) (gitql.CompileError){
+func throwSyntaxError(expectedToken uint8, foundToken uint8) (error){
     error := new(SyntaxError)
     error.expected = expectedToken
     error.found = foundToken
@@ -31,79 +28,123 @@ func throwSyntaxError(expectedToken uint8, foundToken uint8) (gitql.CompileError
     return error
 }
 
+
 func New(source string) {
     lexical.New(source)
 }
 
-func AST() (p *NodeProgram, error gitql.CompileError) {
+func AST() (*NodeProgram, error) {
     program := new(NodeProgram)
-    program.child, error = g_program()
+    node, err := g_program()
+    program.child = node 
 
-    return program, error
+    return program, err
 }
 
-func g_program() (NodeMain, gitql.CompileError) {
-    token, _ := lexical.Token()
-    if token != lexical.T_SELECT {
-        return nil, throwSyntaxError(lexical.T_SELECT, token)
+func g_program() (NodeMain, error) {
+    token, err := lexical.Token()
+    look_ahead = token
+    
+    if err != nil {
+        return nil, err
     }
 
-    s := new(NodeSelect)
-    params, error := g_table_params()
-    if error != nil {
-        return nil, error
+    s, err2 := gSelect()
+    if s == nil {
+        return new(NodeEmpty), err2
     }
-
-    if len(params) == 1 && params[0] == "*" {
-        s.WildCard = true    
-    }
-    s.params = params
-
     return s, nil
 }
 
-func g_table_params() ([]string, gitql.CompileError){
-    token, errorToken := lexical.Token()
-    if errorToken != nil {
-        return nil, errorToken
+func gSelect() (*NodeSelect, error){
+    if look_ahead != lexical.T_SELECT {
+        return nil, throwSyntaxError(lexical.T_SELECT, look_ahead)
+    }
+    token, err := lexical.Token()
+    look_ahead = token 
+    if err != nil {
+        return nil, err
+    }
+    s := new(NodeSelect)
+
+    fields, err2 := gTableParams()
+    if err2 != nil {
+        return nil, err2
     }
 
-    if token == lexical.T_WILD_CARD {
+    if len(fields) == 1 && fields[0] == "*" {
+        s.WildCard = true   
+    }
+    s.fields = fields
+    tables , err4 := gTableNames()
+    if err4 != nil {
+        return nil, err4
+    }
+    s.tables = tables
+    return s, nil
+}
+
+func gTableNames() ([]string, error){
+    if look_ahead != lexical.T_FROM {
+        return nil, throwSyntaxError(lexical.T_FROM, look_ahead)
+    } 
+    look_ahead, error := lexical.Token()
+    if error != nil {
+        return nil,error
+    }
+    if look_ahead != lexical.T_LITERAL {
+        return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+    }
+    
+    tables := make([]string, 1)
+    tables[0] = lexical.CurrentLexeme
+    
+    return tables, nil
+}
+
+func gTableParams() ([]string, error){
+    if look_ahead == lexical.T_WILD_CARD {
+        token, err := lexical.Token()
+        if err != nil {
+            return nil,err
+        }
+        look_ahead = token
         return []string{"*"}, nil
     }
-
     var fields = []string{}
-    if token == lexical.T_LITERAL {
+    if look_ahead == lexical.T_LITERAL {
         fields := append(fields, lexical.CurrentLexeme)
-
-        fields, errorSyntax := g_table_params_rest(&fields, 1)
+        token, err := lexical.Token()
+        if err != nil {
+            return nil,err
+        }
+        look_ahead = token
+        fields, errorSyntax := gTableParamsRest(&fields, 1)
 
         return fields, errorSyntax
     }
-    return nil, throwSyntaxError(lexical.T_LITERAL, token)
+    return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
     
 }
 
-func g_table_params_rest(fields *[]string, count int) ([]string, gitql.CompileError){
-    token, errorToken := lexical.Token()
-    if errorToken != nil {
-        return *fields, errorToken
-    }
-
-    if lexical.T_COMMA == token {
-
-        token, errorToken = lexical.Token()
+func gTableParamsRest(fields *[]string, count int) ([]string, error){
+    if lexical.T_COMMA == look_ahead {
+        var errorToken *lexical.TokenError
+        look_ahead, errorToken = lexical.Token()
         if errorToken != nil {
             return *fields, errorToken
         }
-        if token != lexical.T_LITERAL {
-            return *fields, throwSyntaxError(lexical.T_LITERAL, token)
+        if look_ahead != lexical.T_LITERAL {
+            return *fields, throwSyntaxError(lexical.T_LITERAL, look_ahead)
         }
 
         n := append(*fields, lexical.CurrentLexeme)
         fields = &n
-        
-        n, errorSyntax := g_table_params_rest(fields, count + 1)
+        look_ahead, errorToken = lexical.Token()
+        if errorToken != nil {
+            return *fields, errorToken
+        }        
+        n, errorSyntax := gTableParamsRest(fields, count + 1)
         fields = &n
         if errorSyntax != nil {
             return *fields, errorSyntax
