@@ -2,6 +2,8 @@ package parser
 
 import (
     "fmt"
+    "strconv"
+    _"unicode"
     "github.com/cloudson/gitql/lexical"
 )
 
@@ -67,6 +69,7 @@ func gSelect() (*NodeSelect, error){
     }
     s := new(NodeSelect)
 
+    // PARAMETERS
     fields, err2 := gTableParams()
     if err2 != nil {
         return nil, err2
@@ -76,11 +79,21 @@ func gSelect() (*NodeSelect, error){
         s.WildCard = true   
     }
     s.fields = fields
+
+    // TABLES
     tables , err4 := gTableNames()
     if err4 != nil {
         return nil, err4
     }
     s.tables = tables
+
+    // LIMIT 
+    var err5 error 
+    s.limit, err5 = gLimit() 
+    if err5 != nil {
+        return nil, err5 
+    }
+
     return s, nil
 }
 
@@ -152,4 +165,22 @@ func gTableParamsRest(fields *[]string, count int) ([]string, error){
     }
 
     return *fields, nil
+}
+
+func gLimit() (int, error) {
+    if look_ahead != lexical.T_LIMIT {
+        return 0, nil
+    }
+
+    token, err := lexical.Token()
+    if err != nil {
+        return 0, err 
+    }
+    look_ahead = token
+
+    number, numberError := strconv.Atoi(lexical.CurrentLexeme)
+    if numberError != nil {
+        return 0, numberError
+    }
+    return number, nil  
 }

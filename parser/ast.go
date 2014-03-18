@@ -12,6 +12,7 @@ type NodeSelect struct {
     WildCard bool
     fields []string
     tables []string
+    limit int 
 }
 
 func (s *NodeSelect) Run() {

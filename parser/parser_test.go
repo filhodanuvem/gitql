@@ -32,11 +32,6 @@ func TestValidFirstNode(t *testing.T) {
     New("select * from users")
     ast, _ := AST()
 
-
-    // if error != nil {
-    //     t.Errorf(error.Error())
-    // }
-
     if ast.child == nil {
         t.Errorf("Program is empty")
     }
@@ -111,5 +106,66 @@ func TestWithOneTable(t *testing.T) {
 
     if selectNode.tables[0] != "files" {
         t.Errorf("Expected table 'files', found %s", selectNode.tables[0])
+    }
+}
+
+func TestErrorWithUnexpectedComma(t *testing.T) {
+    New("select name, from files")
+
+    _, error := AST()
+
+    if error == nil {
+        t.Errorf("Expected error 'Unexpected T_COMMA'")
+    }
+}
+
+func TestErrorWithInvalidRootNode(t *testing.T) {
+    New("name from files")
+
+    _, error := AST()
+    if error == nil {
+        t.Errorf("Expected error 'EXPECTED T_SELECT'")
+    }
+
+}
+
+func testErrorSqlWithoutTable(t *testing.T) {
+    New("select name from ")
+
+    _, error := AST()
+    if error == nil {
+        t.Errorf("Expected error 'EXPECTED table'")   
+    }
+}
+
+func testWithLimit(t *testing.T) {
+    New("select * from files where limit 5")
+
+    ast, error := AST()
+    if error != nil {
+        t.Errorf(error.Error())
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    if selectNode.limit != 5 {
+        t.Errorf("Limit should be 5!!!")   
+    }
+}
+
+func testWithEmptyLimit(t *testing.T) {
+    New("select * from files where limit")
+
+    _, error := AST()
+    if error == nil {
+        t.Errorf("Shoud throw error because limit has not value")
+    }
+}
+
+func testWithNonNumericLimit(t *testing.T) {
+    New("select * from commits where limit cloud")
+
+    _, error := AST() 
+    if error == nil {
+        t.Errorf("Shoud throw error because limit is not a number")
     }
 }
