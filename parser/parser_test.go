@@ -169,3 +169,17 @@ func testWithNonNumericLimit(t *testing.T) {
         t.Errorf("Shoud throw error because limit is not a number")
     }
 }
+
+func testWithWhereSimpleComparting(t *testing.T) {
+    New("select * from commits where hash = e69de29bb2d1d6434b8b29ae775ad8c2e48c5391")
+
+    ast, err := AST() 
+    if err != nil {
+        t.Errorf(err.Error())
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    if selectNode.where == nil{
+        t.Errorf("should has where node")
+    }
+}
