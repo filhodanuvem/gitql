@@ -18,6 +18,8 @@ const T_EQUAL = 15;
 const T_NOT_EQUAL = 16; 
 const T_LITERAL = 17; 
 const T_NUMERIC = 18; 
+const T_AND = 19;
+const T_OR = 20;
 const T_EOF = 0;
 
 var tokenNameMap map[uint8]string; 

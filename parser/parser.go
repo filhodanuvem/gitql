@@ -87,6 +87,13 @@ func gSelect() (*NodeSelect, error){
     }
     s.tables = tables
 
+    // WHERE 
+    where, err6 := gWhere()
+    if err6 != nil {
+        return nil, err6
+    }
+    s.where = where
+
     // LIMIT 
     var err5 error 
     s.limit, err5 = gLimit() 
@@ -183,4 +190,87 @@ func gLimit() (int, error) {
         return 0, numberError
     }
     return number, nil  
+}
+
+func gWhere() (NodeExpr, error){
+    if look_ahead != lexical.T_WHERE {
+        return nil, nil
+    }
+
+    token, err := lexical.Token()
+    if err != nil {
+        return nil, err
+    }
+    look_ahead = token
+    conds, err2 := gWhereConds()
+
+    return conds, err2
+}
+
+func gWhereConds() (NodeExpr, error){
+    lval, err := lValue()
+    if err != nil {
+        return nil, err
+    }
+
+    var expr NodeExpr
+    operator, err2 := operator() 
+    if err2 != nil {
+        return nil, err2
+    }
+
+    if operator == lexical.T_EQUAL {
+        expr = new(NodeEqual)
+    }
+    expr.SetLeftValue(lval)
+
+    rVal, err3 := rValue()
+    if err3 != nil {
+        return nil, err3
+    }
+    expr.SetRightValue(rVal)
+
+    return expr, nil
+}
+
+func lValue() (NodeExpr, error){
+    if look_ahead == lexical.T_LITERAL {
+        n := new (NodeLiteral)
+        n.SetValue(lexical.CurrentLexeme)
+
+        return n, nil 
+    }
+
+    return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+}
+
+func operator() (uint8, error){
+    token := look_ahead
+    newToken, err := lexical.Token()
+    if err != nil {
+        return 0, err
+    }
+    look_ahead = newToken
+
+    return token, nil
+}
+
+func rValue() (NodeExpr, error){
+    if look_ahead != lexical.T_LITERAL {
+        return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+    }
+
+    lexeme := lexical.CurrentLexeme
+    _, notIsNumer := strconv.ParseFloat(lexeme, 64)
+    if  notIsNumer == nil {
+        n := new(NodeNumber)
+        n.SetValue(lexeme)
+
+        return n, nil
+    }
+
+    n := new(NodeLiteral)
+    n.SetValue(lexeme)
+
+    return n, nil
 }
