@@ -171,7 +171,7 @@ func TestWithNonNumericLimit(t *testing.T) {
 }
 
 func TestWithWhereSimpleComparation(t *testing.T) {
-    New("select * from commits where hash = e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 ")
+    New("select * from commits where hash = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391' ")
 
     ast, err := AST() 
     if err != nil {
