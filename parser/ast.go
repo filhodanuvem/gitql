@@ -65,6 +65,7 @@ func (n *NodeAnd) Operator() uint8{
     return lexical.T_AND
 }
 
+// EQUAL
 func (n *NodeEqual) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -85,10 +86,7 @@ func (n *NodeEqual) LeftValue() NodeExpr{
     return n.leftValue
 }
 
-func (n *NodeNumber) Operator() uint8{
-    return 0
-}
-
+// LITERAL 
 func (n *NodeLiteral) Operator() uint8{
     return lexical.T_LITERAL
 }
@@ -113,6 +111,15 @@ func (n *NodeLiteral) LeftValue() NodeExpr{
     return n.leftValue
 }
 
+func (n* NodeLiteral) Value() string {
+    return n.value
+}
+
+// NUMBER 
+func (n *NodeNumber) Operator() uint8{
+    return 0
+}
+
 func (n *NodeNumber) SetValue(value string) {
     n.value, _ = strconv.ParseFloat(value, 64)
 }
@@ -131,4 +138,8 @@ func (n *NodeNumber) RightValue() NodeExpr{
 
 func (n *NodeNumber) LeftValue() NodeExpr{
     return n.leftValue
+}
+
+func (n* NodeNumber) Value() float64 {
+    return n.value
 }

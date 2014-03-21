@@ -129,7 +129,7 @@ func TestErrorWithInvalidRootNode(t *testing.T) {
 
 }
 
-func testErrorSqlWithoutTable(t *testing.T) {
+func TestErrorSqlWithoutTable(t *testing.T) {
     New("select name from ")
 
     _, error := AST()
@@ -138,8 +138,8 @@ func testErrorSqlWithoutTable(t *testing.T) {
     }
 }
 
-func testWithLimit(t *testing.T) {
-    New("select * from files where limit 5")
+func TestWithLimit(t *testing.T) {
+    New("select * from files limit 5")
 
     ast, error := AST()
     if error != nil {
@@ -148,12 +148,12 @@ func testWithLimit(t *testing.T) {
 
     selectNode := ast.child.(*NodeSelect)
     if selectNode.limit != 5 {
-        t.Errorf("Limit should be 5!!!")   
+        t.Errorf("Limit should be 5, found %d!!!", selectNode.limit)   
     }
 }
 
-func testWithEmptyLimit(t *testing.T) {
-    New("select * from files where limit")
+func TestWithEmptyLimit(t *testing.T) {
+    New("select * from files limit")
 
     _, error := AST()
     if error == nil {
@@ -161,8 +161,8 @@ func testWithEmptyLimit(t *testing.T) {
     }
 }
 
-func testWithNonNumericLimit(t *testing.T) {
-    New("select * from commits where limit cloud")
+func TestWithNonNumericLimit(t *testing.T) {
+    New("select * from commits limit cloud")
 
     _, error := AST() 
     if error == nil {
@@ -170,8 +170,8 @@ func testWithNonNumericLimit(t *testing.T) {
     }
 }
 
-func testWithWhereSimpleComparting(t *testing.T) {
-    New("select * from commits where hash = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391' ")
+func TestWithWhereSimpleComparation(t *testing.T) {
+    New("select * from commits where hash = e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 ")
 
     ast, err := AST() 
     if err != nil {
@@ -179,7 +179,19 @@ func testWithWhereSimpleComparting(t *testing.T) {
     }
 
     selectNode := ast.child.(*NodeSelect)
-    if selectNode.where == nil{
+    w := selectNode.where
+    if w == nil{
         t.Errorf("should has where node")
     }
+
+    lValue := w.LeftValue().(*NodeLiteral)
+    rValue := w.RightValue().(*NodeLiteral)
+    if (lValue.Value() != "hash") {
+        t.Errorf("LValue should be 'hash'")
+    }
+
+    if (rValue.Value() != "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391") {
+        t.Errorf("LValue should be 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'")   
+    }
+
 }

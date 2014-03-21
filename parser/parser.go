@@ -108,16 +108,23 @@ func gTableNames() ([]string, error){
     if look_ahead != lexical.T_FROM {
         return nil, throwSyntaxError(lexical.T_FROM, look_ahead)
     } 
-    look_ahead, error := lexical.Token()
+    token, error := lexical.Token()
     if error != nil {
         return nil,error
     }
+    look_ahead = token
     if look_ahead != lexical.T_LITERAL {
         return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
     }
     
     tables := make([]string, 1)
     tables[0] = lexical.CurrentLexeme
+
+    token2, err2 := lexical.Token()
+    if err2 != nil && token2 != lexical.T_EOF{
+        return nil, err2
+    }
+    look_ahead = token2
     
     return tables, nil
 }
@@ -178,7 +185,6 @@ func gLimit() (int, error) {
     if look_ahead != lexical.T_LIMIT {
         return 0, nil
     }
-
     token, err := lexical.Token()
     if err != nil {
         return 0, err 
@@ -225,6 +231,7 @@ func gWhereConds() (NodeExpr, error){
     expr.SetLeftValue(lval)
 
     rVal, err3 := rValue()
+
     if err3 != nil {
         return nil, err3
     }
@@ -238,8 +245,15 @@ func lValue() (NodeExpr, error){
         n := new (NodeLiteral)
         n.SetValue(lexical.CurrentLexeme)
 
+        token2, err := lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        look_ahead = token2
+
         return n, nil 
     }
+
 
     return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
 }
@@ -265,12 +279,22 @@ func rValue() (NodeExpr, error){
     if  notIsNumer == nil {
         n := new(NodeNumber)
         n.SetValue(lexeme)
+        token2, err := lexical.Token()
+        if err != nil && token2 != lexical.T_EOF {
+            return nil, err
+        }
+        look_ahead = token2
 
         return n, nil
     }
 
     n := new(NodeLiteral)
     n.SetValue(lexeme)
+    token2, err := lexical.Token()
+    if err != nil  && token2 != lexical.T_EOF{
+        return nil, err
+    }
+    look_ahead = token2
 
     return n, nil
 }
