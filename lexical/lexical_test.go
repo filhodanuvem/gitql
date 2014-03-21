@@ -141,10 +141,10 @@ func TestNotReservedWords(t *testing.T) {
     var token uint8
 
     token, _ = Token()
-    assertToken(t, token, T_LITERAL)
+    assertToken(t, token, T_ID)
 
     token, _ = Token()
-    assertToken(t, token, T_LITERAL)
+    assertToken(t, token, T_ID)
 
 }
 
@@ -183,7 +183,7 @@ func TestCurrentLexeme(t *testing.T) {
 
 
     token, _ = Token()
-    assertToken(t, token, T_LITERAL)
+    assertToken(t, token, T_ID)
 
     if (CurrentLexeme != "users") {
         t.Errorf("%s is not users", CurrentLexeme)
@@ -198,7 +198,7 @@ func TestRepetitiveTokens(t *testing.T) {
     
     var token uint8
 
-    tokens := []uint8{T_SELECT, T_LITERAL, T_COMMA, T_LITERAL, T_FROM, T_LITERAL}
+    tokens := []uint8{T_SELECT, T_ID, T_COMMA, T_ID, T_FROM, T_ID}
     for i := range tokens {
         token, _ = Token()
         assertToken(t, token, tokens[i])

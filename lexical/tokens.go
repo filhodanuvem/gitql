@@ -20,6 +20,7 @@ const T_LITERAL = 17;
 const T_NUMERIC = 18; 
 const T_AND = 19;
 const T_OR = 20;
+const T_ID = 21;
 const T_EOF = 0;
 
 var tokenNameMap map[uint8]string; 
@@ -44,7 +45,8 @@ func allocMapTokenNames() {
             T_EQUAL : "T_EQUAL",
             T_NOT_EQUAL : "T_NOT_EQUAL", 
             T_LITERAL : "T_LITERAL" ,
-            T_NUMERIC : "T_NUMERIC", 
+            T_NUMERIC : "T_NUMERIC",
+            T_ID : "T_ID",
             T_EOF : "T_EOF",
         }   
     }

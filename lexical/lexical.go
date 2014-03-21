@@ -181,7 +181,7 @@ func lexemeToToken(lexeme string) (uint8){
         case "limit" : return T_LIMIT
     }
     // @TODO insert to symbol table
-    return T_LITERAL
+    return T_ID
 }
 
 func nextChar() int32 {

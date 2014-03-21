@@ -113,8 +113,8 @@ func gTableNames() ([]string, error){
         return nil,error
     }
     look_ahead = token
-    if look_ahead != lexical.T_LITERAL {
-        return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+    if look_ahead != lexical.T_ID {
+        return nil, throwSyntaxError(lexical.T_ID, look_ahead)
     }
     
     tables := make([]string, 1)
@@ -139,7 +139,7 @@ func gTableParams() ([]string, error){
         return []string{"*"}, nil
     }
     var fields = []string{}
-    if look_ahead == lexical.T_LITERAL {
+    if look_ahead == lexical.T_ID {
         fields := append(fields, lexical.CurrentLexeme)
         token, err := lexical.Token()
         if err != nil {
@@ -150,7 +150,7 @@ func gTableParams() ([]string, error){
 
         return fields, errorSyntax
     }
-    return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+    return nil, throwSyntaxError(lexical.T_ID, look_ahead)
     
 }
 
@@ -161,8 +161,8 @@ func gTableParamsRest(fields *[]string, count int) ([]string, error){
         if errorToken != nil {
             return *fields, errorToken
         }
-        if look_ahead != lexical.T_LITERAL {
-            return *fields, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+        if look_ahead != lexical.T_ID {
+            return *fields, throwSyntaxError(lexical.T_ID, look_ahead)
         }
 
         n := append(*fields, lexical.CurrentLexeme)
@@ -241,7 +241,7 @@ func gWhereConds() (NodeExpr, error){
 }
 
 func lValue() (NodeExpr, error){
-    if look_ahead == lexical.T_LITERAL {
+    if look_ahead == lexical.T_ID {
         n := new (NodeLiteral)
         n.SetValue(lexical.CurrentLexeme)
 
@@ -255,7 +255,7 @@ func lValue() (NodeExpr, error){
     }
 
 
-    return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+    return nil, throwSyntaxError(lexical.T_ID, look_ahead)
 }
 
 func operator() (uint8, error){
