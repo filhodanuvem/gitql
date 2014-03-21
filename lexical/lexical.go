@@ -70,6 +70,16 @@ func Token() (uint8, *TokenError) {
                         case "!" : 
                             state = S_NOT_EQUAL
                             break
+                        case "'":
+                            lexeme = ""
+                            char = nextChar()
+                            state = S_LITERAL
+                            break
+                        case "\"":
+                            lexeme = ""
+                            char = nextChar()
+                            state = S_LITERAL_2
+                            break
                         case " ":
                             lexeme = ""
                             char = nextChar()
@@ -134,6 +144,26 @@ func Token() (uint8, *TokenError) {
                     return T_NOT_EQUAL, nil
                 }
                 return 0, throwTokenError(char)
+            case S_LITERAL:
+                for string(char) != "'" && char != T_EOF {
+                    lexeme = lexeme + string(char)
+                    char = nextChar()
+                }
+                if char == T_EOF {
+                    return 0, throwTokenError(char)
+                }
+                char = nextChar()
+                return T_LITERAL, nil 
+            case S_LITERAL_2:
+                for string(char) != "\"" && char != T_EOF {
+                    lexeme = lexeme + string(char)
+                    char = nextChar()
+                }
+                if char == T_EOF {
+                    return 0, throwTokenError(char)
+                }
+                char = nextChar()
+                return T_LITERAL, nil 
             default:
                 break
         }

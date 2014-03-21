@@ -205,6 +205,71 @@ func TestRepetitiveTokens(t *testing.T) {
     }
 }
 
+func TestReturningLiteral(t *testing.T) {
+    setUp()
+
+    source = " 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391' "
+    char = nextChar()
+
+    token, error := Token()
+    if error != nil {
+        t.Errorf(error.Error())
+    }
+
+    if token != T_LITERAL {
+        t.Errorf("token should be literal")
+    }
+
+    if CurrentLexeme != "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391" {
+        t.Errorf("token should be e69de29bb2d1d6434b8b29ae775ad8c2e48c5391")
+    }
+}
+
+func TestEOFIntoLiteral(t *testing.T) {
+    setUp()
+
+    source = " 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391 "
+    char = nextChar()
+
+    _, error := Token()
+    if error == nil {
+        t.Errorf("should throw error about unterminated literal")
+    }
+}
+
+func TestReturningLiteralWithDoubleQuotes(t *testing.T) {
+    setUp()
+
+    source = " \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\" "
+    char = nextChar()
+
+    token, error := Token()
+    if error != nil {
+        t.Errorf(error.Error())
+    }
+
+    if token != T_LITERAL {
+        t.Errorf("token should be literal")
+    }
+
+    if CurrentLexeme != "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391" {
+        t.Errorf("token should be e69de29bb2d1d6434b8b29ae775ad8c2e48c5391")
+    }
+}
+
+func TestUseTwoQuoteTypes(t *testing.T) {
+    setUp()
+
+    source = " \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391' "
+    char = nextChar()
+
+    _, error := Token()
+    if error == nil {
+        t.Errorf("should throw error with literal using two quote types")
+    }
+}
+
+
 func assertToken(t *testing.T, expected uint8, found uint8) {
     if (expected != found) {
         t.Errorf("Token %s is not %s, lexeme: %s", TokenName(found), TokenName(expected), CurrentLexeme)
