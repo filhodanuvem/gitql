@@ -55,6 +55,11 @@ func g_program() (NodeMain, error) {
     if s == nil {
         return new(NodeEmpty), err2
     }
+
+    if look_ahead != lexical.T_EOF {
+        return nil, throwSyntaxError(lexical.T_EOF, look_ahead)
+    }
+
     return s, nil
 }
 
@@ -195,6 +200,12 @@ func gLimit() (int, error) {
     if numberError != nil {
         return 0, numberError
     }
+    token2, err2 := lexical.Token()
+    if token2 != lexical.T_EOF && err2 != nil {
+        return 0, err2
+    }
+    look_ahead = token2
+
     return number, nil  
 }
 
@@ -219,19 +230,13 @@ func gWhereConds() (NodeExpr, error){
         return nil, err
     }
 
-    var expr NodeExpr
-    operator, err2 := operator() 
+    expr, err2 := operator() 
     if err2 != nil {
         return nil, err2
-    }
-
-    if operator == lexical.T_EQUAL {
-        expr = new(NodeEqual)
     }
     expr.SetLeftValue(lval)
 
     rVal, err3 := rValue()
-
     if err3 != nil {
         return nil, err3
     }
@@ -258,25 +263,40 @@ func lValue() (NodeExpr, error){
     return nil, throwSyntaxError(lexical.T_ID, look_ahead)
 }
 
-func operator() (uint8, error){
+func operator() (NodeExpr, error){
     token := look_ahead
     newToken, err := lexical.Token()
     if err != nil {
-        return 0, err
+        return nil, err
     }
     look_ahead = newToken
+    switch token {
+        case lexical.T_EQUAL :
+            return new(NodeEqual), nil
+        case lexical.T_NOT_EQUAL:
+            return new(NodeNotEqual), nil
+        case lexical.T_GREATER, lexical.T_GREATER_OR_EQUAL:
+             s := new(NodeGreater)
+             s.Equal = (token == lexical.T_GREATER_OR_EQUAL)
+             return s, nil
+        case lexical.T_SMALLER, lexical.T_SMALLER_OR_EQUAL:
+             s := new(NodeSmaller)
+             s.Equal = (token == lexical.T_SMALLER_OR_EQUAL)
+             return s, nil
 
-    return token, nil
+    }
+    // @todo create throwSyntaxErrors to use many expected tokens
+    return nil, throwSyntaxError(lexical.T_EQUAL, token)
 }
 
 func rValue() (NodeExpr, error){
-    if look_ahead != lexical.T_LITERAL {
+    if look_ahead != lexical.T_LITERAL && look_ahead != lexical.T_NUMERIC {
         return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
     }
 
     lexeme := lexical.CurrentLexeme
-    _, notIsNumer := strconv.ParseFloat(lexeme, 64)
-    if  notIsNumer == nil {
+    _, notIsNumber := strconv.ParseFloat(lexeme, 64)
+    if  notIsNumber == nil {
         n := new(NodeNumber)
         n.SetValue(lexeme)
         token2, err := lexical.Token()
@@ -287,6 +307,8 @@ func rValue() (NodeExpr, error){
 
         return n, nil
     }
+
+    // @todo inserts IS NULL!
 
     n := new(NodeLiteral)
     n.SetValue(lexeme)

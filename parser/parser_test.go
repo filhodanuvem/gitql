@@ -170,7 +170,7 @@ func TestWithNonNumericLimit(t *testing.T) {
     }
 }
 
-func TestWithWhereSimpleComparation(t *testing.T) {
+func TestWithWhereSimpleEqualComparation(t *testing.T) {
     New("select * from commits where hash = 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391' ")
 
     ast, err := AST() 
@@ -184,6 +184,10 @@ func TestWithWhereSimpleComparation(t *testing.T) {
         t.Errorf("should has where node")
     }
 
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeEqual)) {
+        t.Errorf("should be a NodeEqual")
+    }
+
     lValue := w.LeftValue().(*NodeLiteral)
     rValue := w.RightValue().(*NodeLiteral)
     if (lValue.Value() != "hash") {
@@ -195,3 +199,90 @@ func TestWithWhereSimpleComparation(t *testing.T) {
     }
 
 }
+
+func TestWhereWithNotEqualCompare(t *testing.T) {
+    New("select * from commits where author != 'cloudson'")
+
+    ast, err := AST() 
+    if err != nil {
+        t.Errorf(err.Error())
+        return
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where
+    if w == nil{
+        t.Errorf("should has where node")
+    }
+
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeNotEqual)) {
+        t.Errorf("should be a NodeNotEqual")
+    }
+
+    lValue := w.LeftValue().(*NodeLiteral)
+    rValue := w.RightValue().(*NodeLiteral)
+    if (lValue.Value() != "author") {
+        t.Errorf("LValue should be 'author'")
+    }
+
+    if (rValue.Value() != "cloudson") {
+        t.Errorf("LValue should be 'cloudson'")   
+    }
+}
+
+func TestWhereWithGreater(t *testing.T) {
+    New("select * from commits where date > '2014-05-12 00:00:00' ")
+
+    ast, err := AST() 
+    if err != nil {
+        t.Errorf(err.Error())
+        return
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where
+
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeGreater)) {
+        t.Errorf("should be a NodeGreater")
+    }
+}
+
+func TestWhereWithSmaller(t *testing.T) {
+    New("select * from commits where date <= '2014-05-12 00:00:00' ")
+
+    ast, err := AST() 
+    if err != nil {
+        t.Errorf(err.Error())
+        return
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where
+
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeSmaller)) {
+        t.Errorf("should be a NodeSmaller")
+    } 
+}
+
+func TestWhereWithNumeric(t *testing.T) {
+    New("select * from anything where blah >= 8")
+
+    ast, err := AST()
+    if err != nil {
+        t.Errorf(err.Error())
+        return
+    }   
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where
+
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeGreater)) {
+        t.Errorf("should be a NodeGreater")
+    }
+
+    greater := w.(*NodeGreater)
+    if !greater.Equal {
+        t.Errorf("Greater shoud be marked with equal")
+    }
+}
+

@@ -141,6 +141,7 @@ func Token() (uint8, *TokenError) {
                 char = nextChar()
                 lexeme = string(char)
                 if lexeme == "=" {
+                    char = nextChar()
                     return T_NOT_EQUAL, nil
                 }
                 return 0, throwTokenError(char)

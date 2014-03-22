@@ -36,6 +36,28 @@ type NodeEqual struct {
     rightValue NodeExpr
 }
 
+type NodeNotEqual struct {
+    leftValue NodeExpr
+    rightValue NodeExpr
+}
+
+type NodeGreater struct {
+    leftValue NodeExpr
+    rightValue NodeExpr
+    Equal bool
+}
+
+type NodeSmaller struct {
+    leftValue NodeExpr
+    rightValue NodeExpr
+    Equal bool
+}
+
+type NodeOr struct { 
+    leftValue NodeExpr
+    rightValue NodeExpr
+}
+
 type NodeAnd struct { 
     leftValue NodeExpr
     rightValue NodeExpr
@@ -61,9 +83,6 @@ func (e *NodeEmpty) Run() {
     return 
 }
 
-func (n *NodeAnd) Operator() uint8{
-    return lexical.T_AND
-}
 
 // EQUAL
 func (n *NodeEqual) Operator() uint8{
@@ -85,6 +104,113 @@ func (n *NodeEqual) RightValue() NodeExpr{
 func (n *NodeEqual) LeftValue() NodeExpr{
     return n.leftValue
 }
+
+// NOT EQUAL
+func (n *NodeNotEqual) Operator() uint8{
+    return lexical.T_EQUAL
+}
+
+func (n *NodeNotEqual) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeNotEqual) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeNotEqual) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeNotEqual) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+// GREATER
+func (n *NodeGreater) Operator() uint8{
+    return lexical.T_EQUAL
+}
+
+func (n *NodeGreater) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeGreater) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeGreater) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeGreater) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+// SMALLER
+func (n *NodeSmaller) Operator() uint8{
+    return lexical.T_EQUAL
+}
+
+func (n *NodeSmaller) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeSmaller) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeSmaller) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeSmaller) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+// OR
+func (n *NodeOr) Operator() uint8{
+    return lexical.T_EQUAL
+}
+
+func (n *NodeOr) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeOr) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeOr) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeOr) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+// AND
+func (n *NodeAnd) Operator() uint8{
+    return lexical.T_EQUAL
+}
+
+func (n *NodeAnd) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeAnd) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeAnd) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeAnd) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+
 
 // LITERAL 
 func (n *NodeLiteral) Operator() uint8{

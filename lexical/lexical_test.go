@@ -86,7 +86,7 @@ func TestRecognizeTokensWithLexemesOfTwoChars(t *testing.T) {
 
 func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
     setUp()
-    source = "=    <    >=   !="
+    source = "=    <    >=   != cloudson"
     char = nextChar()
 
     var token uint8
@@ -102,6 +102,9 @@ func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
 
     token, _ = Token()
     assertToken(t, token, T_NOT_EQUAL)
+
+    token, _ = Token()
+    assertToken(t, token, T_ID)
 }
 
 func TestErrorUnrecognizeChar(t* testing.T) {
