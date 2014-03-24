@@ -368,6 +368,27 @@ func gWC5(eating bool) (NodeExpr, error) {
 }
 
 func rValue() (NodeExpr, error){
+    if look_ahead == lexical.T_PARENTH_L {
+        token, err := lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        look_ahead = token
+        conds, err2 := gWhereConds()
+        if err2 != nil {
+            return nil, err2
+        }
+        if look_ahead != lexical.T_PARENTH_R {
+            return nil, throwSyntaxError(lexical.T_PARENTH_R, look_ahead)
+        }
+        token2, err3 := lexical.Token()
+        if token2 != lexical.T_EOF && err3 != nil {
+            return nil, err3
+        }
+        look_ahead = token2
+        return conds, nil
+    }
+
     if look_ahead == lexical.T_ID {
         n := new (NodeLiteral)
         n.SetValue(lexical.CurrentLexeme)

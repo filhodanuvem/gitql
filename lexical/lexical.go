@@ -56,6 +56,12 @@ func Token() (uint8, *TokenError) {
                         case "*" : 
                             state = S_WILD_CARD
                             break
+                        case "(" :
+                            state = S_PARENTH_L
+                            break
+                        case ")" :
+                            state = S_PARENTH_R
+                            break
                         case ",":
                             state = S_COMMA
                             break
@@ -169,6 +175,12 @@ func Token() (uint8, *TokenError) {
                 }
                 char = nextChar()
                 return T_LITERAL, nil 
+            case S_PARENTH_L: 
+                char = nextChar()
+                return T_PARENTH_L, nil 
+            case S_PARENTH_R: 
+                char = nextChar()
+                return T_PARENTH_R, nil
             default:
                 break
         }

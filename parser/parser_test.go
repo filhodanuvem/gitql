@@ -355,3 +355,28 @@ func TestConditionWithNoPrecedentParent(t *testing.T) {
         t.Errorf("should be a NodeEqual")
     }     
 }
+
+func TestConditionWithPrecedentParent(t *testing.T) {
+    New("select * from commits where hash = 'e69de29' and (date > 'now' or hash = 'fff3331')")
+
+    ast, err := AST()
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where 
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeAnd)) {
+        t.Errorf("should be a NodeAnd")
+    }
+    lValue := w.LeftValue().(*NodeEqual)
+    rValue := w.RightValue().(*NodeOr)
+
+    if reflect.TypeOf(lValue) != reflect.TypeOf(new(NodeEqual)) {
+        t.Errorf("should be a NodeEqual")
+    }
+
+    if reflect.TypeOf(rValue) != reflect.TypeOf(new(NodeOr)) {
+        t.Errorf("should be a NodeOr")
+    }     
+}
