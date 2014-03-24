@@ -286,3 +286,18 @@ func TestWhereWithNumeric(t *testing.T) {
     }
 }
 
+func TestWhereWithOR(t *testing.T) {
+    New("select * from commits where hash = 'e69de29' or hash = '11837a4'")
+
+    ast, err := AST()
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where 
+
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeOr)) {
+        t.Errorf("should be a NodeOr")
+    }
+}

@@ -225,25 +225,170 @@ func gWhere() (NodeExpr, error){
 }
 
 func gWhereConds() (NodeExpr, error){
-    lval, err := lValue()
+    where, err := gWC2(false) 
     if err != nil {
         return nil, err
     }
 
-    expr, err2 := operator() 
-    if err2 != nil {
-        return nil, err2
-    }
-    expr.SetLeftValue(lval)
+    return where, nil
+}
 
-    rVal, err3 := rValue()
-    if err3 != nil {
-        return nil, err3
+// where cond OR
+func gWC2(eating bool) (NodeExpr, error) {
+    if eating {
+        token, err := lexical.Token() 
+        if err != nil {
+            return nil, err 
+        }
+        look_ahead = token
+        if look_ahead != lexical.T_OR {
+            return nil, throwSyntaxError(lexical.T_OR, look_ahead)
+        }
     }
-    expr.SetRightValue(rVal)
+    expr, err := gWC3(false)
+    if err != nil {
+        return nil, err 
+    }
+    if look_ahead == lexical.T_OR  {
+        or := new(NodeOr)
+        or.SetLeftValue(expr)
+        expr2, err2 := gWC2(true)
+        if err2 != nil {
+            return nil, err2 
+        }
+        or.SetRightValue(expr2)
+        return or, nil 
+    }
+    return expr, nil
+}
+
+// where cond AND
+func gWC3(eating bool) (NodeExpr, error) {
+    if eating {
+        token, err := lexical.Token() 
+        if err != nil {
+            return nil, err 
+        }
+        look_ahead = token
+        if look_ahead != lexical.T_AND {
+            return nil, throwSyntaxError(lexical.T_OR, look_ahead)
+        }
+    }
+    expr, err := gWC4(false)
+    if err != nil {
+        return nil, err 
+    }
+    if look_ahead == lexical.T_AND  {
+        and := new(NodeAnd)
+        and.SetLeftValue(expr)
+        expr2, err2 := gWC3(true)
+        if err2 != nil {
+            return nil, err2 
+        }
+        and.SetRightValue(expr2)
+        return and, nil
+    }
+    return expr, nil
+}
+
+// where cond equal and not equal
+func gWC4(eating bool) (NodeExpr, error) {
+    if eating {
+        token, err := lexical.Token() 
+        if err != nil {
+            return nil, err 
+        }
+        look_ahead = token
+        if look_ahead != lexical.T_EQUAL && look_ahead != lexical.T_NOT_EQUAL  {
+            return nil, throwSyntaxError(lexical.T_EQUAL, look_ahead)
+        }
+    }
+    expr, err := gWC5(false)
+    if err != nil {
+        return nil, err 
+    }
+    
+    switch look_ahead {
+        case lexical.T_EQUAL: 
+            op := new(NodeEqual)
+            op.SetLeftValue(expr)
+            expr2, err2 := gWC4(true)
+            if err2 != nil {
+                return nil, err2 
+            }
+            op.SetRightValue(expr2)    
+
+            break
+        case lexical.T_NOT_EQUAL:  
+            op := new(NodeNotEqual)
+            op.SetLeftValue(expr)
+            expr2, err2 := gWC4(true)
+            if err2 != nil {
+                return nil, err2 
+            }
+            op.SetRightValue(expr2)
+            break
+    }
 
     return expr, nil
 }
+
+// where cond greater and lesser
+func gWC5(eating bool) (NodeExpr, error) {
+    if eating {
+        token, err := lexical.Token() 
+        if err != nil {
+            return nil, err 
+        }
+        look_ahead = token
+        if look_ahead != lexical.T_GREATER && look_ahead != lexical.T_GREATER_OR_EQUAL &&
+           look_ahead != lexical.T_SMALLER && look_ahead != lexical.T_SMALLER_OR_EQUAL  {
+            return nil, throwSyntaxError(lexical.T_GREATER, look_ahead)
+        }
+    }
+    expr, err := rValue()
+    if err != nil {
+        return nil, err 
+    }
+    
+    switch look_ahead {
+        case lexical.T_GREATER, lexical.T_GREATER_OR_EQUAL: 
+            op := new(NodeGreater)
+            op.Equal = (look_ahead == lexical.T_GREATER_OR_EQUAL)
+            op.SetLeftValue(expr)
+            token, err := lexical.Token() 
+            if err != nil {
+                return nil, err 
+            }
+            look_ahead = token
+            expr2, err2 := gWC5(true)
+            if err2 != nil {
+                return nil, err2 
+            }
+            op.SetRightValue(expr2)
+
+            return op, nil 
+        case lexical.T_SMALLER, lexical.T_SMALLER_OR_EQUAL:  
+            op := new(NodeSmaller)
+            op.Equal = (look_ahead == lexical.T_GREATER_OR_EQUAL)
+            op.SetLeftValue(expr)
+            token, err := lexical.Token() 
+            if err != nil {
+                return nil, err 
+            }
+            look_ahead = token
+            expr2, err2 := gWC5(true)
+            if err2 != nil {
+                return nil, err2 
+            }
+            op.SetRightValue(expr2)
+
+            return op, nil 
+    }
+
+    return expr, nil
+}
+
 
 func lValue() (NodeExpr, error){
     if look_ahead == lexical.T_ID {
@@ -290,6 +435,19 @@ func operator() (NodeExpr, error){
 }
 
 func rValue() (NodeExpr, error){
+    if look_ahead == lexical.T_ID {
+        n := new (NodeLiteral)
+        n.SetValue(lexical.CurrentLexeme)
+
+        token2, err := lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        look_ahead = token2
+
+        return n, nil 
+    }
+
     if look_ahead != lexical.T_LITERAL && look_ahead != lexical.T_NUMERIC {
         return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
     }
