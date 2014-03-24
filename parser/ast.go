@@ -31,6 +31,21 @@ type NodeExpr interface {
     SetRightValue(NodeExpr) 
 }
 
+type NodeBinOp interface {
+    LeftValue() NodeExpr
+    RightValue() NodeExpr
+    SetLeftValue(NodeExpr) 
+    SetRightValue(NodeExpr) 
+}
+
+type NodeConst interface {
+    SetValue(string)
+}
+
+type NodeAdapterBinToConst struct {
+    adapted NodeBinOp
+}
+
 type NodeEqual struct {
     leftValue NodeExpr
     rightValue NodeExpr
@@ -70,6 +85,12 @@ type NodeNumber struct {
 }
 
 type NodeLiteral struct {
+    leftValue NodeExpr
+    rightValue NodeExpr
+    value string
+}
+
+type NodeId struct {
     leftValue NodeExpr
     rightValue NodeExpr
     value string
@@ -210,8 +231,6 @@ func (n *NodeAnd) LeftValue() NodeExpr{
     return n.leftValue
 }
 
-
-
 // LITERAL 
 func (n *NodeLiteral) Operator() uint8{
     return lexical.T_LITERAL
@@ -268,4 +287,38 @@ func (n *NodeNumber) LeftValue() NodeExpr{
 
 func (n* NodeNumber) Value() float64 {
     return n.value
+}
+
+// ID 
+func (n *NodeId) Operator() uint8{
+    return 0
+}
+
+func (n *NodeId) SetValue(value string) {
+    n.value = value
+}
+
+func (n *NodeId) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeId) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeId) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeId) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+func (n* NodeId) Value() string {
+    return n.value
+}
+
+
+func (n *NodeAdapterBinToConst) setAdapted(a NodeBinOp) {
+    n.adapted = a
 }

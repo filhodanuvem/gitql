@@ -4,6 +4,7 @@ import (
     "fmt"
     "strconv"
     _"unicode"
+    "reflect"
     "github.com/cloudson/gitql/lexical"
 )
 
@@ -386,6 +387,7 @@ func rValue() (NodeExpr, error){
             return nil, err3
         }
         look_ahead = token2
+
         return conds, nil
     }
 
