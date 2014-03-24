@@ -312,3 +312,46 @@ func TestWhereWithOR(t *testing.T) {
         t.Errorf("should be a NodeGreater")
     }    
 }
+
+func TestErrorIfOperatorBeforeEOF(t *testing.T) {
+    New("select * from commits where hash = 'e69de29' and date > ")
+    _, err := AST()
+    if err == nil {
+        t.Fatalf("Shoud be error with T_GREATER before T_EOF")
+    }
+
+
+    New("select * from commits where hash = 'e69de29' and   ")
+    _, err = AST()
+    if err == nil {
+        t.Fatalf("Shoud be error with T_AND before T_EOF")
+    }
+
+    // @todo should this sql throws an error ? 
+    New("select * from commits where hash = 'e69de29' and date  ")
+}
+
+func TestConditionWithNoPrecedentParent(t *testing.T) {
+    New("select * from commits where hash = 'e69de29' and date > 'now' or hash = 'fff3331'")
+
+    ast, err := AST()
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+
+    selectNode := ast.child.(*NodeSelect)
+    w := selectNode.where 
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeOr)) {
+        t.Errorf("should be a NodeOr")
+    }
+    lValue := w.LeftValue().(*NodeAnd)
+    rValue := w.RightValue().(*NodeEqual)
+
+    if reflect.TypeOf(lValue) != reflect.TypeOf(new(NodeAnd)) {
+        t.Errorf("should be a NodeAnd")
+    }
+
+    if reflect.TypeOf(rValue) != reflect.TypeOf(new(NodeEqual)) {
+        t.Errorf("should be a NodeEqual")
+    }     
+}
