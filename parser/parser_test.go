@@ -287,7 +287,7 @@ func TestWhereWithNumeric(t *testing.T) {
 }
 
 func TestWhereWithOR(t *testing.T) {
-    New("select * from commits where hash = 'e69de29' or hash = '11837a4'")
+    New("select * from commits where hash = 'e69de29' or date > 'now' ")
 
     ast, err := AST()
     if err != nil {
@@ -300,4 +300,15 @@ func TestWhereWithOR(t *testing.T) {
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeOr)) {
         t.Errorf("should be a NodeOr")
     }
+
+    lValue := w.LeftValue().(*NodeEqual)
+    rValue := w.RightValue().(*NodeGreater)
+
+    if reflect.TypeOf(lValue) != reflect.TypeOf(new(NodeEqual)) {
+        t.Errorf("should be a NodeEqual")
+    }
+
+    if reflect.TypeOf(rValue) != reflect.TypeOf(new(NodeGreater)) {
+        t.Errorf("should be a NodeGreater")
+    }    
 }

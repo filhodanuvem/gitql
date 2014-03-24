@@ -16,7 +16,7 @@ type SyntaxError struct {
 
 func (e *SyntaxError) Error() string {
     var appendix = ""; 
-    if e.found == lexical.T_LITERAL {
+    if e.found == lexical.T_LITERAL || e.found == lexical.T_ID{
         appendix = fmt.Sprintf("(%s)", lexical.CurrentLexeme)
     }
     return fmt.Sprintf("Expected %s and found %s%s", lexical.TokenName(e.expected), lexical.TokenName(e.found), appendix)
@@ -237,13 +237,10 @@ func gWhereConds() (NodeExpr, error){
 func gWC2(eating bool) (NodeExpr, error) {
     if eating {
         token, err := lexical.Token() 
-        if err != nil {
+        if token != lexical.T_EOF && err != nil {
             return nil, err 
         }
         look_ahead = token
-        if look_ahead != lexical.T_OR {
-            return nil, throwSyntaxError(lexical.T_OR, look_ahead)
-        }
     }
     expr, err := gWC3(false)
     if err != nil {
@@ -266,13 +263,10 @@ func gWC2(eating bool) (NodeExpr, error) {
 func gWC3(eating bool) (NodeExpr, error) {
     if eating {
         token, err := lexical.Token() 
-        if err != nil {
+        if token != lexical.T_EOF && err != nil {
             return nil, err 
         }
         look_ahead = token
-        if look_ahead != lexical.T_AND {
-            return nil, throwSyntaxError(lexical.T_OR, look_ahead)
-        }
     }
     expr, err := gWC4(false)
     if err != nil {
@@ -295,13 +289,10 @@ func gWC3(eating bool) (NodeExpr, error) {
 func gWC4(eating bool) (NodeExpr, error) {
     if eating {
         token, err := lexical.Token() 
-        if err != nil {
+        if token != lexical.T_EOF && err != nil {
             return nil, err 
         }
         look_ahead = token
-        if look_ahead != lexical.T_EQUAL && look_ahead != lexical.T_NOT_EQUAL  {
-            return nil, throwSyntaxError(lexical.T_EQUAL, look_ahead)
-        }
     }
     expr, err := gWC5(false)
     if err != nil {
@@ -318,7 +309,7 @@ func gWC4(eating bool) (NodeExpr, error) {
             }
             op.SetRightValue(expr2)    
 
-            break
+            return op, nil
         case lexical.T_NOT_EQUAL:  
             op := new(NodeNotEqual)
             op.SetLeftValue(expr)
@@ -327,7 +318,7 @@ func gWC4(eating bool) (NodeExpr, error) {
                 return nil, err2 
             }
             op.SetRightValue(expr2)
-            break
+            return op, nil
     }
 
     return expr, nil
@@ -337,14 +328,11 @@ func gWC4(eating bool) (NodeExpr, error) {
 func gWC5(eating bool) (NodeExpr, error) {
     if eating {
         token, err := lexical.Token() 
-        if err != nil {
+
+        if token != lexical.T_EOF && err != nil {
             return nil, err 
         }
         look_ahead = token
-        if look_ahead != lexical.T_GREATER && look_ahead != lexical.T_GREATER_OR_EQUAL &&
-           look_ahead != lexical.T_SMALLER && look_ahead != lexical.T_SMALLER_OR_EQUAL  {
-            return nil, throwSyntaxError(lexical.T_GREATER, look_ahead)
-        }
     }
     expr, err := rValue()
     if err != nil {
@@ -356,11 +344,6 @@ func gWC5(eating bool) (NodeExpr, error) {
             op := new(NodeGreater)
             op.Equal = (look_ahead == lexical.T_GREATER_OR_EQUAL)
             op.SetLeftValue(expr)
-            token, err := lexical.Token() 
-            if err != nil {
-                return nil, err 
-            }
-            look_ahead = token
             expr2, err2 := gWC5(true)
             if err2 != nil {
                 return nil, err2 
@@ -372,11 +355,6 @@ func gWC5(eating bool) (NodeExpr, error) {
             op := new(NodeSmaller)
             op.Equal = (look_ahead == lexical.T_GREATER_OR_EQUAL)
             op.SetLeftValue(expr)
-            token, err := lexical.Token() 
-            if err != nil {
-                return nil, err 
-            }
-            look_ahead = token
             expr2, err2 := gWC5(true)
             if err2 != nil {
                 return nil, err2 
@@ -390,49 +368,24 @@ func gWC5(eating bool) (NodeExpr, error) {
 }
 
 
-func lValue() (NodeExpr, error){
-    if look_ahead == lexical.T_ID {
-        n := new (NodeLiteral)
-        n.SetValue(lexical.CurrentLexeme)
+// func lValue() (NodeExpr, error){
+//     if look_ahead == lexical.T_ID {
+//         n := new (NodeLiteral)
+//         n.SetValue(lexical.CurrentLexeme)
 
-        token2, err := lexical.Token()
-        if err != nil {
-            return nil, err
-        }
-        look_ahead = token2
+//         token2, err := lexical.Token()
+//         if err != nil {
+//             return nil, err
+//         }
+//         look_ahead = token2
 
-        return n, nil 
-    }
+//         return n, nil 
+//     }
 
 
-    return nil, throwSyntaxError(lexical.T_ID, look_ahead)
-}
+//     return nil, throwSyntaxError(lexical.T_ID, look_ahead)
+// }
 
-func operator() (NodeExpr, error){
-    token := look_ahead
-    newToken, err := lexical.Token()
-    if err != nil {
-        return nil, err
-    }
-    look_ahead = newToken
-    switch token {
-        case lexical.T_EQUAL :
-            return new(NodeEqual), nil
-        case lexical.T_NOT_EQUAL:
-            return new(NodeNotEqual), nil
-        case lexical.T_GREATER, lexical.T_GREATER_OR_EQUAL:
-             s := new(NodeGreater)
-             s.Equal = (token == lexical.T_GREATER_OR_EQUAL)
-             return s, nil
-        case lexical.T_SMALLER, lexical.T_SMALLER_OR_EQUAL:
-             s := new(NodeSmaller)
-             s.Equal = (token == lexical.T_SMALLER_OR_EQUAL)
-             return s, nil
-
-    }
-    // @todo create throwSyntaxErrors to use many expected tokens
-    return nil, throwSyntaxError(lexical.T_EQUAL, token)
-}
 
 func rValue() (NodeExpr, error){
     if look_ahead == lexical.T_ID {
@@ -440,7 +393,7 @@ func rValue() (NodeExpr, error){
         n.SetValue(lexical.CurrentLexeme)
 
         token2, err := lexical.Token()
-        if err != nil {
+        if token2 != lexical.T_EOF && err != nil {
             return nil, err
         }
         look_ahead = token2

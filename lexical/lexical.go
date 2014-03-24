@@ -15,7 +15,11 @@ type TokenError struct {
 }
 
 func (error *TokenError) Error() string {
-    return fmt.Sprintf("Unexpected char '%s' with source '%s'", string(error.char), source)
+    character := string(error.char)
+    if char == T_EOF {
+        character =  "EOF"
+    }
+    return fmt.Sprintf("Unexpected char '%s' with source '%s'", character, source)
 }
 
 func throwTokenError(char int32) (*TokenError) {
@@ -179,6 +183,8 @@ func lexemeToToken(lexeme string) (uint8){
         case "where" : return T_WHERE
         case "order" : return T_ORDER
         case "by" : return T_BY
+        case "or" : return T_OR
+        case "and" : return T_AND
         case "limit" : return T_LIMIT
     }
     // @TODO insert to symbol table
