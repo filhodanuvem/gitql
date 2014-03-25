@@ -4,7 +4,6 @@ import (
     "fmt"
     "strconv"
     _"unicode"
-    "reflect"
     "github.com/cloudson/gitql/lexical"
 )
 
