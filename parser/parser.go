@@ -37,13 +37,13 @@ func New(source string) {
 
 func AST() (*NodeProgram, error) {
     program := new(NodeProgram)
-    node, err := g_program()
-    program.child = node 
+    node, err := gProgram()
+    program.Child = node 
 
     return program, err
 }
 
-func g_program() (NodeMain, error) {
+func gProgram() (NodeMain, error) {
     token, err := lexical.Token()
     look_ahead = token
     
@@ -83,25 +83,30 @@ func gSelect() (*NodeSelect, error){
     if len(fields) == 1 && fields[0] == "*" {
         s.WildCard = true   
     }
-    s.fields = fields
+    s.Fields = fields
 
     // TABLES
     tables , err4 := gTableNames()
     if err4 != nil {
         return nil, err4
     }
-    s.tables = tables
+    s.Tables = tables
 
     // WHERE 
     where, err6 := gWhere()
     if err6 != nil {
         return nil, err6
     }
-    s.where = where
+    s.Where = where
 
     // LIMIT 
     var err5 error 
-    s.limit, err5 = gLimit() 
+    s.Limit, err5 = gLimit() 
+    if  s.Limit == -1 {
+        // @todo search default limit from file config
+        s.Limit = 10 
+    }
+
     if err5 != nil {
         return nil, err5 
     }
@@ -188,7 +193,7 @@ func gTableParamsRest(fields *[]string, count int) ([]string, error){
 
 func gLimit() (int, error) {
     if look_ahead != lexical.T_LIMIT {
-        return 0, nil
+        return -1, nil
     }
     token, err := lexical.Token()
     if err != nil {

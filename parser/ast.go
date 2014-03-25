@@ -12,15 +12,15 @@ type NodeEmpty struct {
 }
 
 type NodeProgram struct {
-    child NodeMain
+    Child NodeMain
 }
 
 type NodeSelect struct {
     WildCard bool
-    fields []string
-    tables []string
-    where NodeExpr
-    limit int 
+    Fields []string
+    Tables []string
+    Where NodeExpr
+    Limit int 
 }
 
 type NodeExpr interface {

@@ -14,7 +14,7 @@ func TestEmptySource(t *testing.T) {
         t.Errorf("AST should be a NodeProgram, found %s", reflect.TypeOf(ast).String())
     }
 
-    if (ast.child != nil) {
+    if (ast.Child != nil) {
         t.Errorf("Program is not empty")
     }
 }
@@ -32,7 +32,7 @@ func TestValidFirstNode(t *testing.T) {
     New("select * from users")
     ast, _ := AST()
 
-    if ast.child == nil {
+    if ast.Child == nil {
         t.Errorf("Program is empty")
     }
 }
@@ -45,11 +45,11 @@ func TestUsingWildCard(t *testing.T) {
         t.Errorf(error.Error())
     }
 
-    if ast.child == nil {
+    if ast.Child == nil {
         t.Errorf("Program is empty")
     }
 
-    selectNode := ast.child.(*NodeSelect)
+    selectNode := ast.Child.(*NodeSelect)
     if !selectNode.WildCard {
         t.Errorf("Expected wildcard setted")
     }
@@ -64,14 +64,14 @@ func TestUsingOneFieldName(t *testing.T) {
         t.Errorf(error.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
+    selectNode := ast.Child.(*NodeSelect)
     
-    if len(selectNode.fields) != 1 {
-        t.Errorf("Expected exactly one field and found %d", len(selectNode.fields))
+    if len(selectNode.Fields) != 1 {
+        t.Errorf("Expected exactly one field and found %d", len(selectNode.Fields))
     }
 
-    if selectNode.fields[0] != "name" {
-        t.Errorf("Expected param 'name' and found '%s'", selectNode.fields[0])
+    if selectNode.Fields[0] != "name" {
+        t.Errorf("Expected param 'name' and found '%s'", selectNode.Fields[0])
     }
 }
 
@@ -84,9 +84,9 @@ func TestUsingFieldNames(t *testing.T) {
         t.Errorf(error.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    if len(selectNode.fields) != 2 {
-        t.Errorf("Expected exactly two fields and found %d", len(selectNode.fields))
+    selectNode := ast.Child.(*NodeSelect)
+    if len(selectNode.Fields) != 2 {
+        t.Errorf("Expected exactly two fields and found %d", len(selectNode.Fields))
     }
 }
 
@@ -99,13 +99,13 @@ func TestWithOneTable(t *testing.T) {
         t.Errorf(error.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    if len(selectNode.fields) != 2 {
-        t.Errorf("Expected exactly two fields and found %d", len(selectNode.fields))
+    selectNode := ast.Child.(*NodeSelect)
+    if len(selectNode.Fields) != 2 {
+        t.Errorf("Expected exactly two fields and found %d", len(selectNode.Fields))
     }
 
-    if selectNode.tables[0] != "files" {
-        t.Errorf("Expected table 'files', found %s", selectNode.tables[0])
+    if selectNode.Tables[0] != "files" {
+        t.Errorf("Expected table 'files', found %s", selectNode.Tables[0])
     }
 }
 
@@ -146,9 +146,9 @@ func TestWithLimit(t *testing.T) {
         t.Errorf(error.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    if selectNode.limit != 5 {
-        t.Errorf("Limit should be 5, found %d!!!", selectNode.limit)   
+    selectNode := ast.Child.(*NodeSelect)
+    if selectNode.Limit != 5 {
+        t.Errorf("Limit should be 5, found %d!!!", selectNode.Limit)   
     }
 }
 
@@ -178,8 +178,8 @@ func TestWithWhereSimpleEqualComparation(t *testing.T) {
         t.Errorf(err.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where
     if w == nil{
         t.Errorf("should has where node")
     }
@@ -209,8 +209,8 @@ func TestWhereWithNotEqualCompare(t *testing.T) {
         return
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where
     if w == nil{
         t.Errorf("should has where node")
     }
@@ -239,8 +239,8 @@ func TestWhereWithGreater(t *testing.T) {
         return
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where
 
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeGreater)) {
         t.Errorf("should be a NodeGreater")
@@ -256,8 +256,8 @@ func TestWhereWithSmaller(t *testing.T) {
         return
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where
 
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeSmaller)) {
         t.Errorf("should be a NodeSmaller")
@@ -273,8 +273,8 @@ func TestWhereWithNumeric(t *testing.T) {
         return
     }   
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where
 
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeGreater)) {
         t.Errorf("should be a NodeGreater")
@@ -294,8 +294,8 @@ func TestWhereWithOR(t *testing.T) {
         t.Fatalf(err.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where 
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where 
 
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeOr)) {
         t.Errorf("should be a NodeOr")
@@ -339,8 +339,8 @@ func TestConditionWithNoPrecedentParent(t *testing.T) {
         t.Fatalf(err.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where 
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where 
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeOr)) {
         t.Errorf("should be a NodeOr")
     }
@@ -364,8 +364,8 @@ func TestConditionWithPrecedentParent(t *testing.T) {
         t.Fatalf(err.Error())
     }
 
-    selectNode := ast.child.(*NodeSelect)
-    w := selectNode.where 
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where 
     if reflect.TypeOf(w) != reflect.TypeOf(new(NodeAnd)) {
         t.Errorf("should be a NodeAnd")
     }
