@@ -42,5 +42,43 @@ func TestChooseRepetitiveFields(t *testing.T) {
     if err == nil {
         t.Fatalf("Shoud avoid repetitive fields")
     }
+}
 
+func TestConstantLValue(t *testing.T) {
+    parser.New("select name from commits where 'name' = 'name' ")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := analysis(ast)
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+}
+
+func TestGreaterWithNoNumeric(t *testing.T) {
+    parser.New("select name from commits where date > 'name'")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := analysis(ast)
+    if err == nil {
+        t.Fatalf("Shoud avoid greater with no numeric")
+    }
+}
+
+func TestSmallerWithNoNumeric(t *testing.T) {
+    parser.New("select name from commits where date > 'name'")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := analysis(ast)
+    if err == nil {
+        t.Fatalf("Shoud avoid smaller with no numeric")
+    }
 }

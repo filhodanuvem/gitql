@@ -2,12 +2,16 @@ package semantical
 
 import (
     "fmt"
+    "reflect"
     "github.com/cloudson/gitql/parser"
 )
 
 type Visitor interface {
     Visit(*parser.NodeProgram) error 
     VisitSelect(*parser.NodeSelect) error 
+    VisitExpr(*parser.NodeExpr) error
+    VisitGreater(*parser.NodeGreater) error
+    VisitSmaller(*parser.NodeSmaller) error
 }
 
 type SemanticalVisitor struct {
@@ -16,6 +20,7 @@ type SemanticalVisitor struct {
 
 type SemanticalError struct {
     err string
+    errNo uint8
 }
 
 func throwSemanticalError(err string) (error) {
@@ -46,9 +51,54 @@ func (v *SemanticalVisitor) VisitSelect(n *parser.NodeSelect) (error) {
         fieldsCount[field] = true
     }
 
+
+    err := v.VisitExpr(n.Where)
+    if err != nil {
+        return err
+    }
+
     if 0 == n.Limit {
         return throwSemanticalError("Limit should be greater then zero")
     }
 
     return nil 
 } 
+
+func (v *SemanticalVisitor) VisitExpr(n parser.NodeExpr) (error) {
+    switch reflect.TypeOf(n) {
+        case reflect.TypeOf(new(parser.NodeGreater)) : 
+            g:= n.(*parser.NodeGreater)
+            return v.VisitGreater(g)
+        case reflect.TypeOf(new(parser.NodeSmaller)) : 
+            g:= n.(*parser.NodeSmaller)
+            return v.VisitSmaller(g)
+    } 
+
+    return nil
+}
+
+func (v *SemanticalVisitor) VisitGreater(n *parser.NodeGreater) (error) {
+    rVal := n.RightValue()
+    if !shouldBeNumeric(rVal) {
+        return throwSemanticalError("RValue in Greater should be numeric")
+    } 
+
+    return nil
+}
+
+func (v *SemanticalVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
+    rVal := n.RightValue()
+    if !shouldBeNumeric(rVal) {
+        return throwSemanticalError("RValue in Smaller should be numeric")
+    } 
+
+    return nil
+}
+
+func shouldBeNumeric(val parser.NodeExpr) bool {
+    if reflect.TypeOf(val) != reflect.TypeOf(new(parser.NodeNumber)) {
+        return false
+    }
+
+    return true
+}
