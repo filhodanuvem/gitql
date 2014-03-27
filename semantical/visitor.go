@@ -3,6 +3,7 @@ package semantical
 import (
     "fmt"
     "reflect"
+    "time"
     "github.com/cloudson/gitql/parser"
 )
 
@@ -79,8 +80,8 @@ func (v *SemanticalVisitor) VisitExpr(n parser.NodeExpr) (error) {
 
 func (v *SemanticalVisitor) VisitGreater(n *parser.NodeGreater) (error) {
     rVal := n.RightValue()
-    if !shouldBeNumeric(rVal) {
-        return throwSemanticalError("RValue in Greater should be numeric")
+    if !shouldBeNumericOrDate(rVal) {
+        return throwSemanticalError("RValue in Greater should be numeric or a date")
     } 
 
     return nil
@@ -88,17 +89,28 @@ func (v *SemanticalVisitor) VisitGreater(n *parser.NodeGreater) (error) {
 
 func (v *SemanticalVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
     rVal := n.RightValue()
-    if !shouldBeNumeric(rVal) {
-        return throwSemanticalError("RValue in Smaller should be numeric")
+    if !shouldBeNumericOrDate(rVal) {
+        return throwSemanticalError("RValue in Smaller should be numeric or a date")
     } 
 
     return nil
 }
 
-func shouldBeNumeric(val parser.NodeExpr) bool {
-    if reflect.TypeOf(val) != reflect.TypeOf(new(parser.NodeNumber)) {
-        return false
+func shouldBeNumericOrDate(val parser.NodeExpr) bool {
+    if reflect.TypeOf(val) == reflect.TypeOf(new(parser.NodeNumber)) {
+        return true
     }
 
-    return true
+    if reflect.TypeOf(val) == reflect.TypeOf(new(parser.NodeLiteral)) {
+        lit := val.(*parser.NodeLiteral)
+        _, err := time.Parse("2006-01-02 15:04:05", lit.Value()) 
+        fmt.Println(lit.Value())
+        fmt.Println(err)
+        if err == nil {
+            return true
+        }
+    }
+    
+
+    return false
 }

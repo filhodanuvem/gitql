@@ -71,7 +71,7 @@ func TestGreaterWithNoNumeric(t *testing.T) {
 }
 
 func TestSmallerWithNoNumeric(t *testing.T) {
-    parser.New("select name from commits where date > 'name'")
+    parser.New("select name from commits where date <= 'name'")
     ast, parserErr := parser.AST()
     if parserErr != nil {
         t.Fatalf(parserErr.Error())
@@ -80,5 +80,18 @@ func TestSmallerWithNoNumeric(t *testing.T) {
     err := analysis(ast)
     if err == nil {
         t.Fatalf("Shoud avoid smaller with no numeric")
+    }
+}
+
+func TestSmallerWithDate(t *testing.T) {
+    parser.New("select name from commits where date > '2013-03-14 00:00:00'")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := analysis(ast)
+    if err != nil {
+        t.Fatalf(err.Error())
     }
 }
