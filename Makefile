@@ -1,2 +1,2 @@
 test: 
-	go test ./lexical/ ./parser/ ./semantical
+	go test ./lexical/ ./parser/ ./semantical ./runtime
