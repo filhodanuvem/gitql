@@ -70,7 +70,7 @@ func TestGreaterWithNoNumeric(t *testing.T) {
     }
 }
 
-func TestSmallerWithNoNumeric(t *testing.T) {
+func TestSmallerWithInvalidConstant(t *testing.T) {
     parser.New("select name from commits where date <= 'name'")
     ast, parserErr := parser.AST()
     if parserErr != nil {
@@ -94,4 +94,18 @@ func TestSmallerWithDate(t *testing.T) {
     if err != nil {
         t.Fatalf(err.Error())
     }
+}
+
+func TestSmallerWithDateWithoutTime(t *testing.T) {
+    parser.New("select * from commits where date > '2013-03-14'")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := analysis(ast)
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+    
 }
