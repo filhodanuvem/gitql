@@ -4,7 +4,7 @@ import (
     "github.com/libgit2/git2go"
     "github.com/cloudson/gitql/parser"
     "github.com/cloudson/gitql/semantical"
-    // "github.com/cloudson/gitql/runtime"
+    "github.com/cloudson/gitql/runtime"
     "fmt"
     "flag"
     "path/filepath"
@@ -24,10 +24,17 @@ func main() {
     if errGit != nil {
         panic(errGit)
     }
+    ast.Path = query
     errGit = semantical.Analysis(ast)
     if errGit != nil {
         panic(errGit)
     }
+
+    runtime.Run(ast)
+
+
+
+
 
     repo, err := git.OpenRepository(path)
     if err != nil {

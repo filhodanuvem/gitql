@@ -13,6 +13,7 @@ type NodeEmpty struct {
 
 type NodeProgram struct {
     Child NodeMain
+    Path *string
 }
 
 type NodeSelect struct {

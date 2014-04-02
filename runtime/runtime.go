@@ -2,10 +2,14 @@ package runtime
 
 import (
     "fmt"
+    "reflect"
+    "github.com/cloudson/gitql/parser"
     "github.com/libgit2/git2go"
 )
 
 var repo *git.Repository
+var builder *GitBuilder
+
 type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
@@ -15,6 +19,24 @@ type RuntimeError struct {
     code uint8 
     message string
 }
+
+type RuntimeVisitor struct {
+
+}
+
+// =========================== Runtime
+func Run(n *parser.NodeProgram) {
+    builder = GetGitBuilder(n.Path)
+    visitor := new(RuntimeVisitor)
+    err := visitor.Visit(n)
+    if err != nil {
+        panic(err)
+    }
+
+    // builder := visitor.Builder()
+}
+
+// =========================== Error 
 
 func (e *RuntimeError) Error() string{
     return e.message
@@ -28,7 +50,49 @@ func throwRuntimeError(message string, code uint8) (*RuntimeError) {
     return e
 }
 
-func GetGitBuilder(path string) (*GitBuilder) {
+// ========================== RuntimeVisitor
+
+func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) (error) {
+    return v.VisitSelect(n.Child.(*parser.NodeSelect))
+} 
+
+func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
+
+    return nil 
+} 
+
+func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
+    switch reflect.TypeOf(n) {
+        case reflect.TypeOf(new(parser.NodeGreater)) : 
+            g:= n.(*parser.NodeGreater)
+            return v.VisitGreater(g)
+        case reflect.TypeOf(new(parser.NodeSmaller)) : 
+            g:= n.(*parser.NodeSmaller)
+            return v.VisitSmaller(g)
+    } 
+
+    return nil
+}
+
+func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
+    
+    return nil
+}
+
+func (v *RuntimeVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
+    
+    return nil
+}
+
+func (v *RuntimeVisitor) Builder() (*GitBuilder){
+    return nil
+}
+
+
+// =================== GitBuilder 
+
+func GetGitBuilder(path *string) (*GitBuilder) {
+
     gb := new(GitBuilder)
     gb.tables = make(map[string]string)
     possibleTables := map[string][]string {
@@ -56,8 +120,8 @@ func GetGitBuilder(path string) (*GitBuilder) {
 
 
 
-func openRepository(path string) {
-    _repo, err := git.OpenRepository(path)
+func openRepository(path *string) {
+    _repo, err := git.OpenRepository(*path)
     if err != nil {
         panic(err)
     }
