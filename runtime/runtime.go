@@ -2,8 +2,10 @@ package runtime
 
 import (
     "fmt"
+    "github.com/libgit2/git2go"
 )
 
+var repo *git.Repository
 type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
@@ -26,7 +28,7 @@ func throwRuntimeError(message string, code uint8) (*RuntimeError) {
     return e
 }
 
-func GetGitBuilder() (*GitBuilder) {
+func GetGitBuilder(path string) (*GitBuilder) {
     gb := new(GitBuilder)
     gb.tables = make(map[string]string)
     possibleTables := map[string][]string {
@@ -50,6 +52,16 @@ func GetGitBuilder() (*GitBuilder) {
     gb.possibleTables = possibleTables
 
     return gb
+}
+
+
+
+func openRepository(path string) {
+    _repo, err := git.OpenRepository(path)
+    if err != nil {
+        panic(err)
+    }
+    repo = _repo
 }
 
 func (g *GitBuilder) WithTable(tableName string, alias string) error {

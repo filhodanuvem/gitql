@@ -10,7 +10,7 @@ func TestErrorWithInvalidTables(t *testing.T) {
         "blah",
     }
 
-    gb := GetGitBuilder()
+    gb := GetGitBuilder("./")
     for _, tableName := range invalidTables {
         err := gb.WithTable(tableName, tableName)
         if err == nil {
@@ -25,7 +25,7 @@ func TestTablesWithoutAlias(t *testing.T) {
         "author",
     }
 
-    gb := GetGitBuilder()
+    gb := GetGitBuilder("./")
     for _, tableName := range invalidTables {
         err := gb.WithTable(tableName, "")
         if err != nil {
@@ -41,7 +41,7 @@ func TestNotFoundFieldsFromTable(t *testing.T) {
         {"files", ""},
     }
 
-    gb := GetGitBuilder()
+    gb := GetGitBuilder("./")
     for _, tableMetada := range metadata {
         err := gb.UseFieldFromTable(tableMetada[1], tableMetada[0])
         if err == nil {
