@@ -4,6 +4,6 @@ go:
    - 1.1 
    - 1.2 
 before_script: 
-   - go get
+    - make install
 script: 
    - make test
