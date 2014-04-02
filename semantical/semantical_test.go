@@ -12,7 +12,7 @@ func TestInvalidZeroLimit(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err == nil {
         t.Fatalf("Should not accept limit zero")
     }
@@ -25,7 +25,7 @@ func TestValidNullLimit(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err != nil {
         t.Fatalf(err.Error())
     }
@@ -38,7 +38,7 @@ func TestChooseRepetitiveFields(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err == nil {
         t.Fatalf("Shoud avoid repetitive fields")
     }
@@ -51,7 +51,7 @@ func TestConstantLValue(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err != nil {
         t.Fatalf(err.Error())
     }
@@ -64,7 +64,7 @@ func TestGreaterWithNoNumeric(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err == nil {
         t.Fatalf("Shoud avoid greater with no numeric")
     }
@@ -77,7 +77,7 @@ func TestSmallerWithInvalidConstant(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err == nil {
         t.Fatalf("Shoud avoid smaller with no numeric")
     }
@@ -90,7 +90,7 @@ func TestSmallerWithDate(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err != nil {
         t.Fatalf(err.Error())
     }
@@ -103,7 +103,7 @@ func TestSmallerWithDateWithoutTime(t *testing.T) {
         t.Fatalf(parserErr.Error())
     }
 
-    err := analysis(ast)
+    err := Analysis(ast)
     if err != nil {
         t.Fatalf(err.Error())
     }
