@@ -6,3 +6,4 @@ install:
 	ls ./git2go/script
 	chmod +x ./git2go/script/build-libgit2.sh
 	./git2go/script/build-libgit2.sh
+	go get 
