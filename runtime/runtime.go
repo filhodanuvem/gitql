@@ -57,12 +57,27 @@ func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) (error) {
 } 
 
 func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
-
+    table := n.Tables[0]
+    fields := n.Fields 
+    var err error
+    for _, f := range fields {
+        err = builder.UseFieldFromTable(f, table)
+        if err != nil {
+            return err
+        }
+    }
+    err = v.VisitExpr(n.Where)
+    if err != nil {
+        return err
+    }
     return nil 
 } 
 
 func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
     switch reflect.TypeOf(n) {
+        case reflect.TypeOf(new(parser.NodeEqual)) : 
+            g:= n.(*parser.NodeEqual)
+            return v.VisitEqual(g)
         case reflect.TypeOf(new(parser.NodeGreater)) : 
             g:= n.(*parser.NodeGreater)
             return v.VisitGreater(g)
@@ -70,7 +85,16 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
             g:= n.(*parser.NodeSmaller)
             return v.VisitSmaller(g)
     } 
+    fmt.Printf("ninguem")
 
+    return nil
+}
+
+func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
+    left := n.LeftValue
+    if reflect.TypeOf(left) == reflect.TypeOf(new(parser.NodeId)) {
+        fmt.Printf("oi?\n")
+    }
     return nil
 }
 
@@ -156,6 +180,10 @@ func (g *GitBuilder) isValidTable(tableName string) error {
 }
 
 func (g *GitBuilder) UseFieldFromTable(field string, tableName string) error {
+    if field == "*" {
+        return nil
+    }
+
     err := g.isValidTable(tableName)
     if err != nil {
         return err
@@ -163,7 +191,7 @@ func (g *GitBuilder) UseFieldFromTable(field string, tableName string) error {
 
     table := g.possibleTables[tableName]
     for _, t := range table {
-        if t == tableName {
+        if t == field {
             return nil
         }
     }

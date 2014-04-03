@@ -18,7 +18,6 @@ func main() {
     query := flag.String("q", "", "Query ")
     flag.Parse()
 
-    fmt.Printf(*query)
     parser.New(*query)
     ast, errGit := parser.AST()
     if errGit != nil {
@@ -31,11 +30,7 @@ func main() {
     }
 
     runtime.Run(ast)
-
-
-
-
-
+    
     repo, err := git.OpenRepository(path)
     if err != nil {
         panic(err)

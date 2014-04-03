@@ -1,6 +1,7 @@
 package runtime
 
 import (
+    "path/filepath"
     "testing"
 )
 
@@ -11,7 +12,7 @@ func TestErrorWithInvalidTables(t *testing.T) {
     }
 
     var path string 
-    path = "./"
+    path, _ = filepath.Abs("../")
     gb := GetGitBuilder(&path)
     for _, tableName := range invalidTables {
         err := gb.WithTable(tableName, tableName)
@@ -28,7 +29,7 @@ func TestTablesWithoutAlias(t *testing.T) {
     }
 
     var path string 
-    path = "./"
+    path, _ = filepath.Abs("../")
     gb := GetGitBuilder(&path)
     for _, tableName := range invalidTables {
         err := gb.WithTable(tableName, "")
@@ -46,12 +47,30 @@ func TestNotFoundFieldsFromTable(t *testing.T) {
     }
 
     var path string 
-    path = "./"
+    path, _ = filepath.Abs("../")
     gb := GetGitBuilder(&path)
     for _, tableMetada := range metadata {
         err := gb.UseFieldFromTable(tableMetada[1], tableMetada[0])
         if err == nil {
             t.Errorf("Table '%s' should has not field '%s'", tableMetada[0], tableMetada[1])
+        }
+    }
+}
+
+func TestFoundFieldsFromTable(t *testing.T) {
+    metadata := [][]string {
+        {"commits", "*"},
+        {"author", "email"},
+        {"files", "hash"},
+    }
+
+    var path string 
+    path, _ = filepath.Abs("../")
+    gb := GetGitBuilder(&path)
+    for _, tableMetada := range metadata {
+        err := gb.UseFieldFromTable(tableMetada[1], tableMetada[0])
+        if err != nil {
+            t.Errorf(err.Error())
         }
     }
 }
