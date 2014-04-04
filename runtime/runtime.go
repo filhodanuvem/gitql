@@ -13,6 +13,7 @@ var builder *GitBuilder
 type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
+    walk *git.RevWalk
 }
 
 type RuntimeError struct {
@@ -85,16 +86,17 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
             g:= n.(*parser.NodeSmaller)
             return v.VisitSmaller(g)
     } 
-    fmt.Printf("ninguem")
 
     return nil
 }
 
 func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
-    left := n.LeftValue
-    if reflect.TypeOf(left) == reflect.TypeOf(new(parser.NodeId)) {
-        fmt.Printf("oi?\n")
+    
+    left, isId := n.LeftValue().(*parser.NodeId)
+    if isId {
+        fmt.Printf("%d", left.Operator())
     }
+
     return nil
 }
 
@@ -138,6 +140,12 @@ func GetGitBuilder(path *string) (*GitBuilder) {
         },
     }
     gb.possibleTables = possibleTables
+
+    openRepository(path)
+    
+    gb.walk, _ = repo.Walk()
+    gb.walk.PushHead()
+    gb.walk.Sorting(git.SortTime)
 
     return gb
 }

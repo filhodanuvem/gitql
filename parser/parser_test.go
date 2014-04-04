@@ -188,7 +188,7 @@ func TestWithWhereSimpleEqualComparation(t *testing.T) {
         t.Errorf("should be a NodeEqual")
     }
 
-    lValue := w.LeftValue().(*NodeLiteral)
+    lValue := w.LeftValue().(*NodeId)
     rValue := w.RightValue().(*NodeLiteral)
     if (lValue.Value() != "hash") {
         t.Errorf("LValue should be 'hash'")
@@ -219,7 +219,7 @@ func TestWhereWithNotEqualCompare(t *testing.T) {
         t.Errorf("should be a NodeNotEqual")
     }
 
-    lValue := w.LeftValue().(*NodeLiteral)
+    lValue := w.LeftValue().(*NodeId)
     rValue := w.RightValue().(*NodeLiteral)
     if (lValue.Value() != "author") {
         t.Errorf("LValue should be 'author'")

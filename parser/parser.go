@@ -396,7 +396,7 @@ func rValue() (NodeExpr, error){
     }
 
     if look_ahead == lexical.T_ID {
-        n := new (NodeLiteral)
+        n := new (NodeId)
         n.SetValue(lexical.CurrentLexeme)
 
         token2, err := lexical.Token()
