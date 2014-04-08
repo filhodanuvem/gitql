@@ -87,6 +87,8 @@ func discoverLvalue(identifier string, table string, object *git.Commit) string 
             return object.Committer().Name
         case "committer_email":    
             return object.Committer().Email
+        case "date":
+            return object.Committer().When.String()
         case "full_message":
             return object.Message()
         case "message": 
@@ -191,7 +193,7 @@ func GetGitBuilder(path *string) (*GitBuilder) {
     possibleTables := map[string][]string {
         "commits": {
             "hash",
-            // "date",
+            "date",
             "author",
             "author_email",
             "committer",
