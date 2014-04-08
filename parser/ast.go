@@ -16,6 +16,7 @@ type NodeProgram struct {
     Path *string
 }
 
+
 type NodeSelect struct {
     WildCard bool
     Fields []string
@@ -25,6 +26,7 @@ type NodeSelect struct {
 }
 
 type NodeExpr interface {
+    Assertion(lvalue, rvalue string) bool
     Operator() uint8
     LeftValue() NodeExpr
     RightValue() NodeExpr
@@ -107,6 +109,10 @@ func (e *NodeEmpty) Run() {
 
 
 // EQUAL
+func (n* NodeEqual) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeEqual) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -128,6 +134,10 @@ func (n *NodeEqual) LeftValue() NodeExpr{
 }
 
 // NOT EQUAL
+func (n* NodeNotEqual) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeNotEqual) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -149,6 +159,10 @@ func (n *NodeNotEqual) LeftValue() NodeExpr{
 }
 
 // GREATER
+func (n* NodeGreater) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeGreater) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -170,6 +184,10 @@ func (n *NodeGreater) LeftValue() NodeExpr{
 }
 
 // SMALLER
+func (n* NodeSmaller) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeSmaller) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -191,6 +209,10 @@ func (n *NodeSmaller) LeftValue() NodeExpr{
 }
 
 // OR
+func (n* NodeOr) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeOr) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -212,6 +234,10 @@ func (n *NodeOr) LeftValue() NodeExpr{
 }
 
 // AND
+func (n* NodeAnd) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeAnd) Operator() uint8{
     return lexical.T_EQUAL
 }
@@ -233,6 +259,10 @@ func (n *NodeAnd) LeftValue() NodeExpr{
 }
 
 // LITERAL 
+func (n* NodeLiteral) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeLiteral) Operator() uint8{
     return lexical.T_LITERAL
 }
@@ -262,6 +292,10 @@ func (n* NodeLiteral) Value() string {
 }
 
 // NUMBER 
+func (n* NodeNumber) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeNumber) Operator() uint8{
     return 0
 }
@@ -291,6 +325,10 @@ func (n* NodeNumber) Value() float64 {
 }
 
 // ID 
+func (n* NodeId) Assertion(lvalue string, rvalue string) bool {
+    return lvalue == rvalue;
+}
+
 func (n *NodeId) Operator() uint8{
     return 0
 }

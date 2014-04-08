@@ -9,6 +9,7 @@ import (
 
 var repo *git.Repository
 var builder *GitBuilder
+var boolRegister bool
 
 type GitBuilder struct {
     tables map[string]string 
@@ -34,7 +35,56 @@ func Run(n *parser.NodeProgram) {
         panic(err)
     }
 
-    // builder := visitor.Builder()
+    s := n.Child.(*parser.NodeSelect)
+    where := s.Where
+    // valuesTable := make([]string, len(s.Fields))
+    counter := 0
+    fn := func (object *git.Commit) bool {
+        lvalue := where.LeftValue().(*parser.NodeId).Value()
+        rvalue := where.RightValue().(*parser.NodeLiteral).Value()
+        result := where.Assertion(discoverLvalue(lvalue, s.Tables[0], object), rvalue)
+        if result {
+            fields := s.Fields
+            if s.WildCard {
+                fields = builder.possibleTables[s.Tables[0]]
+            }
+            fmt.Println()
+            for _, f := range fields {
+                fmt.Printf("%s | ", discoverLvalue(f, s.Tables[0], object))    
+            }
+            fmt.Println()
+
+            
+            counter = counter + 1
+        }
+        if counter > s.Limit {
+            return false
+        }
+        return true
+    }
+
+    err = builder.walk.Iterate(fn)
+    if err != nil {
+        fmt.Printf(err.Error())
+    }
+
+}
+
+func discoverLvalue(identifier string, table string, object *git.Commit) string {
+    err := builder.UseFieldFromTable(identifier, table)
+    if err != nil {
+        panic(err)
+    }
+    switch identifier {
+        case "hash" : 
+            return object.Id().String()
+        case "author":
+            return object.Author().Name
+        case "author_email":
+            return object.Author().Email
+    }
+
+    panic(fmt.Sprintf("Trying select field %s ", identifier))
 }
 
 // =========================== Error 
@@ -92,10 +142,11 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
 
 func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
     
-    left, isId := n.LeftValue().(*parser.NodeId)
-    if isId {
-        fmt.Printf("%d", left.Operator())
-    }
+    // left, isId := n.LeftValue().(*parser.NodeId)
+    // if !isId {
+        
+    // }
+    
 
     return nil
 }
@@ -124,11 +175,11 @@ func GetGitBuilder(path *string) (*GitBuilder) {
     possibleTables := map[string][]string {
         "commits": {
             "hash",
-            "date",
+            // "date",
             "author",
-            "commiter",
-            "message",
-            "full_message",
+            // "commiter",
+            // "message",
+            // "full_message",
         }, 
         "author": {
             "name",
@@ -142,7 +193,7 @@ func GetGitBuilder(path *string) (*GitBuilder) {
     gb.possibleTables = possibleTables
 
     openRepository(path)
-    
+
     gb.walk, _ = repo.Walk()
     gb.walk.PushHead()
     gb.walk.Sorting(git.SortTime)
@@ -207,3 +258,5 @@ func (g *GitBuilder) UseFieldFromTable(field string, tableName string) error {
     return throwRuntimeError(fmt.Sprintf("Table '%s' has not field '%s'", tableName, field), 0)
 }
 
+// Criar varias funcoes de asserção, a closure usará elas para saber se um certo objeto
+// pode ser mostrado ou não.
