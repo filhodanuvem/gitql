@@ -16,6 +16,7 @@ type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
     walk *git.RevWalk
+    object *git.Commit
 }
 
 type RuntimeError struct {
@@ -42,19 +43,9 @@ func Run(n *parser.NodeProgram) {
     counter := 1
     fmt.Println()
     fn := func (object *git.Commit) bool {
-        var lvalue string
-        if where != nil && where.LeftValue() != nil  {
-            lvalue = where.LeftValue().(*parser.NodeId).Value()    
-        }
-        var rvalue string
-        if where != nil && where.RightValue() != nil {
-            rvalue = where.RightValue().(*parser.NodeLiteral).Value()    
-        }
-        result := true
-        if rvalue != "" && lvalue != ""{
-            result = where.Assertion(discoverLvalue(lvalue, s.Tables[0], object), rvalue)    
-        }
-        if result {
+        builder.setObject(object)
+        visitor.VisitExpr(where)
+        if boolRegister {
             fields := s.Fields
             if s.WildCard {
                 fields = builder.possibleTables[s.Tables[0]]
@@ -144,10 +135,8 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
             return err
         }
     }
-    err = v.VisitExpr(n.Where)
-    if err != nil {
-        return err
-    }
+    // Why not visit expression right now ? 
+    // Because we will, at first, discover the current commit 
     return nil 
 } 
 
@@ -162,19 +151,19 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
         case reflect.TypeOf(new(parser.NodeSmaller)) : 
             g:= n.(*parser.NodeSmaller)
             return v.VisitSmaller(g)
+        case reflect.TypeOf(new(parser.NodeOr)) : 
+            g:= n.(*parser.NodeOr)
+            return v.VisitOr(g)
     } 
 
     return nil
 }
 
 func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
+    lvalue := n.LeftValue().(*parser.NodeId).Value()
+    rvalue := n.RightValue().(*parser.NodeLiteral).Value()
+    boolRegister = n.Assertion(discoverLvalue(lvalue, "commits", builder.object), rvalue)
     
-    // left, isId := n.LeftValue().(*parser.NodeId)
-    // if !isId {
-        
-    // }
-    
-
     return nil
 }
 
@@ -187,6 +176,16 @@ func (v *RuntimeVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
     
     return nil
 }
+
+func (v *RuntimeVisitor) VisitOr(n *parser.NodeOr) (error) {
+    v.VisitExpr(n.LeftValue())
+    boolLeft := boolRegister
+    v.VisitExpr(n.RightValue())
+    boolRight := boolRegister
+
+    boolRegister = boolLeft || boolRight 
+    return nil
+} 
 
 func (v *RuntimeVisitor) Builder() (*GitBuilder){
     return nil
@@ -238,6 +237,10 @@ func openRepository(path *string) {
         panic(err)
     }
     repo = _repo
+}
+
+func (g *GitBuilder) setObject(object *git.Commit) {
+    g.object = object
 }
 
 func (g *GitBuilder) WithTable(tableName string, alias string) error {

@@ -31,40 +31,4 @@ func main() {
     }
 
     runtime.Run(ast)
-    
-
-
-    // ================ Testing 
-    // repo, err := git.OpenRepository(path)
-    // if err != nil {
-    //     panic(err)
-    // }
-
-    // b, _ := git.NewOid("35bd9595f1d9a0a48f5c52fb923f0f2180f22976")
-    // obj, err2 := repo.LookupCommit(b)
-    // if err2 != nil {
-    //     panic(err2)
-    // }
-    // fmt.Printf("\n%s\n",obj.Author())
-
-    // walk, err:= repo.Walk()
-    // if err != nil {
-    //     fmt.Printf(err.Error())
-    // }
-    // walk.PushHead()
-    // walk.Sorting(git.SortTime)
-    // i := 1
-    // fn := func (oid *git.Commit) bool {
-    //     fmt.Printf("\n%s\n", oid.Id())
-    //     i = i + 1
-    //     if i == 5 {
-    //         return false
-    //     }
-    //     return true
-    // }
-    // err = walk.Iterate(fn)
-    // if err != nil {
-    //     fmt.Printf(err.Error())
-    // }
-
 }
