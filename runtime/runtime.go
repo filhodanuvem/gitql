@@ -42,9 +42,18 @@ func Run(n *parser.NodeProgram) {
     counter := 1
     fmt.Println()
     fn := func (object *git.Commit) bool {
-        lvalue := where.LeftValue().(*parser.NodeId).Value()
-        rvalue := where.RightValue().(*parser.NodeLiteral).Value()
-        result := where.Assertion(discoverLvalue(lvalue, s.Tables[0], object), rvalue)
+        var lvalue string
+        if where != nil && where.LeftValue() != nil  {
+            lvalue = where.LeftValue().(*parser.NodeId).Value()    
+        }
+        var rvalue string
+        if where != nil && where.RightValue() != nil {
+            rvalue = where.RightValue().(*parser.NodeLiteral).Value()    
+        }
+        result := true
+        if rvalue != "" && lvalue != ""{
+            result = where.Assertion(discoverLvalue(lvalue, s.Tables[0], object), rvalue)    
+        }
         if result {
             fields := s.Fields
             if s.WildCard {
