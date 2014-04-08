@@ -3,6 +3,7 @@ package runtime
 import (
     "fmt"
     "reflect"
+    "strings"
     "github.com/cloudson/gitql/parser"
     "github.com/libgit2/git2go"
 )
@@ -38,7 +39,8 @@ func Run(n *parser.NodeProgram) {
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
     // valuesTable := make([]string, len(s.Fields))
-    counter := 0
+    counter := 1
+    fmt.Println()
     fn := func (object *git.Commit) bool {
         lvalue := where.LeftValue().(*parser.NodeId).Value()
         rvalue := where.RightValue().(*parser.NodeLiteral).Value()
@@ -47,8 +49,7 @@ func Run(n *parser.NodeProgram) {
             fields := s.Fields
             if s.WildCard {
                 fields = builder.possibleTables[s.Tables[0]]
-            }
-            fmt.Println()
+            }            
             for _, f := range fields {
                 fmt.Printf("%s | ", discoverLvalue(f, s.Tables[0], object))    
             }
@@ -82,6 +83,21 @@ func discoverLvalue(identifier string, table string, object *git.Commit) string 
             return object.Author().Name
         case "author_email":
             return object.Author().Email
+        case "committer":
+            return object.Committer().Name
+        case "committer_email":    
+            return object.Committer().Email
+        case "full_message":
+            return object.Message()
+        case "message": 
+            message := object.Message()
+            r := []rune("\n")
+            idx := strings.IndexRune(message, r[0])
+            if idx != -1 {
+                message = message[0:idx]
+            }
+            return message  
+
     }
 
     panic(fmt.Sprintf("Trying select field %s ", identifier))
@@ -177,9 +193,11 @@ func GetGitBuilder(path *string) (*GitBuilder) {
             "hash",
             // "date",
             "author",
-            // "commiter",
-            // "message",
-            // "full_message",
+            "author_email",
+            "committer",
+            "committer_email",
+            "message",
+            "full_message",
         }, 
         "author": {
             "name",
