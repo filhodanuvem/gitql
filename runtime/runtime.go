@@ -154,6 +154,10 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
         case reflect.TypeOf(new(parser.NodeOr)) : 
             g:= n.(*parser.NodeOr)
             return v.VisitOr(g)
+        case reflect.TypeOf(new(parser.NodeAnd)) : 
+            g:= n.(*parser.NodeAnd)
+            return v.VisitAnd(g)
+
     } 
 
     return nil
@@ -184,6 +188,16 @@ func (v *RuntimeVisitor) VisitOr(n *parser.NodeOr) (error) {
     boolRight := boolRegister
 
     boolRegister = boolLeft || boolRight 
+    return nil
+} 
+
+func (v *RuntimeVisitor) VisitAnd(n *parser.NodeAnd) (error) {
+    v.VisitExpr(n.LeftValue())
+    boolLeft := boolRegister
+    v.VisitExpr(n.RightValue())
+    boolRight := boolRegister
+
+    boolRegister = boolLeft && boolRight 
     return nil
 } 
 
