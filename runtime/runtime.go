@@ -44,6 +44,7 @@ func Run(n *parser.NodeProgram) {
     fmt.Println()
     fn := func (object *git.Commit) bool {
         builder.setObject(object)
+        boolRegister = true
         visitor.VisitExpr(where)
         if boolRegister {
             fields := s.Fields
