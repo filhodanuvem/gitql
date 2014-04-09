@@ -9,6 +9,9 @@ import (
 
 var look_ahead uint8
 
+const Time_YMD = "2006-01-02"
+const Time_YMDHIS = "2006-01-02 15:04:05"
+
 type SyntaxError struct {
     expected uint8
     found uint8

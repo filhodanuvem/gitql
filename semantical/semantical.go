@@ -3,7 +3,6 @@ package semantical
 import (
     "fmt"
     "reflect"
-    "time"
     "github.com/cloudson/gitql/parser"
 )
 
@@ -96,17 +95,11 @@ func shouldBeNumericOrDate(val parser.NodeExpr) bool {
     }
 
     if reflect.TypeOf(val) == reflect.TypeOf(new(parser.NodeLiteral)) {
-        lit := val.(*parser.NodeLiteral)
-        _, err := time.Parse(Time_YMDHIS, lit.Value()) 
-        if err == nil {
-            return true
-        }
-        _, err = time.Parse(Time_YMD, lit.Value()) 
-        if err == nil {
+        date := parser.ExtractDate(val.(*parser.NodeLiteral).Value())        
+        if date != nil {
             return true
         }
     }
     
-
     return false
 }

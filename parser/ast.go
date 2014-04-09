@@ -1,7 +1,9 @@
 package parser
-
-import "github.com/cloudson/gitql/lexical"
-import "strconv"
+import (
+    "github.com/cloudson/gitql/lexical"
+    "strconv"
+    "time"
+)
 
 type NodeMain interface {
     Run()
@@ -160,6 +162,11 @@ func (n *NodeNotEqual) LeftValue() NodeExpr{
 
 // GREATER
 func (n* NodeGreater) Assertion(lvalue string, rvalue string) bool {
+    // := discoverLvalue(lvalue)
+    // time := extractDate(rvalue)
+    // if time != nil {
+        
+    // }
     return lvalue == rvalue;
 }
 
@@ -360,4 +367,21 @@ func (n* NodeId) Value() string {
 
 func (n *NodeAdapterBinToConst) setAdapted(a NodeBinOp) {
     n.adapted = a
+}
+
+
+func ExtractDate(date string) (*time.Time) {
+    t, err := time.Parse(Time_YMD, date)
+    if err == nil {
+        return &t
+    }
+
+    t, err = time.Parse(Time_YMDHIS, date)
+    if err == nil {
+        return &t
+    }
+
+    // does not matter if the string is not a date
+    // gitql will use it like a simple text
+    return nil
 }

@@ -3,6 +3,7 @@ package parser
 import (
     "testing"
     "reflect"
+    "time"
 )
 
 
@@ -379,4 +380,34 @@ func TestConditionWithPrecedentParent(t *testing.T) {
     if reflect.TypeOf(rValue) != reflect.TypeOf(new(NodeOr)) {
         t.Errorf("should be a NodeOr")
     }     
+}
+
+
+func TestExtractDate(t *testing.T) {
+    cases := [][]string {
+        {"2014-04-09", "2014-04-09 00:00:00"},
+        {"2012-12-21 12:00:00", "2012-12-21 12:00:00"},
+    }
+
+    for _, c := range cases {
+        expected, err := time.Parse(Time_YMDHIS, c[1])
+        found := ExtractDate(c[0])
+        if err != nil || ! expected.Equal(*found) {
+            t.Errorf("Date %s should be %s", c[0], c[1])
+        } 
+    } 
+}
+
+func TestExtractInvalidDate(t *testing.T) {
+    cases := []string {
+        "cloudson",
+        "2012-12-2112:00:00",
+    }
+
+    for _, c := range cases {
+        found := ExtractDate(c)
+        if found != nil {
+            t.Errorf("Date %s should not be parsed to time", c)
+        } 
+    } 
 }

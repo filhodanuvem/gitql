@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-    path, errFile := filepath.Abs("/home/cloud/Rocket/braprint")
+    path, errFile := filepath.Abs("./")
     
     if errFile != nil {
         panic(errFile)
     }
-    query := flag.String("q", "", "Query ")
+    query := flag.String("q", "select * from commits", "The Query to search")
     flag.Parse()
 
     parser.New(*query)
