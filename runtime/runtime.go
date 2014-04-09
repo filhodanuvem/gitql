@@ -89,7 +89,7 @@ func discoverLvalue(identifier string, table string, object *git.Commit) string 
         case "committer_email":    
             return object.Committer().Email
         case "date":
-            return object.Committer().When.String()
+            return object.Committer().When.Format(parser.Time_YMDHIS)
         case "full_message":
             return object.Message()
         case "message": 
@@ -174,13 +174,20 @@ func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
 
 func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
+    lvalue = discoverLvalue(lvalue, "commits", builder.object)
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
+
     boolRegister = n.Assertion(lvalue, rvalue)
 
     return nil
 }
 
 func (v *RuntimeVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
+    lvalue := n.LeftValue().(*parser.NodeId).Value()
+    lvalue = discoverLvalue(lvalue, "commits", builder.object)
+    rvalue := n.RightValue().(*parser.NodeLiteral).Value()
+
+    boolRegister = n.Assertion(lvalue, rvalue)
     
     return nil
 }

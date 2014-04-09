@@ -162,12 +162,14 @@ func (n *NodeNotEqual) LeftValue() NodeExpr{
 
 // GREATER
 func (n* NodeGreater) Assertion(lvalue string, rvalue string) bool {
-    // := discoverLvalue(lvalue)
-    // time := extractDate(rvalue)
-    // if time != nil {
-        
-    // }
-    return lvalue == rvalue;
+    time := ExtractDate(rvalue)
+    if time != nil {
+        timeFound := ExtractDate(lvalue)
+        if timeFound != nil {
+            return timeFound.After(*time)
+        }
+    }
+    return lvalue > rvalue;
 }
 
 func (n *NodeGreater) Operator() uint8{
@@ -192,7 +194,14 @@ func (n *NodeGreater) LeftValue() NodeExpr{
 
 // SMALLER
 func (n* NodeSmaller) Assertion(lvalue string, rvalue string) bool {
-    return lvalue == rvalue;
+    time := ExtractDate(rvalue)
+    if time != nil {
+        timeFound := ExtractDate(lvalue)
+        if timeFound != nil {
+            return timeFound.Before(*time)
+        }
+    }
+    return lvalue > rvalue;
 }
 
 func (n *NodeSmaller) Operator() uint8{
