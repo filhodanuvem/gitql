@@ -109,13 +109,20 @@ func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
 
 func TestErrorUnrecognizeChar(t* testing.T) {
     setUp()
-    source = "!"
-    char = nextChar()
-
-    _, error := Token()
-    if (error == nil) {
-        t.Errorf("Expected error with char '!' ")
+    cases := []string{
+        "!", "&", "|",
     }
+
+    for _, c := range cases {
+        source = c
+        char = nextChar()
+
+        _, error := Token()
+        if error == nil {
+            t.Errorf("Expected error with char '%s' ", char)
+        }
+    }
+    
 }
 
 func TestReservedWords(t* testing.T) {

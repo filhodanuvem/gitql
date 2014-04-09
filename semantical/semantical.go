@@ -39,7 +39,7 @@ func (v *SemanticalVisitor) VisitSelect(n *parser.NodeSelect) (error) {
     fieldsCount := make(map[string]bool)
     for _, field := range fields {
         if fieldsCount[field] {
-           return throwSemanticalError(fmt.Sprintf("Field '%s' found may times", field))
+           return throwSemanticalError(fmt.Sprintf("Field '%s' found many times", field))
         }
 
         fieldsCount[field] = true

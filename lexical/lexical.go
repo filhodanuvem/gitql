@@ -111,7 +111,6 @@ func Token() (uint8, *TokenError) {
                     lexeme = lexeme + string(char)
                     char = nextChar()
                 }
-                // @TODO insert to symbol table
                 return T_NUMERIC, nil
             case S_WILD_CARD: 
                 char = nextChar()
@@ -199,7 +198,6 @@ func lexemeToToken(lexeme string) (uint8){
         case "and" : return T_AND
         case "limit" : return T_LIMIT
     }
-    // @TODO insert to symbol table
     return T_ID
 }
 
