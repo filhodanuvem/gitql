@@ -112,6 +112,9 @@ func (e *NodeEmpty) Run() {
 
 // EQUAL
 func (n* NodeEqual) Assertion(lvalue string, rvalue string) bool {
+    if len(lvalue) == 40 {
+        return lvalue[0:len(rvalue)] == rvalue
+    }
     return lvalue == rvalue;
 }
 
@@ -226,7 +229,7 @@ func (n *NodeSmaller) LeftValue() NodeExpr{
 
 // OR
 func (n* NodeOr) Assertion(lvalue string, rvalue string) bool {
-    lbool := n.LeftValue().Assertion()
+    return false
 
 }
 

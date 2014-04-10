@@ -417,7 +417,7 @@ func rValue() (NodeExpr, error){
 
     lexeme := lexical.CurrentLexeme
     _, notIsNumber := strconv.ParseFloat(lexeme, 64)
-    if  notIsNumber == nil {
+    if  notIsNumber == nil && look_ahead == lexical.T_NUMERIC {
         n := new(NodeNumber)
         n.SetValue(lexeme)
         token2, err := lexical.Token()
