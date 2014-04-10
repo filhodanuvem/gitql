@@ -24,6 +24,7 @@ const T_ID = 21;
 const T_PARENTH_L = 22;
 const T_PARENTH_R = 23;
 const T_EOF = 0;
+const T_FUCK = 66;
 
 var tokenNameMap map[uint8]string; 
 

@@ -96,7 +96,10 @@ func Token() (uint8, *TokenError) {
                             state = S_START
                             break
                         default: 
-                            return 0, throwTokenError(char);
+                            if char == T_EOF {
+                                return T_EOF, nil
+                            }
+                            return T_FUCK, throwTokenError(char);
                     }
                 }
                 break;
@@ -181,7 +184,7 @@ func Token() (uint8, *TokenError) {
                 char = nextChar()
                 return T_PARENTH_R, nil
             default:
-                break
+                state = S_START
         }
     }
     return T_EOF, throwTokenError(char)

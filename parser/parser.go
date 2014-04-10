@@ -56,7 +56,7 @@ func gProgram() (NodeMain, error) {
 
     s, err2 := gSelect()
     if s == nil {
-        return new(NodeEmpty), err2
+        return nil, err2
     }
 
     if look_ahead != lexical.T_EOF {
@@ -427,6 +427,10 @@ func rValue() (NodeExpr, error){
         look_ahead = token2
 
         return n, nil
+    }
+    // fmt.Printf("%v, %s", lexical.TokenName(look_ahead), lexical.CurrentLexeme)
+    if look_ahead != lexical.T_LITERAL {
+        return nil, throwSyntaxError(lexical.T_AND, look_ahead)
     }
 
     // @todo inserts IS NULL!

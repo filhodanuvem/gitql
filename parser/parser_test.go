@@ -314,6 +314,14 @@ func TestWhereWithOR(t *testing.T) {
     }    
 }
 
+func TestInvalidchar(t *testing.T) {
+    New("select * from commits where hash = 2 & date ")
+    _, err := AST() 
+    if err == nil {
+        t.Fatalf(err.Error())
+    }
+}
+
 func TestErrorIfOperatorBeforeEOF(t *testing.T) {
     New("select * from commits where hash = 'e69de29' and date > ")
     _, err := AST()

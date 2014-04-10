@@ -108,18 +108,18 @@ func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
 }
 
 func TestErrorUnrecognizeChar(t* testing.T) {
-    setUp()
     cases := []string{
         "!", "&", "|",
     }
 
     for _, c := range cases {
+        setUp()
         source = c
         char = nextChar()
 
         _, error := Token()
         if error == nil {
-            t.Errorf("Expected error with char '%s' ", char)
+            t.Errorf("Expected error with char '%s' ", c)
         }
     }
     
@@ -214,6 +214,7 @@ func TestRepetitiveTokens(t *testing.T) {
         assertToken(t, token, tokens[i])
     }
 }
+
 
 func TestReturningLiteral(t *testing.T) {
     setUp()
