@@ -8,6 +8,11 @@ import (
     "github.com/libgit2/git2go"
 )
 
+const (
+    WALK_COMMITS = 1
+    WALK_TRESS = 2
+)
+
 var repo *git.Repository
 var builder *GitBuilder
 var boolRegister bool
@@ -36,10 +41,27 @@ func Run(n *parser.NodeProgram) {
     if err != nil {
         panic(err)
     }
+    switch findWalkType(n) {
+        case WALK_COMMITS: 
+            walkCommits(n, visitor)
+            break
+    }
+}
 
+func findWalkType(n *parser.NodeProgram) uint8 {
+    s := n.Child.(*parser.NodeSelect)
+
+    switch s.Tables[0] {
+        case "commits" :
+            return WALK_COMMITS
+    }
+    panic(fmt.Sprintf("Table '%s' yet not supported", s.Tables[0]))
+}
+
+func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
-    // valuesTable := make([]string, len(s.Fields))
+    
     counter := 1
     fmt.Println()
     fn := func (object *git.Commit) bool {
@@ -65,11 +87,10 @@ func Run(n *parser.NodeProgram) {
         return true
     }
 
-    err = builder.walk.Iterate(fn)
+    err := builder.walk.Iterate(fn)
     if err != nil {
         fmt.Printf(err.Error())
     }
-
 }
 
 func discoverLvalue(identifier string, object *git.Commit) string {
