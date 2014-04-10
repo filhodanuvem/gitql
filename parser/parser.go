@@ -361,7 +361,7 @@ func gWC5(eating bool) (NodeExpr, error) {
             return op, nil 
         case lexical.T_SMALLER, lexical.T_SMALLER_OR_EQUAL:  
             op := new(NodeSmaller)
-            op.Equal = (look_ahead == lexical.T_GREATER_OR_EQUAL)
+            op.Equal = (look_ahead == lexical.T_SMALLER_OR_EQUAL)
             op.SetLeftValue(expr)
             expr2, err2 := gWC5(true)
             if err2 != nil {

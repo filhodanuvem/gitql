@@ -137,7 +137,7 @@ func (n *NodeEqual) LeftValue() NodeExpr{
 
 // NOT EQUAL
 func (n* NodeNotEqual) Assertion(lvalue string, rvalue string) bool {
-    return lvalue == rvalue;
+    return lvalue != rvalue;
 }
 
 func (n *NodeNotEqual) Operator() uint8{
@@ -166,7 +166,7 @@ func (n* NodeGreater) Assertion(lvalue string, rvalue string) bool {
     if time != nil {
         timeFound := ExtractDate(lvalue)
         if timeFound != nil {
-            return timeFound.After(*time)
+            return timeFound.After(*time) || (n.Equal && timeFound.Equal(*time))
         }
     }
     return lvalue > rvalue;
@@ -198,10 +198,10 @@ func (n* NodeSmaller) Assertion(lvalue string, rvalue string) bool {
     if time != nil {
         timeFound := ExtractDate(lvalue)
         if timeFound != nil {
-            return timeFound.Before(*time)
+            return timeFound.Before(*time) || (n.Equal && timeFound.Equal(*time))
         }
     }
-    return lvalue > rvalue;
+    return lvalue < rvalue;
 }
 
 func (n *NodeSmaller) Operator() uint8{
@@ -226,7 +226,8 @@ func (n *NodeSmaller) LeftValue() NodeExpr{
 
 // OR
 func (n* NodeOr) Assertion(lvalue string, rvalue string) bool {
-    return lvalue == rvalue;
+    lbool := n.LeftValue().Assertion()
+
 }
 
 func (n *NodeOr) Operator() uint8{
