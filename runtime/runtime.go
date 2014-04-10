@@ -22,6 +22,7 @@ type GitBuilder struct {
     possibleTables map[string][]string
     walk *git.RevWalk
     object *git.Commit
+    repo *git.Repository
 }
 
 type RuntimeError struct {
@@ -45,6 +46,9 @@ func Run(n *parser.NodeProgram) {
         case WALK_COMMITS: 
             walkCommits(n, visitor)
             break
+        case WALK_TRESS:
+            walkTrees(n, visitor)
+            break
     }
 }
 
@@ -54,11 +58,17 @@ func findWalkType(n *parser.NodeProgram) uint8 {
     switch s.Tables[0] {
         case "commits" :
             return WALK_COMMITS
+        case "trees" :
+            return WALK_TRESS
     }
     panic(fmt.Sprintf("Table '%s' yet not supported", s.Tables[0]))
 }
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+    builder.walk, _ = repo.Walk()
+    builder.walk.PushHead()
+    builder.walk.Sorting(git.SortTime)
+
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
     
@@ -78,6 +88,39 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             }
             fmt.Println()
 
+            
+            counter = counter + 1
+        }
+        if counter > s.Limit {
+            return false
+        }
+        return true
+    }
+
+    err := builder.walk.Iterate(fn)
+    if err != nil {
+        fmt.Printf(err.Error())
+    }
+}
+
+func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+    builder.walk, _ = repo.Walk()
+    builder.walk.PushHead()
+    builder.walk.Sorting(git.SortTime)
+
+    s := n.Child.(*parser.NodeSelect)
+    where := s.Where
+    
+    counter := 1
+    fmt.Println()
+    fn := func (object *git.Commit) bool {
+        builder.setObject(object)
+        boolRegister = true
+        visitor.VisitExpr(where)
+        if boolRegister {
+            tree, _ := object.Tree()
+
+            fmt.Printf("\n%v", tree.EntryCount())
             
             counter = counter + 1
         }
@@ -261,22 +304,15 @@ func GetGitBuilder(path *string) (*GitBuilder) {
             "message",
             "full_message",
         }, 
-        "author": {
-            "name",
-            "email",
-        },
-        "files": {
+        "trees": {
             "hash",
-            "path",
         },
     }
     gb.possibleTables = possibleTables
 
     openRepository(path)
 
-    gb.walk, _ = repo.Walk()
-    gb.walk.PushHead()
-    gb.walk.Sorting(git.SortTime)
+    gb.repo = repo
 
     return gb
 }
