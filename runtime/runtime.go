@@ -5,6 +5,7 @@ import (
     "strings"
     "github.com/cloudson/gitql/parser"
     "github.com/libgit2/git2go"
+    "github.com/crackcomm/go-clitable"
 )
 
 const (
@@ -93,25 +94,26 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     where := s.Where
     
     counter := 1
-    fmt.Println()
+    fields := s.Fields
+    if s.WildCard {
+        fields = builder.possibleTables[s.Tables[0]]
+    }
+    table := clitable.New(fields)
     fn := func (object *git.Commit) bool {
         builder.setCommit(object)
         boolRegister = true
         visitor.VisitExpr(where)
         if boolRegister {
-            fields := s.Fields
-            if s.WildCard {
-                fields = builder.possibleTables[s.Tables[0]]
-            }            
+            newRow := make(map[string]interface{})
             for _, f := range fields {
-                fmt.Printf("%s | ", metadataCommit(f, object))    
+                newRow[f] = metadataCommit(f, object)
             }
-            fmt.Println()
-
+            table.AddRow(newRow)
             
             counter = counter + 1
         }
         if counter > s.Limit {
+            table.Print()
             return false
         }
         return true
@@ -137,6 +139,11 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
         panic(err)
     }
     counter := 1
+    fields := s.Fields
+    if s.WildCard {
+        fields = builder.possibleTables[s.Tables[0]]
+    }
+    table := clitable.New(fields)
     for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
         
         builder.setReference(object)
@@ -146,19 +153,19 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             fields := s.Fields
             if s.WildCard {
                 fields = builder.possibleTables[s.Tables[0]]
-            }            
+            } 
+            newRow := make(map[string]interface{})
             for _, f := range fields {
-                fmt.Printf("%s | ", metadataReference(f, object))    
+                newRow[f] = metadataReference(f, object)
             }
-            fmt.Println()
-
+            table.AddRow(newRow)
             counter = counter + 1
             if counter > s.Limit {
                 break
             }
         }
     }
-
+    table.Print()
 }
 
 func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
@@ -171,6 +178,12 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     }
 
     counter := 1
+
+    fields := s.Fields
+    if s.WildCard {
+        fields = builder.possibleTables[s.Tables[0]]
+    }
+    table := clitable.New(fields)
     for _, remoteName := range remoteNames {
         object, errRemote := builder.repo.LoadRemote(remoteName)
         if errRemote != nil {
@@ -181,22 +194,19 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
         boolRegister = true
         visitor.VisitExpr(where)
         if boolRegister {
-            fields := s.Fields
-            if s.WildCard {
-                fields = builder.possibleTables[s.Tables[0]]
-            }            
+            newRow := make(map[string]interface{})
             for _, f := range fields {
-                fmt.Printf("%s | ", metadataRemote(f, object))    
+                newRow[f] = metadataRemote(f, object)
             }
-            fmt.Println()
-
+            table.AddRow(newRow)          
+            
             counter = counter + 1
             if counter > s.Limit {
                 break
             }
         }
-
     }
+    table.Print()
    
 }
 
