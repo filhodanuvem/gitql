@@ -10,7 +10,14 @@ import (
 
 const (
     WALK_COMMITS = 1
-    WALK_TRESS = 2
+    WALK_TREES = 2
+    WALK_REFERENCES = 3
+)
+
+const (
+    REFERENCE_TYPE_BRANCH = "branch"
+    REFERENCE_TYPE_REMOTE = "remote"
+    REFERENCE_TYPE_TAG = "tag"
 )
 
 var repo *git.Repository
@@ -20,9 +27,12 @@ var boolRegister bool
 type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
-    walk *git.RevWalk
-    object *git.Commit
     repo *git.Repository
+    currentWalkType uint8
+    currentCommit *git.Commit
+    currentReference *git.Reference
+    walk *git.RevWalk
+
 }
 
 type RuntimeError struct {
@@ -46,9 +56,11 @@ func Run(n *parser.NodeProgram) {
         case WALK_COMMITS: 
             walkCommits(n, visitor)
             break
-        case WALK_TRESS:
+        case WALK_TREES:
             walkTrees(n, visitor)
             break
+        case WALK_REFERENCES:
+            walkReferences(n, visitor)
     }
 }
 
@@ -57,11 +69,14 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 
     switch s.Tables[0] {
         case "commits" :
-            return WALK_COMMITS
+            builder.currentWalkType = WALK_COMMITS
         case "trees" :
-            return WALK_TRESS
+            builder.currentWalkType = WALK_TREES
+        case "refs":
+            builder.currentWalkType = WALK_REFERENCES
     }
-    panic(fmt.Sprintf("Table '%s' yet not supported", s.Tables[0]))
+    
+    return builder.currentWalkType
 }
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
@@ -75,7 +90,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     counter := 1
     fmt.Println()
     fn := func (object *git.Commit) bool {
-        builder.setObject(object)
+        builder.setCommit(object)
         boolRegister = true
         visitor.VisitExpr(where)
         if boolRegister {
@@ -84,7 +99,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
                 fields = builder.possibleTables[s.Tables[0]]
             }            
             for _, f := range fields {
-                fmt.Printf("%s | ", metadata(f, object))    
+                fmt.Printf("%s | ", metadataCommit(f, object))    
             }
             fmt.Println()
 
@@ -104,46 +119,79 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 }
 
 func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-    builder.walk, _ = repo.Walk()
-    builder.walk.PushHead()
-    builder.walk.Sorting(git.SortTime)
+    // not yet!
+}
 
+func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
-    
+
+    // @TODO make PR with Repository.WalkReference()
+    iterator, err := builder.repo.NewReferenceIterator()  
+    if err != nil {
+        panic(err)
+    }
     counter := 1
-    fmt.Println()
-    fn := func (object *git.Commit) bool {
-        builder.setObject(object)
+    for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
+        
+        builder.setReference(object)
         boolRegister = true
         visitor.VisitExpr(where)
         if boolRegister {
-            tree, _ := object.Tree()
+            fields := s.Fields
+            if s.WildCard {
+                fields = builder.possibleTables[s.Tables[0]]
+            }            
+            for _, f := range fields {
+                fmt.Printf("%s | ", metadataReference(f, object))    
+            }
+            fmt.Println()
 
-            fmt.Printf("\n%v", tree.EntryCount())
-            
             counter = counter + 1
+            if counter > s.Limit {
+                break
+            }
         }
-        if counter > s.Limit {
-            return false
-        }
-        return true
     }
 
-    err := builder.walk.Iterate(fn)
-    if err != nil {
-        fmt.Printf(err.Error())
-    }
 }
 
-func metadata(identifier string, object git.Object) string{
-    switch reflect.TypeOf(object) {
-        case reflect.TypeOf(new(git.Commit)):
-            return metadataCommit(identifier, object.(*git.Commit))
-        
+func metadata(identifier string) string {
+    switch builder.currentWalkType {
+        case WALK_COMMITS:
+            return metadataCommit(identifier, builder.currentCommit)
+        case WALK_REFERENCES:
+            return metadataReference(identifier, builder.currentReference)
     }
 
-    return "foo";
+    panic("GOD!")
+}
+
+func metadataTree(identifier string, object *git.TreeEntry) string {
+    return "" // not yet implemented!
+}
+
+func metadataReference(identifier string, object *git.Reference) string {
+    switch identifier {
+        case "name" : 
+            return object.Name()
+        case "hash" :
+            return object.Target().String()
+        case "type":
+            if object.IsBranch() {
+                return REFERENCE_TYPE_BRANCH
+            }
+
+            if object.IsRemote() {
+                return REFERENCE_TYPE_REMOTE
+            }
+
+            if object.IsTag() {
+                return REFERENCE_TYPE_TAG
+            }
+    }
+
+    panic(fmt.Sprintf("Trying select field %s ", identifier))
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
@@ -247,14 +295,14 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
 func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
-    boolRegister = n.Assertion(metadata(lvalue,  builder.object), rvalue)
+    boolRegister = n.Assertion(metadata(lvalue), rvalue)
     
     return nil
 }
 
 func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
-    lvalue = metadata(lvalue, builder.object)
+    lvalue = metadata(lvalue)
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 
     boolRegister = n.Assertion(lvalue, rvalue)
@@ -264,7 +312,7 @@ func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
 
 func (v *RuntimeVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
-    lvalue = metadata(lvalue,  builder.object)
+    lvalue = metadata(lvalue)
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 
     boolRegister = n.Assertion(lvalue, rvalue)
@@ -316,6 +364,15 @@ func GetGitBuilder(path *string) (*GitBuilder) {
         }, 
         "trees": {
             "hash",
+            "name",
+            "id",
+            "type",
+            "filemode",
+        },
+        "refs": {
+            "name",
+            "type",
+            "hash",
         },
     }
     gb.possibleTables = possibleTables
@@ -337,8 +394,12 @@ func openRepository(path *string) {
     repo = _repo
 }
 
-func (g *GitBuilder) setObject(object *git.Commit) {
-    g.object = object
+func (g *GitBuilder) setCommit(object *git.Commit) {
+    g.currentCommit = object
+}
+
+func (g *GitBuilder) setReference(object *git.Reference) {
+    g.currentReference = object
 }
 
 func (g *GitBuilder) WithTable(tableName string, alias string) error {
