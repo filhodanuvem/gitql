@@ -173,7 +173,9 @@ func metadataTree(identifier string, object *git.TreeEntry) string {
 
 func metadataReference(identifier string, object *git.Reference) string {
     switch identifier {
-        case "name" : 
+        case "name":
+            return object.Shorthand()
+        case "full_name" : 
             return object.Name()
         case "hash" :
             return object.Target().String()
@@ -371,6 +373,7 @@ func GetGitBuilder(path *string) (*GitBuilder) {
         },
         "refs": {
             "name",
+            "full_name",
             "type",
             "hash",
         },
