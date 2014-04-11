@@ -25,7 +25,7 @@ func TestErrorWithInvalidTables(t *testing.T) {
 func TestTablesWithoutAlias(t *testing.T) {
     invalidTables := []string{
         "commits",
-        "author",
+        "trees",
     }
 
     var path string 
@@ -42,8 +42,8 @@ func TestTablesWithoutAlias(t *testing.T) {
 func TestNotFoundFieldsFromTable(t *testing.T) {
     metadata := [][]string {
         {"commits", "hashas"},
-        {"author", "blah"},
-        {"files", ""},
+        {"trees", "blah"},
+        {"commits", ""},
     }
 
     var path string 
@@ -60,8 +60,8 @@ func TestNotFoundFieldsFromTable(t *testing.T) {
 func TestFoundFieldsFromTable(t *testing.T) {
     metadata := [][]string {
         {"commits", "*"},
-        {"author", "email"},
-        {"files", "hash"},
+        {"trees", "hash"},
+        {"commits", "hash"},
     }
 
     var path string 

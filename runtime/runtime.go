@@ -84,7 +84,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
                 fields = builder.possibleTables[s.Tables[0]]
             }            
             for _, f := range fields {
-                fmt.Printf("%s | ", discoverLvalue(f, object))    
+                fmt.Printf("%s | ", metadata(f, object))    
             }
             fmt.Println()
 
@@ -136,7 +136,17 @@ func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     }
 }
 
-func discoverLvalue(identifier string, object *git.Commit) string {
+func metadata(identifier string, object git.Object) string{
+    switch reflect.TypeOf(object) {
+        case reflect.TypeOf(new(git.Commit)):
+            return metadataCommit(identifier, object.(*git.Commit))
+        
+    }
+
+    return "foo";
+}
+
+func metadataCommit(identifier string, object *git.Commit) string {
     key := "" 
     for key, _ = range builder.tables {
         break
@@ -237,14 +247,14 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
 func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
-    boolRegister = n.Assertion(discoverLvalue(lvalue,  builder.object), rvalue)
+    boolRegister = n.Assertion(metadata(lvalue,  builder.object), rvalue)
     
     return nil
 }
 
 func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
-    lvalue = discoverLvalue(lvalue, builder.object)
+    lvalue = metadata(lvalue, builder.object)
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 
     boolRegister = n.Assertion(lvalue, rvalue)
@@ -254,7 +264,7 @@ func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
 
 func (v *RuntimeVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
-    lvalue = discoverLvalue(lvalue,  builder.object)
+    lvalue = metadata(lvalue,  builder.object)
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 
     boolRegister = n.Assertion(lvalue, rvalue)
