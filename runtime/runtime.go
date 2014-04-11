@@ -11,6 +11,7 @@ const (
     WALK_COMMITS = 1
     WALK_TREES = 2
     WALK_REFERENCES = 3
+    WALK_REMOTES = 4
 )
 
 const (
@@ -30,6 +31,7 @@ type GitBuilder struct {
     currentWalkType uint8
     currentCommit *git.Commit
     currentReference *git.Reference
+    currentRemote *git.Remote
     walk *git.RevWalk
 
 }
@@ -60,6 +62,8 @@ func Run(n *parser.NodeProgram) {
             break
         case WALK_REFERENCES:
             walkReferences(n, visitor)
+        case WALK_REMOTES:
+            walkRemotes(n, visitor)
     }
 }
 
@@ -73,6 +77,8 @@ func findWalkType(n *parser.NodeProgram) uint8 {
             builder.currentWalkType = WALK_TREES
         case "refs":
             builder.currentWalkType = WALK_REFERENCES
+        case "remotes":
+            builder.currentWalkType = WALK_REMOTES
     }
     
     return builder.currentWalkType
@@ -155,12 +161,53 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 
 }
 
+func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+    s := n.Child.(*parser.NodeSelect)
+    where := s.Where
+
+    remoteNames, err := builder.repo.ListRemotes()
+    if err != nil {
+        panic(err)
+    }
+
+    counter := 1
+    for _, remoteName := range remoteNames {
+        object, errRemote := builder.repo.LoadRemote(remoteName)
+        if errRemote != nil {
+            panic(errRemote)
+        }
+
+        builder.setRemote(object)
+        boolRegister = true
+        visitor.VisitExpr(where)
+        if boolRegister {
+            fields := s.Fields
+            if s.WildCard {
+                fields = builder.possibleTables[s.Tables[0]]
+            }            
+            for _, f := range fields {
+                fmt.Printf("%s | ", metadataRemote(f, object))    
+            }
+            fmt.Println()
+
+            counter = counter + 1
+            if counter > s.Limit {
+                break
+            }
+        }
+
+    }
+   
+}
+
 func metadata(identifier string) string {
     switch builder.currentWalkType {
         case WALK_COMMITS:
             return metadataCommit(identifier, builder.currentCommit)
         case WALK_REFERENCES:
             return metadataReference(identifier, builder.currentReference)
+        case WALK_REMOTES:
+            return metadataRemote(identifier, builder.currentRemote)
     }
 
     panic("GOD!")
@@ -238,6 +285,23 @@ func metadataCommit(identifier string, object *git.Commit) string {
     panic(fmt.Sprintf("Trying select field %s ", identifier))
 }
 
+func metadataRemote(identifier string, object *git.Remote) string {
+    switch identifier {
+       case "name":
+            return object.Name()
+       case "url":
+            return object.Url()
+       case "push_url":
+            return object.PushUrl()
+       case "owner":
+            repo := object.Owner()
+            r := &repo
+            return r.Path()
+    }
+
+    panic(fmt.Sprintf("Trying select field %s ", identifier))
+}
+
 // =========================== Error 
 
 func (e *RuntimeError) Error() string{
@@ -283,6 +347,12 @@ func GetGitBuilder(path *string) (*GitBuilder) {
             "type",
             "hash",
         },
+        "remotes": {
+            "name",
+            "url",
+            "push_url",
+            "owner",
+        },
     }
     gb.possibleTables = possibleTables
 
@@ -310,6 +380,11 @@ func (g *GitBuilder) setCommit(object *git.Commit) {
 func (g *GitBuilder) setReference(object *git.Reference) {
     g.currentReference = object
 }
+
+func (g *GitBuilder) setRemote(object *git.Remote) {
+    g.currentRemote = object
+}
+
 
 func (g *GitBuilder) WithTable(tableName string, alias string) error {
     err := g.isValidTable(tableName)
@@ -357,6 +432,3 @@ func (g *GitBuilder) UseFieldFromTable(field string, tableName string) error {
 
     return throwRuntimeError(fmt.Sprintf("Table '%s' has not field '%s'", tableName, field), 0)
 }
-
-// Criar varias funcoes de asserção, a closure usará elas para saber se um certo objeto
-// pode ser mostrado ou não.
