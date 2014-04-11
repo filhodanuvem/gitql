@@ -11,13 +11,16 @@ import (
 )
 
 func main() {
-    path, errFile := filepath.Abs("./")
+    
+    query := flag.String("q", "select * from commits", "The Query to search")
+    pathString := flag.String("p", ".", "The (optional) path to run gitql")
+    flag.Parse()
+
+    path, errFile := filepath.Abs(*pathString)
     
     if errFile != nil {
         panic(errFile)
     }
-    query := flag.String("q", "select * from commits", "The Query to search")
-    flag.Parse()
 
     parser.New(*query)
     ast, errGit := parser.AST()
