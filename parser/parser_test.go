@@ -265,28 +265,6 @@ func TestWhereWithSmaller(t *testing.T) {
     } 
 }
 
-func TestWhereWithNumeric(t *testing.T) {
-    New("select * from anything where blah >= 8")
-
-    ast, err := AST()
-    if err != nil {
-        t.Errorf(err.Error())
-        return
-    }   
-
-    selectNode := ast.Child.(*NodeSelect)
-    w := selectNode.Where
-
-    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeGreater)) {
-        t.Errorf("should be a NodeGreater")
-    }
-
-    greater := w.(*NodeGreater)
-    if !greater.Equal {
-        t.Errorf("Greater shoud be marked with equal")
-    }
-}
-
 func TestWhereWithOR(t *testing.T) {
     New("select * from commits where hash = 'e69de29' or date > 'now' ")
 

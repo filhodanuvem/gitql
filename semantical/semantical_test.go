@@ -110,8 +110,9 @@ func TestSmallerWithDateWithoutTime(t *testing.T) {
     
 }
 
+// You should not test stupid things like "c" in "cloudson" or 1 = 1 ¬¬
 func TestInUsingNotLiteralLeft(t *testing.T) {
-    parser.New("select * from commits where 1 in 'cloudson'")
+    parser.New("select * from commits where 'c' in 'cloudson'")
     ast, parserErr := parser.AST()
     if parserErr != nil {
         t.Fatalf(parserErr.Error())

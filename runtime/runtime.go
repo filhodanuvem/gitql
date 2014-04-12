@@ -291,6 +291,7 @@ func metadataCommit(identifier string, object *git.Commit) string {
         case "full_message":
             return object.Message()
         case "message": 
+            // return first line of a commit message 
             message := object.Message()
             r := []rune("\n")
             idx := strings.IndexRune(message, r[0])

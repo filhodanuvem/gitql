@@ -425,19 +425,6 @@ func rValue() (NodeExpr, error){
     }
 
     lexeme := lexical.CurrentLexeme
-    _, notIsNumber := strconv.ParseFloat(lexeme, 64)
-    if  notIsNumber == nil && look_ahead == lexical.T_NUMERIC {
-        n := new(NodeNumber)
-        n.SetValue(lexeme)
-        token2, err := lexical.Token()
-        if err != nil && token2 != lexical.T_EOF {
-            return nil, err
-        }
-        look_ahead = token2
-
-        return n, nil
-    }
-    // fmt.Printf("%v, %s", lexical.TokenName(look_ahead), lexical.CurrentLexeme)
     if look_ahead != lexical.T_LITERAL {
         return nil, throwSyntaxError(lexical.T_AND, look_ahead)
     }
