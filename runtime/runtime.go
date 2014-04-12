@@ -25,6 +25,8 @@ var repo *git.Repository
 var builder *GitBuilder
 var boolRegister bool
 
+type tableRow map[string]interface{}
+
 type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
@@ -98,17 +100,17 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     if s.WildCard {
         fields = builder.possibleTables[s.Tables[0]]
     }
-    table := clitable.New(fields)
+    rows := make([]tableRow, s.Limit)
     fn := func (object *git.Commit) bool {
         builder.setCommit(object)
         boolRegister = true
         visitor.VisitExpr(where)
         if boolRegister {
-            newRow := make(map[string]interface{})
+            newRow := make(tableRow)
             for _, f := range fields {
                 newRow[f] = metadataCommit(f, object)
             }
-            table.AddRow(newRow)
+            rows = append(rows, newRow)
             
             counter = counter + 1
         }
@@ -121,6 +123,15 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     err := builder.walk.Iterate(fn)
     if err != nil {
         fmt.Printf(err.Error())
+    }
+    printTable(rows, fields, counter)
+}
+
+func printTable(rows []tableRow, fields []string, successCount int) {
+    table := clitable.New(fields)
+    rowsSliced := rows[len(rows) - successCount + 1:]
+    for _, r := range rowsSliced {
+        table.AddRow(r)
     }
     table.Print()
 }
@@ -143,7 +154,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     if s.WildCard {
         fields = builder.possibleTables[s.Tables[0]]
     }
-    table := clitable.New(fields)
+    rows := make([]tableRow, s.Limit)
     for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
         
         builder.setReference(object)
@@ -154,18 +165,18 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             if s.WildCard {
                 fields = builder.possibleTables[s.Tables[0]]
             } 
-            newRow := make(map[string]interface{})
+            newRow := make(tableRow)
             for _, f := range fields {
                 newRow[f] = metadataReference(f, object)
             }
-            table.AddRow(newRow)
+            rows = append(rows, newRow)
             counter = counter + 1
             if counter > s.Limit {
                 break
             }
         }
     }
-    table.Print()
+    printTable(rows, fields, counter)
 }
 
 func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
@@ -183,7 +194,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     if s.WildCard {
         fields = builder.possibleTables[s.Tables[0]]
     }
-    table := clitable.New(fields)
+    rows := make([]tableRow, s.Limit)
     for _, remoteName := range remoteNames {
         object, errRemote := builder.repo.LoadRemote(remoteName)
         if errRemote != nil {
@@ -198,7 +209,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             for _, f := range fields {
                 newRow[f] = metadataRemote(f, object)
             }
-            table.AddRow(newRow)          
+            rows = append(rows, newRow)         
             
             counter = counter + 1
             if counter > s.Limit {
@@ -206,8 +217,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             }
         }
     }
-    table.Print()
-   
+    printTable(rows, fields, counter)
 }
 
 func metadata(identifier string) string {
