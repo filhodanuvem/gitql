@@ -65,8 +65,10 @@ func Run(n *parser.NodeProgram) {
             break
         case WALK_REFERENCES:
             walkReferences(n, visitor)
+            break
         case WALK_REMOTES:
             walkRemotes(n, visitor)
+            break;
     }
 }
 
@@ -130,47 +132,6 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 
 }
 
-func printTable(rows []tableRow, fields []string) {
-    table := clitable.New(fields)
-    for _, r := range rows {
-        table.AddRow(r)
-    }
-    table.Print()
-}
-
-func orderTable(rows []tableRow, order *parser.NodeOrder)([]tableRow){
-    if order == nil {
-        return rows
-    }
-    // We will use parser.NodeGreater.Assertion(A, B) to know if 
-    // A > B and then switch their positions.
-    // Unfortunaly, we will use bubble sort, that is O(n²)
-    // @todo change to quick or other better sort.
-    var orderer parser.NodeExpr 
-    if order.Asc {
-        orderer = new(parser.NodeGreater)
-    } else {
-        orderer = new(parser.NodeSmaller)
-    }
-
-    field := order.Field 
-    for i, row := range rows {
-        for j, rowWalk := range rows {
-            if orderer.Assertion(fmt.Sprintf("%v", rowWalk[field]), fmt.Sprintf("%v",row[field])) {
-                aux := rows[j]
-                rows[j] = rows[i]
-                rows[i] = aux
-            }
-        }
-    }
-
-    return rows
-}
-
-func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-    // not yet!
-}
-
 func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
@@ -207,7 +168,9 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             }
         }
     }
-    printTable(rows, fields)
+    rowsSliced := rows[len(rows) - counter + 1:]
+    rowsSliced = orderTable(rowsSliced, s.Order)
+    printTable(rowsSliced, fields)
 }
 
 func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
@@ -248,7 +211,50 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             }
         }
     }
-    printTable(rows, fields)
+    rowsSliced := rows[len(rows) - counter + 1:]
+    rowsSliced = orderTable(rowsSliced, s.Order)
+    printTable(rowsSliced, fields)
+}
+
+func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+
+}
+
+func printTable(rows []tableRow, fields []string) {
+    table := clitable.New(fields)
+    for _, r := range rows {
+        table.AddRow(r)
+    }
+    table.Print()
+}
+
+func orderTable(rows []tableRow, order *parser.NodeOrder)([]tableRow){
+    if order == nil {
+        return rows
+    }
+    // We will use parser.NodeGreater.Assertion(A, B) to know if 
+    // A > B and then switch their positions.
+    // Unfortunaly, we will use bubble sort, that is O(n²)
+    // @todo change to quick or other better sort.
+    var orderer parser.NodeExpr 
+    if order.Asc {
+        orderer = new(parser.NodeGreater)
+    } else {
+        orderer = new(parser.NodeSmaller)
+    }
+
+    field := order.Field 
+    for i, row := range rows {
+        for j, rowWalk := range rows {
+            if orderer.Assertion(fmt.Sprintf("%v", rowWalk[field]), fmt.Sprintf("%v",row[field])) {
+                aux := rows[j]
+                rows[j] = rows[i]
+                rows[i] = aux
+            }
+        }
+    }
+
+    return rows
 }
 
 func metadata(identifier string) string {
