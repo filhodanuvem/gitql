@@ -57,6 +57,10 @@ func TestNotFoundFieldsFromTable(t *testing.T) {
     }
 }
 
+func TestAccepNoIdInLeftValueAtInOperator(t *testing.T) {
+    
+}
+
 func TestFoundFieldsFromTable(t *testing.T) {
     metadata := [][]string {
         {"commits", "*"},

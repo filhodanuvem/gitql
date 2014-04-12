@@ -23,6 +23,7 @@ const T_OR = 20;
 const T_ID = 21;
 const T_PARENTH_L = 22;
 const T_PARENTH_R = 23;
+const T_IN = 24;
 const T_EOF = 0;
 const T_FUCK = 66;
 
@@ -52,6 +53,7 @@ func allocMapTokenNames() {
             T_ID : "T_ID",
             T_PARENTH_L : "T_PARENTH_L",
             T_PARENTH_R : "T_PARENTH_R",
+            T_IN: "T_IN",
             T_EOF : "T_EOF",
         }   
     }

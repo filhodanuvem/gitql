@@ -127,7 +127,7 @@ func TestErrorUnrecognizeChar(t* testing.T) {
 
 func TestReservedWords(t* testing.T) {
     setUp()
-    source = "SELECT from WHEre"
+    source = "SELECT from WHEre in "
     char = nextChar()
 
     var token uint8
@@ -140,6 +140,12 @@ func TestReservedWords(t* testing.T) {
 
     token, _ = Token()
     assertToken(t, token, T_WHERE)
+
+    token, _ = Token()
+    assertToken(t, token, T_IN)
+
+    token, _ = Token()
+    assertToken(t, token, T_EOF)
 }
 
 func TestNotReservedWords(t *testing.T) {

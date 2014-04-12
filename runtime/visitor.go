@@ -42,6 +42,9 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
         case reflect.TypeOf(new(parser.NodeAnd)) : 
             g:= n.(*parser.NodeAnd)
             return v.VisitAnd(g)
+        case reflect.TypeOf(new(parser.NodeIn)):
+            g:= n.(*parser.NodeIn)
+            return v.VisitIn(g)
 
     } 
 
@@ -94,7 +97,15 @@ func (v *RuntimeVisitor) VisitAnd(n *parser.NodeAnd) (error) {
 
     boolRegister = boolLeft && boolRight 
     return nil
-} 
+}
+
+func (v *RuntimeVisitor) VisitIn(n *parser.NodeIn) (error) {
+    lvalue := n.LeftValue().(*parser.NodeLiteral).Value()
+    rvalue := n.RightValue().(*parser.NodeId).Value()
+    boolRegister = n.Assertion(lvalue, metadata(rvalue))
+
+    return nil
+}  
 
 func (v *RuntimeVisitor) Builder() (*GitBuilder){
     return nil

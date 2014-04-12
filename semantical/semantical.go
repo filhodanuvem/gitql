@@ -2,7 +2,7 @@ package semantical
 
 import (
     "fmt"
-    "reflect"
+    "github.com/cloudson/gitql/lexical"
     "github.com/cloudson/gitql/parser"
 )
 
@@ -59,13 +59,20 @@ func (v *SemanticalVisitor) VisitSelect(n *parser.NodeSelect) (error) {
 } 
 
 func (v *SemanticalVisitor) VisitExpr(n parser.NodeExpr) (error) {
-    switch reflect.TypeOf(n) {
-        case reflect.TypeOf(new(parser.NodeGreater)) : 
+    if n == nil {
+        return nil
+    }
+
+    switch n.Operator() {
+        case lexical.T_GREATER : 
             g:= n.(*parser.NodeGreater)
             return v.VisitGreater(g)
-        case reflect.TypeOf(new(parser.NodeSmaller)) : 
+        case lexical.T_SMALLER : 
             g:= n.(*parser.NodeSmaller)
             return v.VisitSmaller(g)
+        case lexical.T_IN :
+            g:= n.(*parser.NodeIn)
+            return v.VisitIn(g)
     } 
 
     return nil
@@ -89,12 +96,27 @@ func (v *SemanticalVisitor) VisitSmaller(n *parser.NodeSmaller) (error) {
     return nil
 }
 
+func (v* SemanticalVisitor) VisitIn(n *parser.NodeIn) (error) {
+    lval := n.LeftValue()
+    if lval.Operator() != lexical.T_LITERAL {
+        return throwSemanticalError("LValue at In operator shoud be a literal")
+    }
+
+    rval := n.RightValue()
+    if rval.Operator() != lexical.T_ID {
+        return throwSemanticalError("RValue at In operator shoud be a Identifier")   
+    }
+
+    return nil
+}
+
 func shouldBeNumericOrDate(val parser.NodeExpr) bool {
-    if reflect.TypeOf(val) == reflect.TypeOf(new(parser.NodeNumber)) {
+    // if reflect.TypeOf(val) == reflect.TypeOf(new(parser.NodeNumber)) {
+    if val.Operator() == lexical.T_NUMERIC {
         return true
     }
 
-    if reflect.TypeOf(val) == reflect.TypeOf(new(parser.NodeLiteral)) {
+    if val.Operator() == lexical.T_LITERAL {
         date := parser.ExtractDate(val.(*parser.NodeLiteral).Value())        
         if date != nil {
             return true

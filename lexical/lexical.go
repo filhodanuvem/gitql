@@ -200,6 +200,7 @@ func lexemeToToken(lexeme string) (uint8){
         case "or" : return T_OR
         case "and" : return T_AND
         case "limit" : return T_LIMIT
+        case "in": return T_IN
     }
     return T_ID
 }

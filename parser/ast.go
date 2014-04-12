@@ -2,6 +2,7 @@ package parser
 import (
     "github.com/cloudson/gitql/lexical"
     "strconv"
+    "strings"
     "time"
 )
 
@@ -49,6 +50,11 @@ type NodeConst interface {
 
 type NodeAdapterBinToConst struct {
     adapted NodeBinOp
+}
+
+type NodeIn struct {
+    leftValue NodeExpr
+    rightValue NodeExpr
 }
 
 type NodeEqual struct {
@@ -109,6 +115,30 @@ func (e *NodeEmpty) Run() {
     return 
 }
 
+func (n* NodeIn) Assertion(lvalue string, rvalue string) bool {
+    return strings.Contains(rvalue, lvalue) 
+}
+
+func (n *NodeIn) SetLeftValue(e NodeExpr) {
+    n.leftValue = e
+}
+
+func (n *NodeIn) SetRightValue(e NodeExpr) {
+    n.rightValue = e
+}
+
+func (n *NodeIn) RightValue() NodeExpr{
+    return n.rightValue
+}
+
+func (n *NodeIn) LeftValue() NodeExpr{
+    return n.leftValue
+}
+
+func (n *NodeIn) Operator() uint8 {
+    return lexical.T_IN
+}
+
 
 // EQUAL
 func (n* NodeEqual) Assertion(lvalue string, rvalue string) bool {
@@ -144,7 +174,7 @@ func (n* NodeNotEqual) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeNotEqual) Operator() uint8{
-    return lexical.T_EQUAL
+    return lexical.T_NOT_EQUAL
 }
 
 func (n *NodeNotEqual) SetLeftValue(e NodeExpr) {
@@ -176,7 +206,7 @@ func (n* NodeGreater) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeGreater) Operator() uint8{
-    return lexical.T_EQUAL
+    return lexical.T_GREATER
 }
 
 func (n *NodeGreater) SetLeftValue(e NodeExpr) {
@@ -208,7 +238,7 @@ func (n* NodeSmaller) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeSmaller) Operator() uint8{
-    return lexical.T_EQUAL
+    return lexical.T_SMALLER
 }
 
 func (n *NodeSmaller) SetLeftValue(e NodeExpr) {
@@ -234,7 +264,7 @@ func (n* NodeOr) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeOr) Operator() uint8{
-    return lexical.T_EQUAL
+    return lexical.T_OR
 }
 
 func (n *NodeOr) SetLeftValue(e NodeExpr) {
@@ -259,7 +289,7 @@ func (n* NodeAnd) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeAnd) Operator() uint8{
-    return lexical.T_EQUAL
+    return lexical.T_AND
 }
 
 func (n *NodeAnd) SetLeftValue(e NodeExpr) {
@@ -317,7 +347,7 @@ func (n* NodeNumber) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeNumber) Operator() uint8{
-    return 0
+    return lexical.T_NUMERIC
 }
 
 func (n *NodeNumber) SetValue(value string) {
@@ -350,7 +380,7 @@ func (n* NodeId) Assertion(lvalue string, rvalue string) bool {
 }
 
 func (n *NodeId) Operator() uint8{
-    return 0
+    return lexical.T_ID
 }
 
 func (n *NodeId) SetValue(value string) {

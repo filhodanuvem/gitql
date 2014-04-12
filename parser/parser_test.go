@@ -390,6 +390,21 @@ func TestConditionWithPrecedentParent(t *testing.T) {
     }     
 }
 
+func TestUsingInOperator(t *testing.T) {
+    New("select * from commits where hash in 'e69de29' ")
+
+    ast, err := AST()
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+
+    selectNode := ast.Child.(*NodeSelect)
+    w := selectNode.Where 
+    if reflect.TypeOf(w) != reflect.TypeOf(new(NodeIn)) {
+        t.Errorf("Where should be node in")
+    }
+}
+
 
 func TestExtractDate(t *testing.T) {
     cases := [][]string {

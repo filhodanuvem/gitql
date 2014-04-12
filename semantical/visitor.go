@@ -10,6 +10,9 @@ type Visitor interface {
     VisitExpr(*parser.NodeExpr) error
     VisitGreater(*parser.NodeGreater) error
     VisitSmaller(*parser.NodeSmaller) error
+    VisitIn(*parser.NodeSmaller) error
+    VisitEqual(*parser.NodeSmaller) error
+    VisitNotEqual(*parser.NodeSmaller) error
 }
 
 type SemanticalVisitor struct {

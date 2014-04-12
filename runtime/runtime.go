@@ -257,15 +257,7 @@ func metadataReference(identifier string, object *git.Reference) string {
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
-    key := "" 
-    for key, _ = range builder.tables {
-        break
-    }
-    table := key
-    err := builder.UseFieldFromTable(identifier, table)
-    if err != nil {
-        panic(err)
-    }
+    
     switch identifier {
         case "hash" : 
             return object.Id().String()

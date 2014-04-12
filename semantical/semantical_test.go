@@ -110,3 +110,28 @@ func TestSmallerWithDateWithoutTime(t *testing.T) {
     
 }
 
+func TestInUsingNotLiteralLeft(t *testing.T) {
+    parser.New("select * from commits where 1 in 'cloudson'")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := Analysis(ast)
+    if err == nil {
+        t.Fatalf("Should trow error with invalid in ")
+    }
+}
+
+func TestInUsingNotIdRight(t *testing.T) {
+    parser.New("select * from commits where 'c' in 'cc' ")
+    ast, parserErr := parser.AST()
+    if parserErr != nil {
+        t.Fatalf(parserErr.Error())
+    }
+
+    err := Analysis(ast)
+    if err == nil {
+        t.Fatalf("Should trow error with invalid in ")
+    }
+}

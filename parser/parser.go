@@ -293,7 +293,7 @@ func gWC3(eating bool) (NodeExpr, error) {
     return expr, nil
 }
 
-// where cond equal and not equal
+// where cond 'equal', 'in' and 'not equal'
 func gWC4(eating bool) (NodeExpr, error) {
     if eating {
         token, err := lexical.Token() 
@@ -320,6 +320,15 @@ func gWC4(eating bool) (NodeExpr, error) {
             return op, nil
         case lexical.T_NOT_EQUAL:  
             op := new(NodeNotEqual)
+            op.SetLeftValue(expr)
+            expr2, err2 := gWC4(true)
+            if err2 != nil {
+                return nil, err2 
+            }
+            op.SetRightValue(expr2)
+            return op, nil
+        case lexical.T_IN:
+            op := new(NodeIn)
             op.SetLeftValue(expr)
             expr2, err2 := gWC4(true)
             if err2 != nil {
