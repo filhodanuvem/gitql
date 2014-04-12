@@ -201,6 +201,9 @@ func lexemeToToken(lexeme string) (uint8){
         case "and" : return T_AND
         case "limit" : return T_LIMIT
         case "in": return T_IN
+        case "asc" : return T_ASC
+        case "desc" : return T_DESC
+
     }
     return T_ID
 }

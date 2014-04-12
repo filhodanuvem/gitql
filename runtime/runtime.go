@@ -124,16 +124,47 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     if err != nil {
         fmt.Printf(err.Error())
     }
-    printTable(rows, fields, counter)
+    rowsSliced := rows[len(rows) - counter + 1:]
+    rowsSliced = orderTable(rowsSliced, s.Order)
+    printTable(rowsSliced, fields)
+
 }
 
-func printTable(rows []tableRow, fields []string, successCount int) {
+func printTable(rows []tableRow, fields []string) {
     table := clitable.New(fields)
-    rowsSliced := rows[len(rows) - successCount + 1:]
-    for _, r := range rowsSliced {
+    for _, r := range rows {
         table.AddRow(r)
     }
     table.Print()
+}
+
+func orderTable(rows []tableRow, order *parser.NodeOrder)([]tableRow){
+    if order == nil {
+        return rows
+    }
+    // We will use parser.NodeGreater.Assertion(A, B) to know if 
+    // A > B and then switch their positions.
+    // Unfortunaly, we will use bubble sort, that is O(n²)
+    // @todo change to quick or other better sort.
+    var orderer parser.NodeExpr 
+    if order.Asc {
+        orderer = new(parser.NodeGreater)
+    } else {
+        orderer = new(parser.NodeSmaller)
+    }
+
+    field := order.Field 
+    for i, row := range rows {
+        for j, rowWalk := range rows {
+            if orderer.Assertion(fmt.Sprintf("%v", rowWalk[field]), fmt.Sprintf("%v",row[field])) {
+                aux := rows[j]
+                rows[j] = rows[i]
+                rows[i] = aux
+            }
+        }
+    }
+
+    return rows
 }
 
 func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
@@ -176,7 +207,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             }
         }
     }
-    printTable(rows, fields, counter)
+    printTable(rows, fields)
 }
 
 func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
@@ -217,7 +248,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             }
         }
     }
-    printTable(rows, fields, counter)
+    printTable(rows, fields)
 }
 
 func metadata(identifier string) string {

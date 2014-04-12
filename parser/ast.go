@@ -25,6 +25,7 @@ type NodeSelect struct {
     Fields []string
     Tables []string
     Where NodeExpr
+    Order *NodeOrder
     Limit int 
 }
 
@@ -105,6 +106,11 @@ type NodeId struct {
     leftValue NodeExpr
     rightValue NodeExpr
     value string
+}
+
+type NodeOrder struct {
+    Field string
+    Asc bool 
 }
 
 func (s *NodeSelect) Run() {

@@ -383,6 +383,63 @@ func TestUsingInOperator(t *testing.T) {
     }
 }
 
+func TestOrderByWithASC(t *testing.T) {
+    New("select * from refs order by hash asc ")
+
+    ast, err := AST()
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+
+    selectNode := ast.Child.(*NodeSelect)
+    o := selectNode.Order 
+    if o == nil {
+        t.Errorf("should has order node")
+    }
+}
+
+func TestOrderByWithDESC(t *testing.T) {
+    New("select * from refs order by hash desc ")
+
+    ast, err := AST()
+    if err != nil {
+        t.Fatalf(err.Error())
+    }
+
+    selectNode := ast.Child.(*NodeSelect)
+    o := selectNode.Order 
+    if o == nil {
+        t.Errorf("should has order node")
+    }
+}
+
+func TestOrderByWithoutASC(t *testing.T) {
+    New("select * from refs order by hash ")
+
+    _, err := AST()
+    if err == nil {
+        t.Fatalf("Shoud throws error about order by without asc/desc")
+    }
+}
+
+func TestOrderByWithoutBY(t *testing.T) {
+    New("select * from refs order hash asc ")
+
+    _, err := AST()
+    if err == nil {
+        t.Fatalf("Shoud throws error about order by without by")
+    }
+}
+
+func TestOrderByWithInvalidField(t *testing.T) {
+    New("select * from refs order by 'hash' ")
+
+    _, err := AST()
+    if err == nil {
+        t.Fatalf("Shoud throws error about order by with id instead of identifier")
+    }
+}
+
 
 func TestExtractDate(t *testing.T) {
     cases := [][]string {

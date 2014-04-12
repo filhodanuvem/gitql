@@ -102,6 +102,13 @@ func gSelect() (*NodeSelect, error){
     }
     s.Where = where
 
+    // ORDER BY 
+    order, err6 := gOrder()
+    if err6 != nil {
+        return nil, err6
+    }
+    s.Order = order
+
     // LIMIT 
     var err5 error 
     s.Limit, err5 = gLimit() 
@@ -192,6 +199,45 @@ func gTableParamsRest(fields *[]string, count int) ([]string, error){
     }
 
     return *fields, nil
+}
+
+func gOrder() (*NodeOrder, error) {
+    if look_ahead == lexical.T_ORDER {
+        token, err := lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        if token != lexical.T_BY {
+            return nil, throwSyntaxError(lexical.T_BY, token)
+        }
+
+        order := new(NodeOrder)
+        token, err = lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        if token != lexical.T_ID {
+            return nil, throwSyntaxError(lexical.T_ID, token)
+        }
+        order.Field = lexical.CurrentLexeme
+        token, err = lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        if token != lexical.T_ASC && token != lexical.T_DESC {
+            return nil, throwSyntaxError(lexical.T_ASC, token)   
+        }
+        order.Asc = (token == lexical.T_ASC)
+
+        token, err = lexical.Token()
+        if err != nil {
+            return nil, err
+        }
+        look_ahead = token
+        return order, nil 
+    }
+
+    return nil, nil
 }
 
 func gLimit() (int, error) {

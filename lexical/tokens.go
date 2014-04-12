@@ -5,7 +5,7 @@ const T_FROM = 2;
 const T_WHERE = 3; 
 const T_ORDER = 4; 
 const T_BY = 5; 
-const T_LIMIT = 6; 
+const T_LIMIT = 6;  
 const T_DESC = 7; 
 const T_WILD_CARD = 8; 
 const T_COMMA = 9;  
@@ -24,6 +24,7 @@ const T_ID = 21;
 const T_PARENTH_L = 22;
 const T_PARENTH_R = 23;
 const T_IN = 24;
+const T_ASC = 25;
 const T_EOF = 0;
 const T_FUCK = 66;
 
@@ -55,6 +56,7 @@ func allocMapTokenNames() {
             T_PARENTH_R : "T_PARENTH_R",
             T_IN: "T_IN",
             T_EOF : "T_EOF",
+            T_ASC : "T_ASC",
         }   
     }
 }
