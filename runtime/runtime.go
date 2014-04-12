@@ -113,7 +113,6 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
             counter = counter + 1
         }
         if counter > s.Limit {
-            table.Print()
             return false
         }
         return true
@@ -123,6 +122,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
     if err != nil {
         fmt.Printf(err.Error())
     }
+    table.Print()
 }
 
 func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {

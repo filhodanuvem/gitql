@@ -60,7 +60,7 @@ func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) (error) {
     lvalue := n.LeftValue().(*parser.NodeId).Value()
     lvalue = metadata(lvalue)
     rvalue := n.RightValue().(*parser.NodeLiteral).Value()
-
+    
     boolRegister = n.Assertion(lvalue, rvalue)
 
     return nil
