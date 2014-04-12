@@ -228,6 +228,15 @@ func metadataTree(identifier string, object *git.TreeEntry) string {
 }
 
 func metadataReference(identifier string, object *git.Reference) string {
+    key := "" 
+    for key, _ = range builder.tables {
+        break
+    }
+    table := key
+    err := builder.UseFieldFromTable(identifier, table)
+    if err != nil {
+        panic(err)
+    }
     switch identifier {
         case "name":
             return object.Shorthand()
@@ -253,11 +262,19 @@ func metadataReference(identifier string, object *git.Reference) string {
             }
     }
 
-    panic(fmt.Sprintf("Trying select field %s ", identifier))
+    panic(fmt.Sprintf("Field %s not implemented yet", identifier))
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
-    
+    key := "" 
+    for key, _ = range builder.tables {
+        break
+    }
+    table := key
+    err := builder.UseFieldFromTable(identifier, table)
+    if err != nil {
+        panic(err)
+    }
     switch identifier {
         case "hash" : 
             return object.Id().String()
@@ -284,10 +301,19 @@ func metadataCommit(identifier string, object *git.Commit) string {
 
     }
 
-    panic(fmt.Sprintf("Trying select field %s ", identifier))
+    panic(fmt.Sprintf("Field %s not implemented yet", identifier))
 }
 
 func metadataRemote(identifier string, object *git.Remote) string {
+    key := "" 
+    for key, _ = range builder.tables {
+        break
+    }
+    table := key
+    err := builder.UseFieldFromTable(identifier, table)
+    if err != nil {
+        panic(err)
+    }
     switch identifier {
        case "name":
             return object.Name()
@@ -301,7 +327,7 @@ func metadataRemote(identifier string, object *git.Remote) string {
             return r.Path()
     }
 
-    panic(fmt.Sprintf("Trying select field %s ", identifier))
+    panic(fmt.Sprintf("Field %s not implemented yet", identifier))
 }
 
 // =========================== Error 
