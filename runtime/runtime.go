@@ -87,7 +87,7 @@ func findWalkType(n *parser.NodeProgram) uint8 {
             builder.currentWalkType = WALK_TREES
         case "remotes":
             builder.currentWalkType = WALK_REMOTES
-        case "refs", "tags":
+        case "refs", "tags", "branches":
             builder.currentWalkType = WALK_REFERENCES
     }
     
@@ -449,14 +449,17 @@ func GetGitBuilder(path *string) (*GitBuilder) {
             "full_name",
             "hash",
         },
+        "branches": {
+            "name",
+            "full_name",
+            "hash",
+        },
     }
     gb.possibleTables = possibleTables
 
-    // proxyTables := map[string]string {
-    //     "tags" : "refs",
-    // }
     proxyTables := map[string]*proxyTable{
         "tags" : proxyTableEntry("refs", map[string]string{"type" : "tag",}),
+        "branches" : proxyTableEntry("refs", map[string]string{"type" : "branch",}),
     }
     gb.proxyTables = proxyTables
 
