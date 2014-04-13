@@ -3,7 +3,7 @@ Gitql [![Build Status](https://travis-ci.org/cloudson/gitql.png)](https://travis
 
 Gitql is a Git query language.
 
-
+![how to use](./howtouse.gif)
 
 See more [here](https://asciinema.org/a/8863)
 
