@@ -1,7 +1,6 @@
 package main
 
 import (
-    _"github.com/libgit2/git2go"
     "github.com/cloudson/gitql/parser"
     "github.com/cloudson/gitql/semantical"
     "github.com/cloudson/gitql/runtime"
@@ -12,7 +11,7 @@ import (
 
 func main() {
     
-    query := flag.String("q", "select * from commits", "The query to search")
+    query := flag.String("q", "select * from commits", "The Query to search")
     pathString := flag.String("p", ".", "The (optional) path to run gitql")
     flag.Parse()
 

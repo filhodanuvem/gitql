@@ -26,10 +26,15 @@ var builder *GitBuilder
 var boolRegister bool
 
 type tableRow map[string]interface{}
+type proxyTable struct{
+    table string
+    fields map[string]string
+}
 
 type GitBuilder struct {
     tables map[string]string 
     possibleTables map[string][]string
+    proxyTables map[string]*proxyTable
     repo *git.Repository
     currentWalkType uint8
     currentCommit *git.Commit
@@ -80,10 +85,10 @@ func findWalkType(n *parser.NodeProgram) uint8 {
             builder.currentWalkType = WALK_COMMITS
         case "trees" :
             builder.currentWalkType = WALK_TREES
-        case "refs":
-            builder.currentWalkType = WALK_REFERENCES
         case "remotes":
             builder.currentWalkType = WALK_REMOTES
+        case "refs", "tags":
+            builder.currentWalkType = WALK_REFERENCES
     }
     
     return builder.currentWalkType
@@ -244,6 +249,16 @@ func orderTable(rows []tableRow, order *parser.NodeOrder)([]tableRow){
     }
 
     field := order.Field 
+    key := "" 
+    for key, _ = range builder.tables {
+        break
+    }
+    table := key
+    err := builder.UseFieldFromTable(field, table)
+    if err != nil {
+        panic(err)    
+    }
+
     for i, row := range rows {
         for j, rowWalk := range rows {
             if orderer.Assertion(fmt.Sprintf("%v", rowWalk[field]), fmt.Sprintf("%v",row[field])) {
@@ -429,14 +444,35 @@ func GetGitBuilder(path *string) (*GitBuilder) {
             "push_url",
             "owner",
         },
+        "tags": {
+            "name",
+            "full_name",
+            "hash",
+        },
     }
     gb.possibleTables = possibleTables
+
+    // proxyTables := map[string]string {
+    //     "tags" : "refs",
+    // }
+    proxyTables := map[string]*proxyTable{
+        "tags" : proxyTableEntry("refs", map[string]string{"type" : "tag",}),
+    }
+    gb.proxyTables = proxyTables
 
     openRepository(path)
 
     gb.repo = repo
 
     return gb
+}
+
+func proxyTableEntry(t string, f map[string]string) (*proxyTable){
+    p := new(proxyTable)
+    p.table = t
+    p.fields = f
+
+    return p
 }
 
 
@@ -481,6 +517,12 @@ func (g *GitBuilder) WithTable(tableName string, alias string) error {
     return nil
 }
 
+func (g *GitBuilder) isProxyTable(tableName string) bool {
+    _, isIn := g.proxyTables[tableName]
+    
+    return isIn
+}
+
 func (g *GitBuilder) isValidTable(tableName string) error {
     if _, isOk := g.possibleTables[tableName]; !isOk {
         return throwRuntimeError(fmt.Sprintf("Table '%s' not found", tableName), 0)
@@ -494,7 +536,7 @@ func (g *GitBuilder) UseFieldFromTable(field string, tableName string) error {
     if err != nil {
         return err
     }
-    
+
     if field == "*" {
         return nil
     }

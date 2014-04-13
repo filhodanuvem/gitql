@@ -10,9 +10,41 @@ func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) (error) {
 } 
 
 func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
+    if builder.isProxyTable(n.Tables[0]) {
+        // refactor tree 
+        proxy := builder.proxyTables[n.Tables[0]]
+        n.Fields = builder.possibleTables[n.Tables[0]]
+        n.Tables[0] = proxy.table
+        n.WildCard = false
+        var from, to string
+        for from, to = range proxy.fields {
+            break
+        }
+
+        oldWhere := n.Where
+        where := new(parser.NodeAnd)
+        condition := new(parser.NodeEqual)
+        conditionL := new(parser.NodeId)
+        conditionL.SetValue(from)
+        conditionR := new(parser.NodeLiteral)
+        conditionR.SetValue(to)
+        condition.SetLeftValue(conditionL)
+        condition.SetRightValue(conditionR)
+
+        where.SetLeftValue(condition)
+        where.SetRightValue(oldWhere)
+
+        n.Where = where
+    }
+
     table := n.Tables[0]
-    fields := n.Fields 
     var err error
+    err = builder.WithTable(table, table)
+    if err != nil {
+        return err
+    }
+
+    fields := n.Fields 
     for _, f := range fields {
         err = builder.UseFieldFromTable(f, table)
         builder.tables[table] = table
@@ -21,7 +53,7 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
         }
     }
     // Why not visit expression right now ? 
-    // Because we will, at first, discover the current commit 
+    // Because we will, at first, discover the current object 
     return nil 
 } 
 
