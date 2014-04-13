@@ -482,7 +482,7 @@ func (g *GitBuilder) WithTable(tableName string, alias string) error {
 }
 
 func (g *GitBuilder) isValidTable(tableName string) error {
-    if g.possibleTables[tableName] == nil {
+    if _, isOk := g.possibleTables[tableName]; !isOk {
         return throwRuntimeError(fmt.Sprintf("Table '%s' not found", tableName), 0)
     }
 
@@ -490,13 +490,13 @@ func (g *GitBuilder) isValidTable(tableName string) error {
 }
 
 func (g *GitBuilder) UseFieldFromTable(field string, tableName string) error {
-    if field == "*" {
-        return nil
-    }
-
     err := g.isValidTable(tableName)
     if err != nil {
         return err
+    }
+    
+    if field == "*" {
+        return nil
     }
 
     table := g.possibleTables[tableName]
