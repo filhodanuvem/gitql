@@ -37,7 +37,7 @@ Look the table of commits:
 (see more tables [here](./tables.md))
 
 You can do:   
-* `select hash, author, message from commits`  
+* `select hash, author, message from commits limit 3`  
 * `select hash, message from commits where 'hell' in full_message or 'Fuck' in full_message`  
 * `select hash, message, author_email from commits where author = 'cloudson'`  
 * `select date, message from commits where date < '2014-04-10' `  
