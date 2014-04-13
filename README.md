@@ -14,7 +14,9 @@ See more [here](https://asciinema.org/a/8863)
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make install`
 - `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib`
-- `export PKG_CONFIG_PATH=$PWD/libgit2/install/lib/pkgconfig`
+- `export PKG_CONFIG_PATH=$PWD/libgit2/install/lib/pkgconfig`  
+
+*you could export LD_LIBRARY_PATH and PKG_CONFIG_PATH (with the full path) in your ~/.bashrc *
 
 ## Examples 
 
