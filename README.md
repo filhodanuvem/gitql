@@ -1,7 +1,7 @@
 Gitql [![Build Status](https://travis-ci.org/cloudson/gitql.png)](https://travis-ci.org/cloudson/gitql)
 ===============
 
-Gitql is a Git query language.
+Gitql is a Git query language.  
 In a repository ...
 
 ![how to use](./howtouse.gif)
