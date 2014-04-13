@@ -11,11 +11,21 @@ func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) (error) {
 
 func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
     if builder.isProxyTable(n.Tables[0]) {
+        proxyTableName := n.Tables[0]
         // refactor tree 
-        proxy := builder.proxyTables[n.Tables[0]]
-        n.Fields = builder.possibleTables[n.Tables[0]]
+        proxy := builder.proxyTables[proxyTableName]
+        if !n.WildCard {
+            err := testAllFieldsFromTable(n.Fields, proxyTableName)
+            if err != nil {
+                return err
+            }
+            
+        } else {
+            n.Fields = builder.possibleTables[proxyTableName]
+            n.WildCard = false
+        }
+
         n.Tables[0] = proxy.table
-        n.WildCard = false
         var from, to string
         for from, to = range proxy.fields {
             break
@@ -38,24 +48,27 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) (error) {
     }
 
     table := n.Tables[0]
+    
     var err error
     err = builder.WithTable(table, table)
     if err != nil {
         return err
     }
+    return testAllFieldsFromTable(n.Fields, table)
+    // Why not visit expression right now ? 
+    // Because we will, at first, discover the current object
+} 
 
-    fields := n.Fields 
+func testAllFieldsFromTable(fields []string, table string) error{
     for _, f := range fields {
-        err = builder.UseFieldFromTable(f, table)
-        builder.tables[table] = table
+        err := builder.UseFieldFromTable(f, table)
         if err != nil {
             return err
         }
     }
-    // Why not visit expression right now ? 
-    // Because we will, at first, discover the current object 
-    return nil 
-} 
+
+    return nil
+}
 
 func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) (error) {
     switch reflect.TypeOf(n) {

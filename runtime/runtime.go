@@ -79,7 +79,6 @@ func Run(n *parser.NodeProgram) {
 
 func findWalkType(n *parser.NodeProgram) uint8 {
     s := n.Child.(*parser.NodeSelect)
-
     switch s.Tables[0] {
         case "commits" :
             builder.currentWalkType = WALK_COMMITS

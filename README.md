@@ -17,7 +17,8 @@ See more [here](https://asciinema.org/a/8863)
 
 ## Examples 
 
-`gitql -q "your query" `
+`gitql -q "your query" ` 
+
 
 Look the table of commits:
 
@@ -41,8 +42,11 @@ You can do:
 * `select date, message from commits where date < '2014-04-10' `  
 * :warning: `select message from commits where 'hell' in message order by date asc`   
 
+## Questions? 
+
+`gitql -h` or open an [issue](https://github.com/cloudson/gitql/issues)
 
 Notes:   
-* Gitql dont want kill `git log` :sweat_smile: . It was created just for science!!  
+* Gitql dont wants kill `git log` :sweat_smile: . It was created just for science!!  
 * It's  read-only. Nothing about delete, insert or update commits :stuck_out_tongue_closed_eyes:  
-* It's ispired from [textql](https://github.com/dinedal/textql)  
+* It's inspired by [textql](https://github.com/dinedal/textql)  
