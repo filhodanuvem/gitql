@@ -9,14 +9,12 @@ In a repository ...
 See more [here](https://asciinema.org/a/8863)
 
 ## Install
-
+- You need cmake (ubuntu: `apt-get install cmake`?)
 - `go get -d github.com/cloudson/gitql`
 - `cd $GOPATH/src/github.com/cloudson/gitql`
-- `make install`
-- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib`
-- `export PKG_CONFIG_PATH=$PWD/libgit2/install/lib/pkgconfig`  
+- `make`
+- `sudo make install`
 
-*you could export LD_LIBRARY_PATH and PKG_CONFIG_PATH (with the full path) in your ~/.bashrc *
 
 ## Examples 
 
