@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"flag"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
@@ -10,9 +11,16 @@ import (
 
 func main() {
 
-	query := flag.String("q", "select * from commits", "The Query to search")
+	query := flag.String("q", "", "The Query to search")
 	pathString := flag.String("p", ".", "The (optional) path to run gitql")
+	version := flag.Bool("v", false, "The version of gitql")
 	flag.Parse()
+
+	if *version {
+		// @todo refactor to dynamic value
+		fmt.Println("Gitql 1.0.0")
+		return 
+	}
 
 	path, errFile := filepath.Abs(*pathString)
 
