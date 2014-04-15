@@ -7,7 +7,10 @@ all: prepare build
 test: 
 	go test ./lexical/ ./parser/ ./semantical ./runtime
 
-prepare: 
+clean:
+	rm -rf ./git2go ./libgit2
+
+prepare: clean
 	@echo "Preparing...\n"
 	chmod +x $(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
 	$(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
