@@ -8,7 +8,7 @@ test:
 	go test ./lexical/ ./parser/ ./semantical ./runtime
 
 clean:
-	rm -rf ./git2go ./libgit2
+	rm -rf ./libgit2
 
 prepare: clean
 	@echo "Preparing...\n"
