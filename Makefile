@@ -14,6 +14,7 @@ prepare: clean
 	@echo "Preparing...\n"
 	wget $(URL_BASE_GIT2GO)/$(GIT2GO_VERSION).tar.gz
 	tar -xvf "./$(GIT2GO_VERSION).tar.gz"
+	rm ./$(GIT2GO_VERSION).tar.gz
 	mv ./git2go-$(GIT2GO_VERSION) ./git2go
 	chmod +x ./git2go/script/build-libgit2.sh
 	./git2go/script/build-libgit2.sh
