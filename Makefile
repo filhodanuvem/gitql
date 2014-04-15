@@ -14,6 +14,8 @@ prepare: clean
 	@echo "Preparing...\n"
 	chmod +x $(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
 	$(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
+	cp libgit2/libgit2.0.dylib ./
+	cp libgit2/libgit2.0.dylib ./runtime
 
 build: 
 	go build

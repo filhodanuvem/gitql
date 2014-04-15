@@ -2,3 +2,5 @@
 git2go
 libgit2
 gitql
+libgit2.0.dylib
+runtime/libgit2.0.dylib
