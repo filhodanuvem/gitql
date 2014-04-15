@@ -14,6 +14,7 @@ See more [here](https://asciinema.org/a/8863)
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make`
 - `sudo make install`
+- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib` I hate this! 
 
 
 ## Examples 
@@ -50,4 +51,5 @@ You can do:
 Notes:   
 * Gitql dont wants kill `git log` :sweat_smile: . It was created just for science!!  
 * It's  read-only. Nothing about delete, insert or update commits :stuck_out_tongue_closed_eyes:  
+* The limit default is 10 rows
 * It's inspired by [textql](https://github.com/dinedal/textql)  
