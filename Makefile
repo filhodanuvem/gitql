@@ -9,16 +9,12 @@ test:
 
 prepare: 
 	@echo "Preparing...\n"
-	wget $(URL_BASE_GIT2GO)/$(GIT2GO_VERSION).tar.gz
-	tar -xvf "./$(GIT2GO_VERSION).tar.gz"
-	mv ./git2go-$(GIT2GO_VERSION) ./git2go
-	chmod +x ./git2go/script/build-libgit2.sh
-	./git2go/script/build-libgit2.sh
-	@echo "installed"
+	chmod +x $(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
+	$(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
 
 build: 
 	go build
-	@echo "Read to go!"
+	@echo "Ready to go!"
 	
 install:
 	cp ./gitql /usr/bin/gitql
