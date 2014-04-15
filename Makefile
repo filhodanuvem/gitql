@@ -21,5 +21,5 @@ build:
 	@echo "Read to go!"
 	
 install:
-	cp ./gitql /usr/bin/gitql
-	@echo "Git is in /usr/bin/gitql"
+	cp ./gitql /usr/local/bin/gitql
+	@echo "Git is in /usr/local/bin/gitql"
