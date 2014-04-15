@@ -7,7 +7,10 @@ all: prepare build
 test: 
 	go test ./lexical/ ./parser/ ./semantical ./runtime
 
-prepare: 
+clean:
+	rm -rf ./git2go ./libgit2
+
+prepare: clean
 	@echo "Preparing...\n"
 	wget $(URL_BASE_GIT2GO)/$(GIT2GO_VERSION).tar.gz
 	tar -xvf "./$(GIT2GO_VERSION).tar.gz"
