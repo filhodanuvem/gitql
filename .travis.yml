@@ -4,9 +4,9 @@ go:
    - 1.1 
    - 1.2 
 before_script: 
+    - go get -d 
     - make prepare
     - "export LD_LIBRARY_PATH=$PWD/libgit2/install/lib"
     - "export PKG_CONFIG_PATH=$PWD/libgit2/install/lib/pkgconfig"
-    - go get
 script: 
    - make test
