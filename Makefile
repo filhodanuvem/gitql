@@ -1,4 +1,5 @@
 export LD_LIBRARY_PATH=$(PWD)/libgit2/install/lib
+export DYLD_LIBRARY_PATH=$(PWD)/libgit2/install/lib
 export PKG_CONFIG_PATH=$(PWD)/libgit2/install/lib/pkgconfig
 URL_BASE_GIT2GO=https://github.com/libgit2/git2go/archive
 GIT2GO_VERSION=master
