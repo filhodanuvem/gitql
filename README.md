@@ -2,7 +2,7 @@ Gitql [![Build Status](https://travis-ci.org/cloudson/gitql.png)](https://travis
 ===============
 
 Gitql is a Git query language.  
-In a repository ...
+In a repository root path ...
 
 ![how to use](./howtouse.gif)
 
@@ -14,7 +14,7 @@ See more [here](https://asciinema.org/a/8863)
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make`
 - `sudo make install`
-- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib` on ubuntu or `export DYLD_LIBRARY_PATH=$PWD/libgit2/install/lib`on Mac OS
+- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib` on linux or `export DYLD_LIBRARY_PATH=$PWD/libgit2/install/lib`on Mac OS. 
 
 
 ## Examples 
