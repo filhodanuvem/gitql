@@ -8,8 +8,11 @@ In a repository root path ...
 
 See more [here](https://asciinema.org/a/8863)
 
+## Requirements 
+- Go  
+- cmake  
+
 ## Install
-- You need cmake (ubuntu: `apt-get install cmake`?)
 - `go get -d github.com/cloudson/gitql`
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make`
