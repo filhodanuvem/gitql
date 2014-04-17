@@ -22,6 +22,11 @@ func main() {
 		return 
 	}
 
+  if *query == "" {
+    flag.Usage()
+    return
+  }
+
 	path, errFile := filepath.Abs(*pathString)
 
 	if errFile != nil {
