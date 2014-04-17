@@ -421,13 +421,13 @@ func GetGitBuilder(path *string) *GitBuilder {
 			"message",
 			"full_message",
 		},
-		"trees": {
-			"hash",
-			"name",
-			"id",
-			"type",
-			"filemode",
-		},
+		// "trees": {
+		// 	"hash",
+		// 	"name",
+		// 	"id",
+		// 	"type",
+		// 	"filemode",
+		// },
 		"refs": {
 			"name",
 			"full_name",
