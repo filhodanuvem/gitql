@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
 	"github.com/cloudson/gitql/semantical"
-	"path/filepath"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -19,14 +19,14 @@ func main() {
 
 	if *version {
 		// @todo refactor to dynamic value
-		fmt.Println("Gitql 1.0.0")
-		os.Exit(0) 
+		fmt.Println("Gitql 1.0.0-RC4")
+		os.Exit(0)
 	}
 
-  if *query == "" {
-    flag.Usage()
-    os.Exit(1)
-  }
+	if *query == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	path, errFile := filepath.Abs(*pathString)
 
