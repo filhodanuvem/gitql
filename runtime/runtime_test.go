@@ -23,15 +23,15 @@ func TestErrorWithInvalidTables(t *testing.T) {
 }
 
 func TestTablesWithoutAlias(t *testing.T) {
-	invalidTables := []string{
+	tables := []string{
 		"commits",
-		"trees",
+		"tags",
 	}
 
 	var path string
 	path, _ = filepath.Abs("../")
 	gb := GetGitBuilder(&path)
-	for _, tableName := range invalidTables {
+	for _, tableName := range tables {
 		err := gb.WithTable(tableName, "")
 		if err != nil {
 			t.Errorf(err.Error())
@@ -42,8 +42,8 @@ func TestTablesWithoutAlias(t *testing.T) {
 func TestNotFoundFieldsFromTable(t *testing.T) {
 	metadata := [][]string{
 		{"commits", "hashas"},
-		{"trees", "blah"},
-		{"commits", ""},
+		{"tags", "blah"},
+		{"refs", ""},
 	}
 
 	var path string
@@ -64,8 +64,8 @@ func TestAccepNoIdInLeftValueAtInOperator(t *testing.T) {
 func TestFoundFieldsFromTable(t *testing.T) {
 	metadata := [][]string{
 		{"commits", "*"},
-		{"trees", "hash"},
-		{"commits", "hash"},
+		{"branches", "hash"},
+		{"tags", "hash"},
 	}
 
 	var path string
