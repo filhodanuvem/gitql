@@ -7,6 +7,7 @@ import (
 	"github.com/cloudson/gitql/runtime"
 	"github.com/cloudson/gitql/semantical"
 	"path/filepath"
+	"os"
 )
 
 func main() {
@@ -19,12 +20,12 @@ func main() {
 	if *version {
 		// @todo refactor to dynamic value
 		fmt.Println("Gitql 1.0.0")
-		return 
+		os.Exit(0) 
 	}
 
   if *query == "" {
     flag.Usage()
-    return
+    os.Exit(1)
   }
 
 	path, errFile := filepath.Abs(*pathString)
