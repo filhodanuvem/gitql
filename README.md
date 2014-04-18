@@ -24,6 +24,8 @@ See more [here](https://asciinema.org/a/8863)
 
 `gitql -q "your query" ` 
 
+`git ql -q "your query" `
+
 
 Look the table of commits:
 
