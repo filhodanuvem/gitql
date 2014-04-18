@@ -12,7 +12,6 @@ import (
 
 func main() {
 
-	query := flag.String("q", "", "The Query to search")
 	pathString := flag.String("p", ".", "The (optional) path to run gitql")
 	version := flag.Bool("v", false, "The version of gitql")
 	flag.Parse()
@@ -23,7 +22,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	if *query == "" {
+	query := flag.Arg(0)
+	if query == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -34,7 +34,7 @@ func main() {
 		panic(errFile)
 	}
 
-	parser.New(*query)
+	parser.New(query)
 	ast, errGit := parser.AST()
 	if errGit != nil {
 		panic(errGit)
