@@ -22,6 +22,6 @@ build:
 	
 install:
 	cp ./gitql /usr/local/bin/gitql
-	ln -s /usr/local/bin/gitql /usr/local/bin/git-ql
+	ln -s -f /usr/local/bin/gitql /usr/local/bin/git-ql
 	@echo "Git is in /usr/local/bin/gitql"
 	@echo "You can also use: git ql 'query here'"
