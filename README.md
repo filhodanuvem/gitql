@@ -22,9 +22,9 @@ See more [here](https://asciinema.org/a/8863)
 
 ## Examples 
 
-`gitql -q "your query" ` 
+`gitql "your query" ` 
 
-`git ql -q "your query" `
+`git ql "your query" `
 
 
 Look the table of commits:
