@@ -13,7 +13,7 @@ See more [here](https://asciinema.org/a/8863)
 - cmake  
 
 ## Install
-- `go get -d github.com/cloudson/gitql`
+- `go get -u -d github.com/cloudson/gitql`
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make`
 - `sudo make install`
