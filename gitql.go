@@ -1,34 +1,14 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
 	"github.com/cloudson/gitql/semantical"
-	"os"
 	"path/filepath"
 )
 
 func main() {
-
-	pathString := flag.String("p", ".", "The (optional) path to run gitql")
-	version := flag.Bool("v", false, "The version of gitql")
-	flag.Parse()
-
-	if *version {
-		// @todo refactor to dynamic value
-		fmt.Println("Gitql 1.0.0-RC4")
-		os.Exit(0)
-	}
-
-	query := flag.Arg(0)
-	if query == "" {
-		flag.Usage()
-		os.Exit(1)
-	}
-
-	path, errFile := filepath.Abs(*pathString)
+	folder, errFile := filepath.Abs(*path)
 
 	if errFile != nil {
 		panic(errFile)
@@ -39,7 +19,7 @@ func main() {
 	if errGit != nil {
 		panic(errGit)
 	}
-	ast.Path = &path
+	ast.Path = &folder
 	errGit = semantical.Analysis(ast)
 	if errGit != nil {
 		panic(errGit)
