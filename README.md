@@ -22,8 +22,8 @@ See more [here](https://asciinema.org/a/8863)
 
 ## Examples 
 
-`gitql "your query" ` 
-
+`gitql "your query" `   
+or   
 `git ql "your query" `
 
 
@@ -58,4 +58,4 @@ Notes:
 * It's  read-only. Nothing about delete, insert or update commits :stuck_out_tongue_closed_eyes:  
 * The limit default is 10 rows  
 * It's inspired by [textql](https://github.com/dinedal/textql)   
-* But, why gitql is a compiler/interpreter instead of just read a sqlite database with all commits, tags and etc? Anwser: Because we would need to sync the tables everytime before run sql and we would have sqlite bases for each repository. :neutral_face:
+* But, why gitql is a compiler/interpreter instead of just read a sqlite database with all commits, tags and etc? Answer: Because we would need to sync the tables everytime before run sql and we would have sqlite bases for each repository. :neutral_face:
