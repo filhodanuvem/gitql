@@ -410,47 +410,7 @@ func GetGitBuilder(path *string) *GitBuilder {
 
 	gb := new(GitBuilder)
 	gb.tables = make(map[string]string)
-	possibleTables := map[string][]string{
-		"commits": {
-			"hash",
-			"date",
-			"author",
-			"author_email",
-			"committer",
-			"committer_email",
-			"message",
-			"full_message",
-		},
-		// "trees": {
-		// 	"hash",
-		// 	"name",
-		// 	"id",
-		// 	"type",
-		// 	"filemode",
-		// },
-		"refs": {
-			"name",
-			"full_name",
-			"type",
-			"hash",
-		},
-		"remotes": {
-			"name",
-			"url",
-			"push_url",
-			"owner",
-		},
-		"tags": {
-			"name",
-			"full_name",
-			"hash",
-		},
-		"branches": {
-			"name",
-			"full_name",
-			"hash",
-		},
-	}
+	possibleTables := PossibleTables()
 	gb.possibleTables = possibleTables
 
 	proxyTables := map[string]*proxyTable{
@@ -517,6 +477,50 @@ func (g *GitBuilder) isProxyTable(tableName string) bool {
 	_, isIn := g.proxyTables[tableName]
 
 	return isIn
+}
+
+func  PossibleTables() (map[string][]string) {
+	return map[string][]string{
+		"commits": {
+			"hash",
+			"date",
+			"author",
+			"author_email",
+			"committer",
+			"committer_email",
+			"message",
+			"full_message",
+		},
+		// "trees": {
+		// 	"hash",
+		// 	"name",
+		// 	"id",
+		// 	"type",
+		// 	"filemode",
+		// },
+		"refs": {
+			"name",
+			"full_name",
+			"type",
+			"hash",
+		},
+		"remotes": {
+			"name",
+			"url",
+			"push_url",
+			"owner",
+		},
+		"tags": {
+			"name",
+			"full_name",
+			"hash",
+		},
+		"branches": {
+			"name",
+			"full_name",
+			"hash",
+		},
+	}
 }
 
 func (g *GitBuilder) isValidTable(tableName string) error {
