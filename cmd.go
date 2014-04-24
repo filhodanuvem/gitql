@@ -20,7 +20,7 @@ func usage() {
     fmt.Printf("\nFlags: \n")
     flag.PrintDefaults()
     fmt.Printf("Arguments: \n")
-    fmt.Printf("  path: Path directory of a git repository\n")
+    fmt.Printf("  sql: A query to run\n")
 }
 
 func printTables() {
