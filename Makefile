@@ -6,22 +6,23 @@ GIT2GO_VERSION=master
 all: prepare build
 
 test: 
-	go test ./lexical/ ./parser/ ./semantical ./runtime
+	@go test ./lexical/ ./parser/ ./semantical ./runtime
 
 clean:
-	rm -rf ./libgit2
+	@rm -rf ./libgit2
 
 prepare: clean
 	@echo "Preparing...\n"
-	chmod +x $(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
-	$(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
+	@chmod +x $(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
+	@$(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
 
 build: 
-	go build
+	@echo "Building..."
+	@go build
 	@echo "Ready to go!"
 	
 install:
-	cp ./gitql /usr/local/bin/gitql
-	ln -s -f /usr/local/bin/gitql /usr/local/bin/git-ql
+	@cp ./gitql /usr/local/bin/gitql
+	@ln -s -f /usr/local/bin/gitql /usr/local/bin/git-ql
 	@echo "Git is in /usr/local/bin/gitql"
 	@echo "You can also use: git ql 'query here'"
