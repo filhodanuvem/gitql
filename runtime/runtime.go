@@ -5,6 +5,7 @@ import (
 	"github.com/cloudson/gitql/parser"
 	"github.com/crackcomm/go-clitable"
 	"github.com/libgit2/git2go"
+	"log"
 	"strings"
 )
 
@@ -57,7 +58,7 @@ func Run(n *parser.NodeProgram) {
 	visitor := new(RuntimeVisitor)
 	err := visitor.Visit(n)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	switch findWalkType(n) {
 	case WALK_COMMITS:
@@ -141,7 +142,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 	// @TODO make PR with Repository.WalkReference()
 	iterator, err := builder.repo.NewReferenceIterator()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	counter := 1
 	fields := s.Fields
@@ -181,7 +182,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 
 	remoteNames, err := builder.repo.ListRemotes()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	counter := 1
@@ -194,7 +195,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 	for _, remoteName := range remoteNames {
 		object, errRemote := builder.repo.LoadRemote(remoteName)
 		if errRemote != nil {
-			panic(errRemote)
+			log.Fatalln(errRemote)
 		}
 
 		builder.setRemote(object)
@@ -253,7 +254,7 @@ func orderTable(rows []tableRow, order *parser.NodeOrder) []tableRow {
 	table := key
 	err := builder.UseFieldFromTable(field, table)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	for i, row := range rows {
@@ -279,7 +280,9 @@ func metadata(identifier string) string {
 		return metadataRemote(identifier, builder.currentRemote)
 	}
 
-	panic("GOD!")
+	log.Fatalln("GOD!")
+
+	return ""
 }
 
 func metadataTree(identifier string, object *git.TreeEntry) string {
@@ -294,7 +297,7 @@ func metadataReference(identifier string, object *git.Reference) string {
 	table := key
 	err := builder.UseFieldFromTable(identifier, table)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	switch identifier {
 	case "name":
@@ -320,8 +323,9 @@ func metadataReference(identifier string, object *git.Reference) string {
 			return REFERENCE_TYPE_TAG
 		}
 	}
+	log.Fatalf("Field %s not implemented yet\n", identifier)
 
-	panic(fmt.Sprintf("Field %s not implemented yet", identifier))
+	return ""
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
@@ -332,7 +336,7 @@ func metadataCommit(identifier string, object *git.Commit) string {
 	table := key
 	err := builder.UseFieldFromTable(identifier, table)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	switch identifier {
 	case "hash":
@@ -360,8 +364,9 @@ func metadataCommit(identifier string, object *git.Commit) string {
 		return message
 
 	}
+	log.Fatalf("Field %s not implemented yet \n", identifier)
 
-	panic(fmt.Sprintf("Field %s not implemented yet", identifier))
+	return ""
 }
 
 func metadataRemote(identifier string, object *git.Remote) string {
@@ -372,7 +377,7 @@ func metadataRemote(identifier string, object *git.Remote) string {
 	table := key
 	err := builder.UseFieldFromTable(identifier, table)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	switch identifier {
 	case "name":
@@ -387,7 +392,9 @@ func metadataRemote(identifier string, object *git.Remote) string {
 		return r.Path()
 	}
 
-	panic(fmt.Sprintf("Field %s not implemented yet", identifier))
+	log.Fatalf("Field %s not implemented yet \n", identifier)
+
+	return ""
 }
 
 // =========================== Error
@@ -437,7 +444,7 @@ func proxyTableEntry(t string, f map[string]string) *proxyTable {
 func openRepository(path *string) {
 	_repo, err := git.OpenRepository(*path)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	repo = _repo
 }
