@@ -48,7 +48,7 @@ func parseCommandLine() {
 
     if *version {
         // @todo refactor to dynamic value
-        fmt.Println("Gitql 1.0.0")
+        fmt.Println("Gitql 1.0.1")
         os.Exit(0)
     }
 
