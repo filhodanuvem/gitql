@@ -13,8 +13,8 @@ clean:
 
 prepare: clean
 	@echo "Preparing...\n"
-	@chmod +x $(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
-	@$(GOPATH)/src/github.com/libgit2/git2go/script/build-libgit2.sh
+	@chmod +x $(GOPATH)/src/github.com/cloudson/git2go/script/build-libgit2.sh
+	@$(GOPATH)/src/github.com/cloudson/git2go/script/build-libgit2.sh
 
 build: 
 	@echo "Building..."
