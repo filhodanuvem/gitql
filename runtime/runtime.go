@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/cloudson/gitql/parser"
 	"github.com/crackcomm/go-clitable"
-	"github.com/libgit2/git2go"
+	"github.com/cloudson/git2go"
 	"log"
 	"strings"
 )
