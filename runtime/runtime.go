@@ -442,7 +442,7 @@ func proxyTableEntry(t string, f map[string]string) *proxyTable {
 }
 
 func openRepository(path *string) {
-	_repo, err := git.OpenRepository(*path)
+	_repo, err := git.OpenRepositoryExtended(*path)
 	if err != nil {
 		log.Fatalln(err)
 	}
