@@ -4,7 +4,7 @@ go:
    - 1.1 
    - 1.2 
 before_script: 
-    - export GOPATH="$HOME/gopath/"
+    - export GOPATH="$HOME/gopath"
     - go get -d -v
     - make prepare
     - "export LD_LIBRARY_PATH=$PWD/libgit2/install/lib"
