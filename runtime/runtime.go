@@ -11,9 +11,8 @@ import (
 
 const (
 	WALK_COMMITS    = 1
-	WALK_TREES      = 2
-	WALK_REFERENCES = 3
-	WALK_REMOTES    = 4
+	WALK_REFERENCES = 2
+	WALK_REMOTES    = 3
 )
 
 const (
@@ -64,9 +63,6 @@ func Run(n *parser.NodeProgram) {
 	case WALK_COMMITS:
 		walkCommits(n, visitor)
 		break
-	case WALK_TREES:
-		walkTrees(n, visitor)
-		break
 	case WALK_REFERENCES:
 		walkReferences(n, visitor)
 		break
@@ -81,8 +77,6 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 	switch s.Tables[0] {
 	case "commits":
 		builder.currentWalkType = WALK_COMMITS
-	case "trees":
-		builder.currentWalkType = WALK_TREES
 	case "remotes":
 		builder.currentWalkType = WALK_REMOTES
 	case "refs", "tags", "branches":
@@ -219,9 +213,6 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 	printTable(rowsSliced, fields)
 }
 
-func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-
-}
 
 func printTable(rows []tableRow, fields []string) {
 	table := clitable.New(fields)
@@ -283,10 +274,6 @@ func metadata(identifier string) string {
 	log.Fatalln("GOD!")
 
 	return ""
-}
-
-func metadataTree(identifier string, object *git.TreeEntry) string {
-	return "" // not yet implemented!
 }
 
 func metadataReference(identifier string, object *git.Reference) string {
@@ -498,13 +485,6 @@ func  PossibleTables() (map[string][]string) {
 			"message",
 			"full_message",
 		},
-		// "trees": {
-		// 	"hash",
-		// 	"name",
-		// 	"id",
-		// 	"type",
-		// 	"filemode",
-		// },
 		"refs": {
 			"name",
 			"full_name",
