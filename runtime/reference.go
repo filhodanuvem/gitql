@@ -1,0 +1,87 @@
+package runtime
+
+import (
+    "github.com/cloudson/git2go"
+    "github.com/cloudson/gitql/parser"
+    "log"
+)
+
+func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+    s := n.Child.(*parser.NodeSelect)
+    where := s.Where
+
+    // @TODO make PR with Repository.WalkReference()
+    iterator, err := builder.repo.NewReferenceIterator()
+    if err != nil {
+        log.Fatalln(err)
+    }
+    counter := 1
+    fields := s.Fields
+    if s.WildCard {
+        fields = builder.possibleTables[s.Tables[0]]
+    }
+    rows := make([]tableRow, s.Limit)
+    for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
+
+        builder.setReference(object)
+        boolRegister = true
+        visitor.VisitExpr(where)
+        if boolRegister {
+            fields := s.Fields
+            if s.WildCard {
+                fields = builder.possibleTables[s.Tables[0]]
+            }
+            newRow := make(tableRow)
+            for _, f := range fields {
+                newRow[f] = metadataReference(f, object)
+            }
+            rows = append(rows, newRow)
+            counter = counter + 1
+            if counter > s.Limit {
+                break
+            }
+        }
+    }
+    rowsSliced := rows[len(rows)-counter+1:]
+    rowsSliced = orderTable(rowsSliced, s.Order)
+    printTable(rowsSliced, fields)
+}
+
+func metadataReference(identifier string, object *git.Reference) string {
+    key := ""
+    for key, _ = range builder.tables {
+        break
+    }
+    table := key
+    err := builder.UseFieldFromTable(identifier, table)
+    if err != nil {
+        log.Fatalln(err)
+    }
+    switch identifier {
+    case "name":
+        return object.Shorthand()
+    case "full_name":
+        return object.Name()
+    case "hash":
+        target := object.Target()
+        if target == nil {
+            return "NULL"
+        }
+        return target.String()
+    case "type":
+        if object.IsBranch() {
+            return REFERENCE_TYPE_BRANCH
+        }
+
+        if object.IsRemote() {
+            return REFERENCE_TYPE_REMOTE
+        }
+
+        if object.IsTag() {
+            return REFERENCE_TYPE_TAG
+        }
+    }
+    log.Fatalf("Field %s not implemented yet\n", identifier)
+
+    return ""
+}
