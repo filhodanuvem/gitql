@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/semantical"
 	"github.com/crackcomm/go-clitable"
 	"github.com/cloudson/git2go"
 	"log"
@@ -48,6 +49,21 @@ type RuntimeError struct {
 }
 
 type RuntimeVisitor struct {
+	semantical.Visitor
+}
+
+// =========================== Error
+
+func (e *RuntimeError) Error() string {
+	return e.message
+}
+
+func throwRuntimeError(message string, code uint8) *RuntimeError {
+	e := new(RuntimeError)
+	e.message = message
+	e.code = code
+
+	return e
 }
 
 // =========================== Runtime
@@ -145,20 +161,6 @@ func metadata(identifier string) string {
 	log.Fatalln("GOD!")
 
 	return ""
-}
-
-// =========================== Error
-
-func (e *RuntimeError) Error() string {
-	return e.message
-}
-
-func throwRuntimeError(message string, code uint8) *RuntimeError {
-	e := new(RuntimeError)
-	e.message = message
-	e.code = code
-
-	return e
 }
 
 // =================== GitBuilder
