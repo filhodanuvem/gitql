@@ -106,6 +106,10 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 	rows := make([]tableRow, s.Limit)
+	usingOrder := false
+	if s.Order != nil {
+		usingOrder = true
+	}
 	fn := func(object *git.Commit) bool {
 		builder.setCommit(object)
 		boolRegister = true
@@ -119,7 +123,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 
 			counter = counter + 1
 		}
-		if counter > s.Limit {
+		if !usingOrder && counter > s.Limit {
 			return false
 		}
 		return true
@@ -131,6 +135,12 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 	}
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced = orderTable(rowsSliced, s.Order)
+	if usingOrder {
+		if counter > s.Limit {
+			counter = s.Limit
+		}
+		rowsSliced = rowsSliced[0:counter]
+	}
 	printTable(rowsSliced, fields)
 
 }
@@ -150,6 +160,10 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 	rows := make([]tableRow, s.Limit)
+	usingOrder := false
+	if s.Order != nil {
+		usingOrder = true
+	}
 	for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
 
 		builder.setReference(object)
@@ -166,13 +180,19 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 			}
 			rows = append(rows, newRow)
 			counter = counter + 1
-			if counter > s.Limit {
+			if !usingOrder && counter > s.Limit {
 				break
 			}
 		}
 	}
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced = orderTable(rowsSliced, s.Order)
+	if usingOrder {
+		if counter > s.Limit {
+			counter = s.Limit
+		}
+		rowsSliced = rowsSliced[0:counter]
+	}
 	printTable(rowsSliced, fields)
 }
 
@@ -192,6 +212,10 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 	rows := make([]tableRow, s.Limit)
+	usingOrder := false
+	if s.Order != nil {
+		usingOrder = true
+	}
 	for _, remoteName := range remoteNames {
 		object, errRemote := builder.repo.LoadRemote(remoteName)
 		if errRemote != nil {
@@ -209,13 +233,19 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 			rows = append(rows, newRow)
 
 			counter = counter + 1
-			if counter > s.Limit {
+			if !usingOrder && counter > s.Limit {
 				break
 			}
 		}
 	}
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced = orderTable(rowsSliced, s.Order)
+	if usingOrder {
+		if counter > s.Limit {
+			counter = s.Limit
+		}
+		rowsSliced = rowsSliced[0:counter]
+	}
 	printTable(rowsSliced, fields)
 }
 
