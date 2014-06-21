@@ -2,7 +2,7 @@ Gitql [![Build Status](https://travis-ci.org/cloudson/gitql.png)](https://travis
 ===============
 
 Gitql is a Git query language.  
-In a repository root path ...
+In a repository path ...
 
 ![how to use](./howtouse.gif)
 
@@ -47,7 +47,7 @@ You can do:
 * `select hash, message from commits where 'hell' in full_message or 'Fuck' in full_message`  
 * `select hash, message, author_email from commits where author = 'cloudson'`  
 * `select date, message from commits where date < '2014-04-10' `  
-* :warning: `select message from commits where 'hell' in message order by date asc` (see issue [#4](https://github.com/cloudson/gitql/issues/4))
+* :warning: `select message from commits where 'hell' in message order by date asc`
 
 ## Questions? 
 
