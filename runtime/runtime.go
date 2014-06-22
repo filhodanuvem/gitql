@@ -3,17 +3,16 @@ package runtime
 import (
 	"fmt"
 	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/semantical"
 	"github.com/crackcomm/go-clitable"
 	"github.com/cloudson/git2go"
 	"log"
-	"strings"
 )
 
 const (
 	WALK_COMMITS    = 1
-	WALK_TREES      = 2
-	WALK_REFERENCES = 3
-	WALK_REMOTES    = 4
+	WALK_REFERENCES = 2
+	WALK_REMOTES    = 3
 )
 
 const (
@@ -50,6 +49,21 @@ type RuntimeError struct {
 }
 
 type RuntimeVisitor struct {
+	semantical.Visitor
+}
+
+// =========================== Error
+
+func (e *RuntimeError) Error() string {
+	return e.message
+}
+
+func throwRuntimeError(message string, code uint8) *RuntimeError {
+	e := new(RuntimeError)
+	e.message = message
+	e.code = code
+
+	return e
 }
 
 // =========================== Runtime
@@ -63,9 +77,6 @@ func Run(n *parser.NodeProgram) {
 	switch findWalkType(n) {
 	case WALK_COMMITS:
 		walkCommits(n, visitor)
-		break
-	case WALK_TREES:
-		walkTrees(n, visitor)
 		break
 	case WALK_REFERENCES:
 		walkReferences(n, visitor)
@@ -81,8 +92,6 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 	switch s.Tables[0] {
 	case "commits":
 		builder.currentWalkType = WALK_COMMITS
-	case "trees":
-		builder.currentWalkType = WALK_TREES
 	case "remotes":
 		builder.currentWalkType = WALK_REMOTES
 	case "refs", "tags", "branches":
@@ -90,167 +99,6 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 	}
 
 	return builder.currentWalkType
-}
-
-func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-	builder.walk, _ = repo.Walk()
-	builder.walk.PushHead()
-	builder.walk.Sorting(git.SortTime)
-
-	s := n.Child.(*parser.NodeSelect)
-	where := s.Where
-
-	counter := 1
-	fields := s.Fields
-	if s.WildCard {
-		fields = builder.possibleTables[s.Tables[0]]
-	}
-	rows := make([]tableRow, s.Limit)
-	usingOrder := false
-	if s.Order != nil {
-		usingOrder = true
-	}
-	fn := func(object *git.Commit) bool {
-		builder.setCommit(object)
-		boolRegister = true
-		visitor.VisitExpr(where)
-		if boolRegister {
-			newRow := make(tableRow)
-			for _, f := range fields {
-				newRow[f] = metadataCommit(f, object)
-			}
-			rows = append(rows, newRow)
-
-			counter = counter + 1
-		}
-		if !usingOrder && counter > s.Limit {
-			return false
-		}
-		return true
-	}
-
-	err := builder.walk.Iterate(fn)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	rowsSliced := rows[len(rows)-counter+1:]
-	rowsSliced = orderTable(rowsSliced, s.Order)
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
-		rowsSliced = rowsSliced[0:counter]
-	}
-	printTable(rowsSliced, fields)
-
-}
-
-func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-	s := n.Child.(*parser.NodeSelect)
-	where := s.Where
-
-	// @TODO make PR with Repository.WalkReference()
-	iterator, err := builder.repo.NewReferenceIterator()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	counter := 1
-	fields := s.Fields
-	if s.WildCard {
-		fields = builder.possibleTables[s.Tables[0]]
-	}
-	rows := make([]tableRow, s.Limit)
-	usingOrder := false
-	if s.Order != nil {
-		usingOrder = true
-	}
-	for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
-
-		builder.setReference(object)
-		boolRegister = true
-		visitor.VisitExpr(where)
-		if boolRegister {
-			fields := s.Fields
-			if s.WildCard {
-				fields = builder.possibleTables[s.Tables[0]]
-			}
-			newRow := make(tableRow)
-			for _, f := range fields {
-				newRow[f] = metadataReference(f, object)
-			}
-			rows = append(rows, newRow)
-			counter = counter + 1
-			if !usingOrder && counter > s.Limit {
-				break
-			}
-		}
-	}
-	rowsSliced := rows[len(rows)-counter+1:]
-	rowsSliced = orderTable(rowsSliced, s.Order)
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
-		rowsSliced = rowsSliced[0:counter]
-	}
-	printTable(rowsSliced, fields)
-}
-
-func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-	s := n.Child.(*parser.NodeSelect)
-	where := s.Where
-
-	remoteNames, err := builder.repo.ListRemotes()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	counter := 1
-
-	fields := s.Fields
-	if s.WildCard {
-		fields = builder.possibleTables[s.Tables[0]]
-	}
-	rows := make([]tableRow, s.Limit)
-	usingOrder := false
-	if s.Order != nil {
-		usingOrder = true
-	}
-	for _, remoteName := range remoteNames {
-		object, errRemote := builder.repo.LoadRemote(remoteName)
-		if errRemote != nil {
-			log.Fatalln(errRemote)
-		}
-
-		builder.setRemote(object)
-		boolRegister = true
-		visitor.VisitExpr(where)
-		if boolRegister {
-			newRow := make(map[string]interface{})
-			for _, f := range fields {
-				newRow[f] = metadataRemote(f, object)
-			}
-			rows = append(rows, newRow)
-
-			counter = counter + 1
-			if !usingOrder && counter > s.Limit {
-				break
-			}
-		}
-	}
-	rowsSliced := rows[len(rows)-counter+1:]
-	rowsSliced = orderTable(rowsSliced, s.Order)
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
-		rowsSliced = rowsSliced[0:counter]
-	}
-	printTable(rowsSliced, fields)
-}
-
-func walkTrees(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-
 }
 
 func printTable(rows []tableRow, fields []string) {
@@ -313,132 +161,6 @@ func metadata(identifier string) string {
 	log.Fatalln("GOD!")
 
 	return ""
-}
-
-func metadataTree(identifier string, object *git.TreeEntry) string {
-	return "" // not yet implemented!
-}
-
-func metadataReference(identifier string, object *git.Reference) string {
-	key := ""
-	for key, _ = range builder.tables {
-		break
-	}
-	table := key
-	err := builder.UseFieldFromTable(identifier, table)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	switch identifier {
-	case "name":
-		return object.Shorthand()
-	case "full_name":
-		return object.Name()
-	case "hash":
-		target := object.Target()
-		if target == nil {
-			return "NULL"
-		}
-		return target.String()
-	case "type":
-		if object.IsBranch() {
-			return REFERENCE_TYPE_BRANCH
-		}
-
-		if object.IsRemote() {
-			return REFERENCE_TYPE_REMOTE
-		}
-
-		if object.IsTag() {
-			return REFERENCE_TYPE_TAG
-		}
-	}
-	log.Fatalf("Field %s not implemented yet\n", identifier)
-
-	return ""
-}
-
-func metadataCommit(identifier string, object *git.Commit) string {
-	key := ""
-	for key, _ = range builder.tables {
-		break
-	}
-	table := key
-	err := builder.UseFieldFromTable(identifier, table)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	switch identifier {
-	case "hash":
-		return object.Id().String()
-	case "author":
-		return object.Author().Name
-	case "author_email":
-		return object.Author().Email
-	case "committer":
-		return object.Committer().Name
-	case "committer_email":
-		return object.Committer().Email
-	case "date":
-		return object.Committer().When.Format(parser.Time_YMDHIS)
-	case "full_message":
-		return object.Message()
-	case "message":
-		// return first line of a commit message
-		message := object.Message()
-		r := []rune("\n")
-		idx := strings.IndexRune(message, r[0])
-		if idx != -1 {
-			message = message[0:idx]
-		}
-		return message
-
-	}
-	log.Fatalf("Field %s not implemented yet \n", identifier)
-
-	return ""
-}
-
-func metadataRemote(identifier string, object *git.Remote) string {
-	key := ""
-	for key, _ = range builder.tables {
-		break
-	}
-	table := key
-	err := builder.UseFieldFromTable(identifier, table)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	switch identifier {
-	case "name":
-		return object.Name()
-	case "url":
-		return object.Url()
-	case "push_url":
-		return object.PushUrl()
-	case "owner":
-		repo := object.Owner()
-		r := &repo
-		return r.Path()
-	}
-
-	log.Fatalf("Field %s not implemented yet \n", identifier)
-
-	return ""
-}
-
-// =========================== Error
-
-func (e *RuntimeError) Error() string {
-	return e.message
-}
-
-func throwRuntimeError(message string, code uint8) *RuntimeError {
-	e := new(RuntimeError)
-	e.message = message
-	e.code = code
-
-	return e
 }
 
 // =================== GitBuilder
@@ -528,13 +250,6 @@ func  PossibleTables() (map[string][]string) {
 			"message",
 			"full_message",
 		},
-		// "trees": {
-		// 	"hash",
-		// 	"name",
-		// 	"id",
-		// 	"type",
-		// 	"filemode",
-		// },
 		"refs": {
 			"name",
 			"full_name",
