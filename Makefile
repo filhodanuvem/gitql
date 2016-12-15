@@ -20,7 +20,8 @@ build:
 	@echo "Building..."
 	@go build
 	@echo "Ready to go!"
-	
+	@cp libgit2/install/lib/lib*  /usr/local/lib/
+
 install:
 	@cp ./gitql /usr/local/bin/gitql
 	@ln -s -f /usr/local/bin/gitql /usr/local/bin/git-ql
