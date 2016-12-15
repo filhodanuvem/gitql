@@ -6,7 +6,7 @@ import (
     "log"
 )
 
-func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
 
@@ -54,8 +54,11 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
         }
         rowsSliced = rowsSliced[0:counter]
     }
-    printTable(rowsSliced, fields)
-}
+    tableData := new(TableData)
+    tableData.rows = rowsSliced
+    tableData.fields = fields
+    return tableData
+  }
 
 func metadataReference(identifier string, object *git.Reference) string {
     key := ""

@@ -7,6 +7,7 @@ import (
 	"github.com/crackcomm/go-clitable"
 	"github.com/cloudson/git2go"
 	"log"
+	"encoding/json"
 )
 
 const (
@@ -52,6 +53,11 @@ type RuntimeVisitor struct {
 	semantical.Visitor
 }
 
+type TableData struct {
+	rows []tableRow
+	fields []string
+}
+
 // =========================== Error
 
 func (e *RuntimeError) Error() string {
@@ -67,23 +73,31 @@ func throwRuntimeError(message string, code uint8) *RuntimeError {
 }
 
 // =========================== Runtime
-func Run(n *parser.NodeProgram) {
+func Run(n *parser.NodeProgram, genJson *bool) {
 	builder = GetGitBuilder(n.Path)
 	visitor := new(RuntimeVisitor)
 	err := visitor.Visit(n)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	var tableData *TableData
+
 	switch findWalkType(n) {
 	case WALK_COMMITS:
-		walkCommits(n, visitor)
+		tableData = walkCommits(n, visitor)
 		break
 	case WALK_REFERENCES:
-		walkReferences(n, visitor)
+		tableData = walkReferences(n, visitor)
 		break
 	case WALK_REMOTES:
-		walkRemotes(n, visitor)
+		tableData = walkRemotes(n, visitor)
 		break
+	}
+
+	if *genJson {
+		printJson(tableData)
+	} else {
+		printTable(tableData)
 	}
 }
 
@@ -101,12 +115,21 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 	return builder.currentWalkType
 }
 
-func printTable(rows []tableRow, fields []string) {
-	table := clitable.New(fields)
-	for _, r := range rows {
+func printTable(tableData *TableData) {
+	table := clitable.New(tableData.fields)
+	for _, r := range tableData.rows {
 		table.AddRow(r)
 	}
 	table.Print()
+}
+
+func printJson(tableData *TableData) {
+	res, err := json.Marshal(tableData.rows)
+	if err != nil {
+		log.Fatalln(err)
+	} else {
+		fmt.Println(string(res))
+	}
 }
 
 func orderTable(rows []tableRow, order *parser.NodeOrder) []tableRow {

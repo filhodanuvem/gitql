@@ -1,4 +1,4 @@
-package runtime 
+package runtime
 
 import (
     "github.com/cloudson/git2go"
@@ -6,7 +6,7 @@ import (
     "log"
 )
 
-func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
     s := n.Child.(*parser.NodeSelect)
     where := s.Where
 
@@ -56,7 +56,10 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
         }
         rowsSliced = rowsSliced[0:counter]
     }
-    printTable(rowsSliced, fields)
+    tableData := new(TableData)
+    tableData.rows = rowsSliced
+    tableData.fields = fields
+    return tableData
 }
 
 func metadataRemote(identifier string, object *git.Remote) string {

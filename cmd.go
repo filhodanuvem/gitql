@@ -9,6 +9,7 @@ import (
 
 var path *string
 var query string
+var genJson *bool
 
 func init() {
     parseCommandLine()
@@ -32,17 +33,18 @@ func printTables() {
             if i + 1 < len(fields) {
                 comma = ", "
             }
-            fmt.Printf("%s%s", field, comma)            
+            fmt.Printf("%s%s", field, comma)
         }
         fmt.Println()
     }
-    
+
 }
 
 func parseCommandLine() {
     path = flag.String("p", ".", "The (optional) path to run gitql")
     version := flag.Bool("v", false, "The version of gitql")
     showTables := flag.Bool("show-tables", false, "Show all tables")
+    genJson = flag.Bool("json", false, "Generate JSON")
     flag.Usage = usage
     flag.Parse()
 
