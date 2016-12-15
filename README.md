@@ -13,11 +13,23 @@ See more [here](https://asciinema.org/a/8863)
 - cmake  
 
 ## Install
-- `go get -u -d github.com/cloudson/gitql`
-- `cd $GOPATH/src/github.com/cloudson/gitql`
-- `make`
-- `sudo make install`
-- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib` on linux or `export DYLD_LIBRARY_PATH=$PWD/libgit2/install/lib`on Mac OS. 
+```shell
+go get -u -d github.com/cloudson/gitql
+cd $GOPATH/src/github.com/cloudson/gitql
+make
+sudo make install
+```
+
+Then
+For linux:
+```
+export LD_LIBRARY_PATH=$PWD/libgit2/install/lib
+```
+
+Or for Mac OS:
+```
+export DYLD_LIBRARY_PATH=$PWD/libgit2/install/lib
+```
 
 
 ## Examples 
