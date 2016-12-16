@@ -73,7 +73,7 @@ func throwRuntimeError(message string, code uint8) *RuntimeError {
 }
 
 // =========================== Runtime
-func Run(n *parser.NodeProgram, genJson *bool) {
+func Run(n *parser.NodeProgram, typeFormat *string) {
 	builder = GetGitBuilder(n.Path)
 	visitor := new(RuntimeVisitor)
 	err := visitor.Visit(n)
@@ -94,7 +94,7 @@ func Run(n *parser.NodeProgram, genJson *bool) {
 		break
 	}
 
-	if *genJson {
+	if *typeFormat == "json" {
 		printJson(tableData)
 	} else {
 		printTable(tableData)
@@ -123,12 +123,14 @@ func printTable(tableData *TableData) {
 	table.Print()
 }
 
-func printJson(tableData *TableData) {
+func printJson(tableData *TableData) error {
 	res, err := json.Marshal(tableData.rows)
 	if err != nil {
 		log.Fatalln(err)
+		return throwRuntimeError(fmt.Sprintf("Json error:'%s'", err), 0)
 	} else {
 		fmt.Println(string(res))
+		return nil
 	}
 }
 

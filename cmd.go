@@ -4,12 +4,12 @@ import (
     "flag"
     "os"
     "fmt"
-    "github.com/cloudson/gitql/runtime"
+    "github.com/luizperes/gitql/runtime"
 )
 
 var path *string
 var query string
-var genJson *bool
+var typeFormat *string
 
 func init() {
     parseCommandLine()
@@ -44,7 +44,7 @@ func parseCommandLine() {
     path = flag.String("p", ".", "The (optional) path to run gitql")
     version := flag.Bool("v", false, "The version of gitql")
     showTables := flag.Bool("show-tables", false, "Show all tables")
-    genJson = flag.Bool("json", false, "Generate JSON")
+    typeFormat = flag.String("type", "table", "The output type format {table|json}")
     flag.Usage = usage
     flag.Parse()
 

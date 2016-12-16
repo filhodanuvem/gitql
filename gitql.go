@@ -26,5 +26,5 @@ func main() {
 		log.Fatalln(errGit)
 	}
 
-	runtime.Run(ast, genJson)
+	runtime.Run(ast, typeFormat)
 }
