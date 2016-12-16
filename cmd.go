@@ -4,7 +4,7 @@ import (
     "flag"
     "os"
     "fmt"
-    "github.com/luizperes/gitql/runtime"
+    "github.com/cloudson/gitql/runtime"
 )
 
 var path *string
