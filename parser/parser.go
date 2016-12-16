@@ -2,9 +2,10 @@ package parser
 
 import (
 	"fmt"
-	"github.com/cloudson/gitql/lexical"
 	"strconv"
 	_ "unicode"
+
+	"github.com/cloudson/gitql/lexical"
 )
 
 var look_ahead uint8

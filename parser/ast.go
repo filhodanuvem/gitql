@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"github.com/cloudson/gitql/lexical"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/cloudson/gitql/lexical"
 )
 
 type NodeMain interface {
