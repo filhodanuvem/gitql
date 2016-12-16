@@ -3,10 +3,12 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
 	"github.com/cloudson/gitql/semantical"
@@ -42,7 +44,49 @@ func (cmd Gitql) execute() error {
 		return err
 	}
 
-	parser.New(cmd.Query)
+	if cmd.Isinteractive {
+		return runPrompt(folder)
+	}
+
+	return runQuery(cmd.Query, folder)
+}
+
+func runPrompt(folder string) error {
+
+	term, err := readline.New("gitql> ")
+	if err != nil {
+		return err
+	}
+	defer term.Close()
+
+	for {
+		query, err := term.Readline()
+		if err != nil {
+			if err == io.EOF {
+				break // Ctrl^D
+			}
+			return err
+		}
+
+		if query == "" {
+			continue
+		}
+
+		if query == "exit" || query == "quit" {
+			break
+		}
+
+		if err := runQuery(query, folder); err != nil {
+			fmt.Println("Error: " + err.Error())
+			continue
+		}
+	}
+
+	return nil
+}
+
+func runQuery(query, folder string) error {
+	parser.New(query)
 	ast, err := parser.AST()
 	if err != nil {
 		return err
@@ -78,7 +122,7 @@ func (cmd *Gitql) parse(argv []string) error {
 	p := flags.NewParser(cmd, flags.PrintErrors)
 	args, err := p.ParseArgs(argv)
 
-	if len(args) == 0 || err != nil {
+	if (!cmd.Isinteractive && len(args) == 0) || err != nil {
 		os.Stderr.Write(cmd.usage())
 		return errors.New("invalid command line options")
 	}
