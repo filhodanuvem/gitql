@@ -130,8 +130,8 @@ func printJson(tableData *TableData) error {
 		return throwRuntimeError(fmt.Sprintf("Json error:'%s'", err), 0)
 	} else {
 		fmt.Println(string(res))
-		return nil
 	}
+	return nil
 }
 
 func orderTable(rows []tableRow, order *parser.NodeOrder) []tableRow {
