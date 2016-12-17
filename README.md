@@ -17,7 +17,6 @@ See more [here](https://asciinema.org/a/8863)
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make`
 - `sudo make install`
-- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib` on linux or `export DYLD_LIBRARY_PATH=$PWD/libgit2/install/lib`on Mac OS. 
 
 
 ## Examples 
