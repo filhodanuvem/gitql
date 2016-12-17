@@ -20,9 +20,10 @@ build:
 	@echo "Building..."
 	@go build
 	@echo "Ready to go!"
-	@cp libgit2/install/lib/lib*  /usr/local/lib/
 
 install:
+	@cp ./libgit2/install/lib/lib*  /usr/local/lib/
+	@ldconfig /usr/local/lib >/dev/null 2>&1 || echo "ldconfig not found">/dev/null
 	@cp ./gitql /usr/local/bin/gitql
 	@ln -s -f /usr/local/bin/gitql /usr/local/bin/git-ql
 	@echo "Git is in /usr/local/bin/gitql"
