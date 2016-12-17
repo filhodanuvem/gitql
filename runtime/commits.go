@@ -8,7 +8,7 @@ import (
     "strings"
 )
 
-func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
+func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
     builder.walk, _ = repo.Walk()
     builder.walk.PushHead()
     builder.walk.Sorting(git.SortTime)
@@ -57,7 +57,10 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
         }
         rowsSliced = rowsSliced[0:counter]
     }
-    printTable(rowsSliced, fields)
+    tableData := new(TableData)
+    tableData.rows = rowsSliced
+    tableData.fields = fields
+    return tableData
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
