@@ -16,13 +16,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-const Version = "Gitql 1.1.1"
+const Version = "Gitql 1.2.1"
 
 type Gitql struct {
 	Path          string `short:"p" default:"."`
 	Version       bool   `short:"v"`
 	Isinteractive bool   `short:"i"`
 	ShowTables    bool   `long:"show-tables"`
+	TypeFormat    string `long:"type" default:"table"`
 	Query         string
 }
 
@@ -45,13 +46,13 @@ func (cmd Gitql) execute() error {
 	}
 
 	if cmd.Isinteractive {
-		return runPrompt(folder)
+		return runPrompt(folder, cmd.TypeFormat)
 	}
 
-	return runQuery(cmd.Query, folder)
+	return runQuery(cmd.Query, folder, cmd.TypeFormat)
 }
 
-func runPrompt(folder string) error {
+func runPrompt(folder, typeFormat string) error {
 
 	term, err := readline.New("gitql> ")
 	if err != nil {
@@ -76,7 +77,7 @@ func runPrompt(folder string) error {
 			break
 		}
 
-		if err := runQuery(query, folder); err != nil {
+		if err := runQuery(query, folder, typeFormat); err != nil {
 			fmt.Println("Error: " + err.Error())
 			continue
 		}
@@ -85,7 +86,7 @@ func runPrompt(folder string) error {
 	return nil
 }
 
-func runQuery(query, folder string) error {
+func runQuery(query, folder, typeFormat string) error {
 	parser.New(query)
 	ast, err := parser.AST()
 	if err != nil {
@@ -97,7 +98,7 @@ func runQuery(query, folder string) error {
 		return err
 	}
 
-	runtime.Run(ast)
+	runtime.Run(ast, &typeFormat)
 
 	return nil
 }
@@ -122,7 +123,11 @@ func (cmd *Gitql) parse(argv []string) error {
 	p := flags.NewParser(cmd, flags.PrintErrors)
 	args, err := p.ParseArgs(argv)
 
-	if (!cmd.Isinteractive && len(args) == 0) || err != nil {
+	if err != nil {
+		return err
+	}
+
+	if (!cmd.Isinteractive && !cmd.Version && !cmd.ShowTables && len(args) == 0){
 		os.Stderr.Write(cmd.usage())
 		return errors.New("invalid command line options")
 	}
@@ -137,14 +142,16 @@ func (cmd Gitql) usage() []byte {
 	fmt.Fprintf(&buf, `Gitql - Git query language
 Usage: gitql [flags] [args]
 
-Flags: 
+Flags:
   -i    Enter to interactive mode
   -p string
         The (optional) path to run gitql (default ".")
   --show-tables
         Show all tables
+  --type string
+	The output type format {table|json} (default "table")
   -v    The version of gitql
-Arguments: 
+Arguments:
   sql: A query to run
 `)
 
