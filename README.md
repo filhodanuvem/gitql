@@ -17,7 +17,6 @@ See more [here](https://asciinema.org/a/8863)
 - `cd $GOPATH/src/github.com/cloudson/gitql`
 - `make`
 - `sudo make install`
-- `export LD_LIBRARY_PATH=$PWD/libgit2/install/lib` on linux or `export DYLD_LIBRARY_PATH=$PWD/libgit2/install/lib`on Mac OS. 
 
 
 ## Examples 
@@ -59,3 +58,4 @@ Notes:
 * The limit default is 10 rows  
 * It's inspired by [textql](https://github.com/dinedal/textql)   
 * But, why gitql is a compiler/interpreter instead of just read a sqlite database with all commits, tags and etc? Answer: Because we would need to sync the tables every time before run sql and we would have sqlite bases for each repository. :neutral_face:
+

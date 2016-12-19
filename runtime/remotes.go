@@ -7,9 +7,9 @@ import (
 	"github.com/cloudson/gitql/parser"
 )
 
-func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-	s := n.Child.(*parser.NodeSelect)
-	where := s.Where
+func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
+  s := n.Child.(*parser.NodeSelect)
+  where := s.Where
 
 	remoteNames, err := builder.repo.ListRemotes()
 	if err != nil {
@@ -43,21 +43,24 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 			}
 			rows = append(rows, newRow)
 
-			counter = counter + 1
-			if !usingOrder && counter > s.Limit {
-				break
-			}
-		}
-	}
-	rowsSliced := rows[len(rows)-counter+1:]
-	rowsSliced = orderTable(rowsSliced, s.Order)
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
-		rowsSliced = rowsSliced[0:counter]
-	}
-	printTable(rowsSliced, fields)
+      counter = counter + 1
+      if !usingOrder && counter > s.Limit {
+      	break
+    	}
+    }
+  }
+  rowsSliced := rows[len(rows)-counter+1:]
+  rowsSliced = orderTable(rowsSliced, s.Order)
+  if usingOrder {
+    if counter > s.Limit {
+        counter = s.Limit
+    }
+    rowsSliced = rowsSliced[0:counter]
+  }
+  tableData := new(TableData)
+  tableData.rows = rowsSliced
+  tableData.fields = fields
+  return tableData
 }
 
 func metadataRemote(identifier string, object *git.Remote) string {

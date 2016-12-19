@@ -9,10 +9,11 @@ import (
 	"github.com/cloudson/gitql/parser"
 )
 
-func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-	builder.walk, _ = repo.Walk()
-	builder.walk.PushHead()
-	builder.walk.Sorting(git.SortTime)
+
+func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
+  builder.walk, _ = repo.Walk()
+  builder.walk.PushHead()
+  builder.walk.Sorting(git.SortTime)
 
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
@@ -46,19 +47,22 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 		return true
 	}
 
-	err := builder.walk.Iterate(fn)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
-	rowsSliced := rows[len(rows)-counter+1:]
-	rowsSliced = orderTable(rowsSliced, s.Order)
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
-		rowsSliced = rowsSliced[0:counter]
-	}
-	printTable(rowsSliced, fields)
+  err := builder.walk.Iterate(fn)
+  if err != nil {
+    fmt.Printf(err.Error())
+  }
+  rowsSliced := rows[len(rows)-counter+1:]
+  rowsSliced = orderTable(rowsSliced, s.Order)
+  if usingOrder {
+    if counter > s.Limit {
+      counter = s.Limit
+    }
+    rowsSliced = rowsSliced[0:counter]
+  }
+  tableData := new(TableData)
+  tableData.rows = rowsSliced
+  tableData.fields = fields
+  return tableData
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {

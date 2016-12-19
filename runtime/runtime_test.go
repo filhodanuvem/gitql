@@ -3,6 +3,8 @@ package runtime
 import (
 	"path/filepath"
 	"testing"
+	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/semantical"
 )
 
 func TestErrorWithInvalidTables(t *testing.T) {
@@ -77,4 +79,28 @@ func TestFoundFieldsFromTable(t *testing.T) {
 			t.Errorf(err.Error())
 		}
 	}
+}
+
+func TestCanConvertToTypeFormats(t *testing.T) {
+	folder, errFile := filepath.Abs("../")
+
+	if errFile != nil {
+		t.Errorf(errFile.Error())
+	}
+
+	query := "select author from commits"
+
+	parser.New(query)
+	ast, errGit := parser.AST()
+	if errGit != nil {
+		t.Errorf(errGit.Error())
+	}
+	ast.Path = &folder
+	errGit = semantical.Analysis(ast)
+	if errGit != nil {
+		t.Errorf(errGit.Error())
+	}
+
+	typeFormat := "json"
+	Run(ast, &typeFormat)
 }

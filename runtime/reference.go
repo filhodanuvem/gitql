@@ -7,9 +7,9 @@ import (
 	"github.com/cloudson/gitql/parser"
 )
 
-func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
-	s := n.Child.(*parser.NodeSelect)
-	where := s.Where
+func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
+  s := n.Child.(*parser.NodeSelect)
+  where := s.Where
 
 	// @TODO make PR with Repository.WalkReference()
 	iterator, err := builder.repo.NewReferenceIterator()
@@ -28,34 +28,37 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) {
 	}
 	for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
 
-		builder.setReference(object)
-		boolRegister = true
-		visitor.VisitExpr(where)
-		if boolRegister {
-			fields := s.Fields
-			if s.WildCard {
-				fields = builder.possibleTables[s.Tables[0]]
-			}
-			newRow := make(tableRow)
-			for _, f := range fields {
-				newRow[f] = metadataReference(f, object)
-			}
-			rows = append(rows, newRow)
-			counter = counter + 1
-			if !usingOrder && counter > s.Limit {
-				break
-			}
-		}
-	}
-	rowsSliced := rows[len(rows)-counter+1:]
-	rowsSliced = orderTable(rowsSliced, s.Order)
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
-		rowsSliced = rowsSliced[0:counter]
-	}
-	printTable(rowsSliced, fields)
+	  builder.setReference(object)
+	  boolRegister = true
+	  visitor.VisitExpr(where)
+	  if boolRegister {
+      fields := s.Fields
+      if s.WildCard {
+        fields = builder.possibleTables[s.Tables[0]]
+      }
+      newRow := make(tableRow)
+      for _, f := range fields {
+        newRow[f] = metadataReference(f, object)
+      }
+      rows = append(rows, newRow)
+      counter = counter + 1
+      if !usingOrder && counter > s.Limit {
+        break
+      }
+    }
+  }
+  rowsSliced := rows[len(rows)-counter+1:]
+  rowsSliced = orderTable(rowsSliced, s.Order)
+  if usingOrder {
+    if counter > s.Limit {
+      counter = s.Limit
+    }
+    rowsSliced = rowsSliced[0:counter]
+  }
+  tableData := new(TableData)
+  tableData.rows = rowsSliced
+  tableData.fields = fields
+  return tableData
 }
 
 func metadataReference(identifier string, object *git.Reference) string {
