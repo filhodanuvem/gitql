@@ -2,11 +2,11 @@ package runtime
 
 import (
 	"fmt"
+	"log"
+	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
 	"github.com/crackcomm/go-clitable"
-	"github.com/cloudson/git2go"
-	"log"
 	"encoding/json"
 )
 
@@ -263,7 +263,7 @@ func (g *GitBuilder) isProxyTable(tableName string) bool {
 	return isIn
 }
 
-func  PossibleTables() (map[string][]string) {
+func PossibleTables() map[string][]string {
 	return map[string][]string{
 		"commits": {
 			"hash",
