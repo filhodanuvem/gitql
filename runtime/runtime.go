@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	"log"
+
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"

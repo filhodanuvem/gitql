@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
 	"github.com/chzyer/readline"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
@@ -128,7 +129,7 @@ func (cmd *Gitql) parse(argv []string) error {
 
 	if (!cmd.Isinteractive && !cmd.Version && !cmd.ShowTables && len(args) == 0){
 		os.Stderr.Write(cmd.usage())
-		return errors.New("invalid command line options\n")
+		return errors.New("invalid command line options")
 	}
 
 	cmd.Query = strings.Join(args, " ")

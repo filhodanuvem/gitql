@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 )
+
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
   builder.walk, _ = repo.Walk()

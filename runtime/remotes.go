@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"log"
+
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 )

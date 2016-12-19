@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"log"
+
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 )
@@ -26,6 +27,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
 		usingOrder = true
 	}
 	for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
+
 	  builder.setReference(object)
 	  boolRegister = true
 	  visitor.VisitExpr(where)
