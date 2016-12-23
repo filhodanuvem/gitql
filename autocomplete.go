@@ -6,8 +6,18 @@ func suggestTokens() {
 
 }
 
-func suggestColumns1(focus []rune, pos int) [][]rune {
-	candidacies := [][]rune{
+func suggestTablesFromInputting(focus []rune, pos int) [][]rune {
+	return suggestInputting(focus, pos, [][]rune{
+		[]rune("remotes"),
+		[]rune("tags"),
+		[]rune("branches"),
+		[]rune("commits"),
+		[]rune("refs"),
+	})
+}
+
+func suggestColumnsFromInputting(focus []rune, pos int) [][]rune {
+	return suggestInputting(focus, pos, [][]rune{
 		[]rune("name"),
 		[]rune("url"),
 		[]rune("push_url"),
@@ -22,8 +32,10 @@ func suggestColumns1(focus []rune, pos int) [][]rune {
 		[]rune("message"),
 		[]rune("full_message"),
 		[]rune("type"),
-	}
+	})
+}
 
+func suggestInputting(focus []rune, pos int, candidacies [][]rune) [][]rune {
 	if len(focus) == 0 {
 		return candidacies
 	}
@@ -46,15 +58,16 @@ func suggestColumns1(focus []rune, pos int) [][]rune {
 	return suggests
 }
 
-func suggestColumns2(focused string) [][]rune {
-	focused = focused[:len(focused)-1]
-	candidacies := [][]string{
+func suggestColumnsFromLatest(focused string) [][]rune {
+	return suggestLatest(focused[:len(focused)-1], [][]string{
 		[]string{"hash", "date", "author", "author_email", "committer", "committer_email", "message", "full_message"},
 		[]string{"name", "full_name", "type", "hash"},
 		[]string{"name", "url", "push_url", "owner"},
 		[]string{"name", "full_name", "hash"},
-	}
+	})
+}
 
+func suggestLatest(focused string, candidacies [][]string) [][]rune {
 	var suggests [][]rune
 	for _, candidacy := range candidacies {
 		s := containSlice(focused, candidacy)
@@ -62,7 +75,6 @@ func suggestColumns2(focused string) [][]rune {
 			suggests = append(suggests, s...)
 		}
 	}
-
 	removeDuplicates(&suggests)
 
 	return suggests
@@ -86,7 +98,6 @@ func containColumns(focused string) bool {
 		"full_message,",
 		"type,",
 	})
-
 	return ok
 }
 
@@ -113,13 +124,12 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 	if ln == 1 {
 		return [][]rune{[]rune("select")}
 	} else if ln > 1 {
-		focused := inputs[ln-2]
+		focused := string(inputs[ln-2])
 		focus := inputs[ln-1]
 
-		// gitql> select remo[tab
-		// In the case where the most recent input is "select"
-		pp.Println(focused)
-		if string(focused) == "select" {
+		if focused == "select" {
+			// gitql> select [tab
+			// In the case where the most recent input is "select"
 			return [][]rune{
 				[]rune("*"),
 				[]rune("name"),
@@ -137,19 +147,36 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 				[]rune("full_message"),
 				[]rune("type"),
 			}
-		} else if containColumns(string(focused)) {
+		} else if containColumns(focused) {
 			if pos != 0 {
-				return suggestColumns1(focus, pos)
+				// gitql> select na[tab
+				// gitql> select commi[tab
+				// In the case is inputting column
+				return suggestColumnsFromInputting(focus, pos)
 			}
-			return suggestColumns2(string(focused))
-		}
 
+			// gitql> select name, [tab
+			// gitql> select committer, [tab
+			// In the case where the most recent input is the column name and comma
+			return suggestColumnsFromLatest(focused)
+		} else if focused == "from" {
+			if pos != 0 {
+				return suggestTablesFromInputting(focus, pos)
+			}
+			return [][]rune{
+				[]rune("remotes"),
+				[]rune("tags"),
+				[]rune("branches"),
+				[]rune("commits"),
+				[]rune("refs"),
+			}
+		}
 	}
 
 	//tokens := []string{"select", "from", "where", "order", "by", "or", "and", "limit", "in", "asc", "desc"}
 	//tables := []string{"remotes", "tags", "branches", "commits", "refs"}
 
-	return [][]rune{[]rune("select")}
+	return nil
 }
 
 func containSlice(focused string, candidacy []string) [][]rune {
@@ -163,7 +190,6 @@ func containSlice(focused string, candidacy []string) [][]rune {
 		}
 		return suggests
 	}
-
 	return nil
 }
 
