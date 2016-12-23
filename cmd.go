@@ -54,7 +54,10 @@ func (cmd Gitql) execute() error {
 
 func runPrompt(folder, typeFormat string) error {
 
-	term, err := readline.New("gitql> ")
+	term, err := readline.NewEx(&readline.Config{
+		Prompt:       "gitql> ",
+		AutoComplete: readline.SegmentFunc(suggestCommands),
+	})
 	if err != nil {
 		return err
 	}
@@ -127,7 +130,7 @@ func (cmd *Gitql) parse(argv []string) error {
 		return err
 	}
 
-	if (!cmd.Isinteractive && !cmd.Version && !cmd.ShowTables && len(args) == 0){
+	if !cmd.Isinteractive && !cmd.Version && !cmd.ShowTables && len(args) == 0 {
 		os.Stderr.Write(cmd.usage())
 		return errors.New("invalid command line options")
 	}
