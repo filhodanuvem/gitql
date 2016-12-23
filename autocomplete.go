@@ -1,9 +1,19 @@
 package main
 
-import "github.com/k0kubun/pp"
-
-func suggestTokens() {
-
+func suggestTokensFromInputting(focus []rune, pos int) [][]rune {
+	return suggestInputting(focus, pos, [][]rune{
+		[]rune("select"),
+		[]rune("from"),
+		[]rune("where"),
+		[]rune("order"),
+		[]rune("by"),
+		[]rune("or"),
+		[]rune("and"),
+		[]rune("limit"),
+		[]rune("in"),
+		[]rune("asc"),
+		[]rune("desc"),
+	})
 }
 
 func suggestTablesFromInputting(focus []rune, pos int) [][]rune {
@@ -67,10 +77,11 @@ func suggestColumnsFromLatest(focused string) [][]rune {
 	})
 }
 
+// Creates a candidate from the input previous character string.
 func suggestLatest(focused string, candidacies [][]string) [][]rune {
 	var suggests [][]rune
 	for _, candidacy := range candidacies {
-		s := containSlice(focused, candidacy)
+		s := getPartsFromSlice(focused, candidacy)
 		if s != nil {
 			suggests = append(suggests, s...)
 		}
@@ -117,16 +128,15 @@ func removeDuplicates(s *[][]rune) {
 }
 
 func suggestCommands(inputs [][]rune, pos int) [][]rune {
-	pp.Println(pos)
-	//var suggest [][]rune
+
 	ln := len(inputs)
 
 	if ln == 1 {
+		// When nothing is input yet
 		return [][]rune{[]rune("select")}
 	} else if ln > 1 {
 		focused := string(inputs[ln-2])
 		focus := inputs[ln-1]
-
 		if focused == "select" {
 			// gitql> select [tab
 			// In the case where the most recent input is "select"
@@ -148,7 +158,7 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 				[]rune("type"),
 			}
 		} else if containColumns(focused) {
-			if pos != 0 {
+			if pos > 0 {
 				// gitql> select na[tab
 				// gitql> select commi[tab
 				// In the case is inputting column
@@ -160,9 +170,15 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 			// In the case where the most recent input is the column name and comma
 			return suggestColumnsFromLatest(focused)
 		} else if focused == "from" {
-			if pos != 0 {
+			// gitql> select * from re[tab
+			// gitql> select * from bran[tab
+			// In the case is inputting table name
+			if pos > 0 {
 				return suggestTablesFromInputting(focus, pos)
 			}
+
+			// gitql> select * from [tab
+			// In the case after inputted "from"
 			return [][]rune{
 				[]rune("remotes"),
 				[]rune("tags"),
@@ -171,15 +187,33 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 				[]rune("refs"),
 			}
 		}
-	}
 
-	//tokens := []string{"select", "from", "where", "order", "by", "or", "and", "limit", "in", "asc", "desc"}
-	//tables := []string{"remotes", "tags", "branches", "commits", "refs"}
+		// Other case
+		// gitql> select * fr[tab
+		// gitql> select date, message from commits wh[tab
+		if pos > 0 {
+			return suggestTokensFromInputting(focus, pos)
+		}
+
+		return [][]rune{
+			[]rune("select"),
+			[]rune("from"),
+			[]rune("where"),
+			[]rune("order"),
+			[]rune("by"),
+			[]rune("or"),
+			[]rune("and"),
+			[]rune("limit"),
+			[]rune("in"),
+			[]rune("asc"),
+			[]rune("desc"),
+		}
+	}
 
 	return nil
 }
 
-func containSlice(focused string, candidacy []string) [][]rune {
+func getPartsFromSlice(focused string, candidacy []string) [][]rune {
 	idx, isContained := isContained(focused, candidacy)
 	if isContained {
 		var suggests [][]rune
@@ -194,9 +228,9 @@ func containSlice(focused string, candidacy []string) [][]rune {
 }
 
 func isContained(focused string, candidacy []string) (int, bool) {
-	for i, val := range candidacy {
+	for idx, val := range candidacy {
 		if focused == val {
-			return i, true
+			return idx, true
 		}
 	}
 	return -1, false
