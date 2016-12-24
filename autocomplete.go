@@ -134,19 +134,84 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 	if ln == 1 {
 		// When nothing is input yet
 		return [][]rune{[]rune("select")}
-	} else if ln > 1 {
-		focused := string(inputs[ln-2])
-		focus := inputs[ln-1]
-		if focused == "select" {
-			// gitql> select [tab
-			// In the case where the most recent input is "select"
+	}
+	focused := string(inputs[ln-2])
+	focus := inputs[ln-1]
+	if focused == "select" {
+		// gitql> select [tab
+		// In the case where the most recent input is "select"
+		return [][]rune{
+			[]rune("*"),
+			[]rune("name"),
+			[]rune("url"),
+			[]rune("push_url"),
+			[]rune("owner"),
+			[]rune("full_name"),
+			[]rune("hash"),
+			[]rune("date"),
+			[]rune("author"),
+			[]rune("author_email"),
+			[]rune("committer"),
+			[]rune("committer_email"),
+			[]rune("message"),
+			[]rune("full_message"),
+			[]rune("type"),
+		}
+	} else if containColumns(focused) {
+		if pos > 0 {
+			// gitql> select na[tab
+			// gitql> select commi[tab
+			// In the case is inputting column
+			return suggestColumnsFromInputting(focus, pos)
+		}
+
+		// gitql> select name, [tab
+		// gitql> select committer, [tab
+		// In the case where the most recent input is the column name and comma
+		return suggestColumnsFromLatest(focused)
+	} else if focused == "from" {
+		// gitql> select * from re[tab
+		// gitql> select * from bran[tab
+		// In the case is inputting table name
+		if pos > 0 {
+			return suggestTablesFromInputting(focus, pos)
+		}
+
+		// gitql> select * from [tab
+		// In the case after inputted "from"
+		return [][]rune{
+			[]rune("remotes"),
+			[]rune("tags"),
+			[]rune("branches"),
+			[]rune("commits"),
+			[]rune("refs"),
+		}
+	} else if focused == "order" {
+		return [][]rune{[]rune("by")}
+	} else if focused == "where" || focused == "by" || focused == "or" || focused == "and" {
+		if pos > 0 {
+			// gitql> select name from remotes where na[tab
+			// gitql> select * from commits where committer = "K" order by com[tab
+			// gitql> select * from commits where committer = "K" or com[tab
+			// In the case is inputting column inputted after "where", "by", "and", "or"
+			return suggestColumnsFromInputting(focus, pos)
+		}
+
+		// gitql> select name from remotes where [tab
+		// gitql> select * from commits where committer = "K" order by [tab
+		// gitql> select * from commits where committer = "K" and [tab
+		// In the case is inputted after "where", "by", "and", "or"
+		var table string
+		for i := 0; i < len(inputs); i++ {
+			if string(inputs[i]) == "from" {
+				i++
+				table = string(inputs[i])
+			}
+		}
+
+		switch table {
+		case "commits":
 			return [][]rune{
-				[]rune("*"),
-				[]rune("name"),
-				[]rune("url"),
-				[]rune("push_url"),
-				[]rune("owner"),
-				[]rune("full_name"),
 				[]rune("hash"),
 				[]rune("date"),
 				[]rune("author"),
@@ -155,62 +220,56 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 				[]rune("committer_email"),
 				[]rune("message"),
 				[]rune("full_message"),
-				[]rune("type"),
 			}
-		} else if containColumns(focused) {
-			if pos > 0 {
-				// gitql> select na[tab
-				// gitql> select commi[tab
-				// In the case is inputting column
-				return suggestColumnsFromInputting(focus, pos)
-			}
-
-			// gitql> select name, [tab
-			// gitql> select committer, [tab
-			// In the case where the most recent input is the column name and comma
-			return suggestColumnsFromLatest(focused)
-		} else if focused == "from" {
-			// gitql> select * from re[tab
-			// gitql> select * from bran[tab
-			// In the case is inputting table name
-			if pos > 0 {
-				return suggestTablesFromInputting(focus, pos)
-			}
-
-			// gitql> select * from [tab
-			// In the case after inputted "from"
+		case "refs":
 			return [][]rune{
-				[]rune("remotes"),
-				[]rune("tags"),
-				[]rune("branches"),
-				[]rune("commits"),
-				[]rune("refs"),
+				[]rune("name"),
+				[]rune("full_name"),
+				[]rune("type"),
+				[]rune("hash"),
 			}
-		}
-
-		// Other case
-		// gitql> select * fr[tab
-		// gitql> select date, message from commits wh[tab
-		if pos > 0 {
-			return suggestTokensFromInputting(focus, pos)
-		}
-
-		return [][]rune{
-			[]rune("select"),
-			[]rune("from"),
-			[]rune("where"),
-			[]rune("order"),
-			[]rune("by"),
-			[]rune("or"),
-			[]rune("and"),
-			[]rune("limit"),
-			[]rune("in"),
-			[]rune("asc"),
-			[]rune("desc"),
+		case "remotes":
+			return [][]rune{
+				[]rune("name"),
+				[]rune("url"),
+				[]rune("push_url"),
+				[]rune("owner"),
+			}
+		case "tags":
+			return [][]rune{
+				[]rune("name"),
+				[]rune("full_name"),
+				[]rune("hash"),
+			}
+		case "branches":
+			return [][]rune{
+				[]rune("name"),
+				[]rune("full_name"),
+				[]rune("hash"),
+			}
 		}
 	}
 
-	return nil
+	// Other case
+	// gitql> select * fr[tab
+	// gitql> select date, message from commits wh[tab
+	if pos > 0 {
+		return suggestTokensFromInputting(focus, pos)
+	}
+
+	return [][]rune{
+		[]rune("select"),
+		[]rune("from"),
+		[]rune("where"),
+		[]rune("order"),
+		[]rune("by"),
+		[]rune("or"),
+		[]rune("and"),
+		[]rune("limit"),
+		[]rune("in"),
+		[]rune("asc"),
+		[]rune("desc"),
+	}
 }
 
 func getPartsFromSlice(focused string, candidacy []string) [][]rune {
