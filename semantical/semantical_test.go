@@ -1,8 +1,9 @@
 package semantical
 
 import (
-	"github.com/cloudson/gitql/parser"
 	"testing"
+
+	"github.com/cloudson/gitql/parser"
 )
 
 func TestInvalidZeroLimit(t *testing.T) {
