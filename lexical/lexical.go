@@ -193,27 +193,27 @@ func Token() (uint8, *TokenError) {
 
 func lexemeToToken(lexeme string) uint8 {
 	switch strings.ToLower(lexeme) {
-	case "select":
+	case L_SELECT:
 		return T_SELECT
-	case "from":
+	case L_FROM:
 		return T_FROM
-	case "where":
+	case L_WHERE:
 		return T_WHERE
-	case "order":
+	case L_ORDER:
 		return T_ORDER
-	case "by":
+	case L_BY:
 		return T_BY
-	case "or":
+	case L_OR:
 		return T_OR
-	case "and":
+	case L_AND:
 		return T_AND
-	case "limit":
+	case L_LIMIT:
 		return T_LIMIT
-	case "in":
+	case L_IN:
 		return T_IN
-	case "asc":
+	case L_ASC:
 		return T_ASC
-	case "desc":
+	case L_DESC:
 		return T_DESC
 
 	}
