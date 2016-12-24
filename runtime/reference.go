@@ -7,14 +7,14 @@ import (
 	"github.com/cloudson/gitql/parser"
 )
 
-func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
+func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error){
   s := n.Child.(*parser.NodeSelect)
   where := s.Where
 
 	// @TODO make PR with Repository.WalkReference()
 	iterator, err := builder.repo.NewReferenceIterator()
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	counter := 1
 	fields := s.Fields
@@ -48,7 +48,10 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
     }
   }
   rowsSliced := rows[len(rows)-counter+1:]
-  rowsSliced = orderTable(rowsSliced, s.Order)
+  rowsSliced, err = orderTable(rowsSliced, s.Order)
+  if err != nil {
+  	return nil, err
+  }
   if usingOrder {
     if counter > s.Limit {
       counter = s.Limit
@@ -58,7 +61,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
   tableData := new(TableData)
   tableData.rows = rowsSliced
   tableData.fields = fields
-  return tableData
+  return tableData, nil
 }
 
 func metadataReference(identifier string, object *git.Reference) string {

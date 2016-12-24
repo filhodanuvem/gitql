@@ -10,7 +10,7 @@ import (
 )
 
 
-func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
+func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error){
   builder.walk, _ = repo.Walk()
   builder.walk.PushHead()
   builder.walk.Sorting(git.SortTime)
@@ -52,7 +52,10 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
     fmt.Printf(err.Error())
   }
   rowsSliced := rows[len(rows)-counter+1:]
-  rowsSliced = orderTable(rowsSliced, s.Order)
+  rowsSliced, err = orderTable(rowsSliced, s.Order)
+  if err != nil {
+  	return nil, err
+  }
   if usingOrder {
     if counter > s.Limit {
       counter = s.Limit
@@ -62,7 +65,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
   tableData := new(TableData)
   tableData.rows = rowsSliced
   tableData.fields = fields
-  return tableData
+  return tableData, nil
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {

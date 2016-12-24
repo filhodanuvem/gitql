@@ -7,13 +7,13 @@ import (
 	"github.com/cloudson/gitql/parser"
 )
 
-func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
+func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error){
   s := n.Child.(*parser.NodeSelect)
   where := s.Where
 
 	remoteNames, err := builder.repo.ListRemotes()
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	counter := 1
@@ -50,7 +50,10 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
     }
   }
   rowsSliced := rows[len(rows)-counter+1:]
-  rowsSliced = orderTable(rowsSliced, s.Order)
+  rowsSliced, err = orderTable(rowsSliced, s.Order)
+  if err != nil {
+  	return nil, err
+  }
   if usingOrder {
     if counter > s.Limit {
         counter = s.Limit
@@ -60,7 +63,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) *TableData{
   tableData := new(TableData)
   tableData.rows = rowsSliced
   tableData.fields = fields
-  return tableData
+  return tableData, nil
 }
 
 func metadataRemote(identifier string, object *git.Remote) string {
