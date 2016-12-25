@@ -56,7 +56,7 @@ func runPrompt(folder, typeFormat string) error {
 
 	term, err := readline.NewEx(&readline.Config{
 		Prompt:       "gitql> ",
-		AutoComplete: readline.SegmentFunc(suggestCommands),
+		AutoComplete: readline.SegmentFunc(suggestQuery),
 	})
 	if err != nil {
 		return err
