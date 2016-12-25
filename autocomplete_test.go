@@ -1,126 +1,9 @@
 package main
 
-import "testing"
-
-func TestSuggestTokensFromInputting(t *testing.T) {
-	inputting := [][]rune{
-		[]rune("sel"),
-		[]rune("f"),
-		[]rune("wh"),
-		[]rune("ord"),
-		[]rune("b"),
-		[]rune("o"),
-		[]rune("an"),
-		[]rune("l"),
-		[]rune("i"),
-		[]rune("as"),
-		[]rune("d"),
-	}
-
-	answer := [][]rune{
-		[]rune("select"),
-		[]rune("from"),
-		[]rune("where"),
-		[]rune("order"),
-		[]rune("by"),
-		[]rune("or"),
-		[]rune("and"),
-		[]rune("limit"),
-		[]rune("in"),
-		[]rune("asc"),
-		[]rune("desc"),
-	}
-
-	for i, input := range inputting {
-		result := suggestTokensFromInputting(input, len(input))
-		if i == 5 {
-			// inputting "o" test
-			// should return [][]rune{[]rune("or"), []rune("order")}
-			for _, got := range result {
-				if !(string(got) == "or" || string(got) == "order") {
-					t.Errorf("expected 'or' also 'order', got %s", string(got))
-				}
-			}
-		} else {
-			assertSuggests(t, string(answer[i]), string(result[0]))
-		}
-	}
-}
-
-func TestSuggestTablesFromInputting(t *testing.T) {
-	inputting := [][]rune{
-		[]rune("rem"),
-		[]rune("t"),
-		[]rune("br"),
-		[]rune("c"),
-		[]rune("ref"),
-	}
-
-	answer := [][]rune{
-		[]rune("remotes"),
-		[]rune("tags"),
-		[]rune("branches"),
-		[]rune("commits"),
-		[]rune("refs"),
-	}
-
-	for i, input := range inputting {
-		result := suggestTablesFromInputting(input, len(input))
-		assertSuggests(t, string(answer[i]), string(result[0]))
-	}
-}
-
-func TestSuggestColumnsFromInputting(t *testing.T) {
-	inputting1 := [][]rune{
-		[]rune("na"),
-		[]rune("u"),
-		[]rune("pu"),
-		[]rune("own"),
-		[]rune("h"),
-		[]rune("da"),
-		[]rune("me"),
-		[]rune("t"),
-	}
-
-	answer1 := [][]rune{
-		[]rune("name"),
-		[]rune("url"),
-		[]rune("push_url"),
-		[]rune("owner"),
-		[]rune("hash"),
-		[]rune("date"),
-		[]rune("message"),
-		[]rune("type"),
-	}
-
-	for i, input := range inputting1 {
-		result := suggestColumnsFromInputting(input, len(input))
-		assertSuggests(t, string(answer1[i]), string(result[0]))
-	}
-
-	inputting2 := [][]rune{
-		[]rune("ful"),
-		[]rune("au"),
-		[]rune("co"),
-	}
-
-	for i, input := range inputting2 {
-		result := suggestColumnsFromInputting(input, len(input))
-		for _, got := range result {
-			if i == 0 && !(string(got) == "full_name" || string(got) == "full_message") {
-				t.Errorf("expected 'full_name' also 'full_message', got %s", string(got))
-			}
-
-			if i == 1 && !(string(got) == "author" || string(got) == "author_email") {
-				t.Errorf("expected 'author' also 'author_email', got %s", string(got))
-			}
-
-			if i == 2 && !(string(got) == "committer" || string(got) == "committer_email") {
-				t.Errorf("expected 'committer' also 'committer_email', got %s", string(got))
-			}
-		}
-	}
-}
+import (
+	"strings"
+	"testing"
+)
 
 func TestSuggestColumnsFromLatest(t *testing.T) {
 	answer := []string{
@@ -210,6 +93,158 @@ func TestGetPartsFromSlice(t *testing.T) {
 	}
 }
 
+func TestSuggestQuery(t *testing.T) {
+	// gitql> [tab
+	// expected: select
+	pattern1 := [][]rune{
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern1, []string{"select"})
+
+	// gitql> select [tab
+	// expected: *, name, url,  push_url, owner, full_name, hash, date, author,
+	// author_email, committer, committer_email, message, full_message, type
+	pattern2 := [][]rune{
+		[]rune("select"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern2, []string{
+		"*",
+		"name",
+		"url",
+		"push_url",
+		"owner",
+		"full_name",
+		"hash",
+		"date",
+		"author",
+		"author_email",
+		"committer",
+		"committer_email",
+		"message",
+		"full_message",
+		"type",
+	})
+
+	// gitql> select name [tab
+	// expected: select, from, where, order, by, or, and, limit, in, asc, desc
+	pattern3 := [][]rune{
+		[]rune("select"),
+		[]rune("name"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern3, []string{
+		"select",
+		"from",
+		"where",
+		"order",
+		"by",
+		"or",
+		"and",
+		"limit",
+		"in",
+		"asc",
+		"desc",
+	})
+	// gitql> select name, [tab
+	// expected: full_name, type, hash, url, push_url, owner
+	pattern4 := [][]rune{
+		[]rune("select"),
+		[]rune("name,"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern4, []string{
+		"full_name",
+		"type",
+		"hash",
+		"url",
+		"push_url",
+		"owner",
+	})
+
+	// gitql> select * from [tab
+	// expected: remotes, tags, branches, commits, refs
+	pattern5 := [][]rune{
+		[]rune("select"),
+		[]rune("*"),
+		[]rune("from"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern5, []string{
+		"remotes",
+		"tags",
+		"branches",
+		"commits",
+		"refs",
+	})
+
+	// gitql> select name from remotes where [tab
+	// expected: name, url, push_url, owner
+	pattern6 := [][]rune{
+		[]rune("select"),
+		[]rune("name"),
+		[]rune("from"),
+		[]rune("remotes"),
+		[]rune("where"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern6, []string{"name", "url", "push_url", "owner"})
+
+	// gitql> select committer from commits where committer = "K" and [tab
+	// expected: hash, date, author, author_email, committer, committer_email, message, full_message
+	pattern7 := [][]rune{
+		[]rune("select"),
+		[]rune("committer"),
+		[]rune("from"),
+		[]rune("commits"),
+		[]rune("where"),
+		[]rune("committer"),
+		[]rune("="),
+		[]rune(`"K"`),
+		[]rune("and"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern7, []string{
+		"hash",
+		"date",
+		"author",
+		"author_email",
+		"committer",
+		"committer_email",
+		"message",
+		"full_message",
+	})
+
+	// gitql> select committer from commits where committer = "k" order [tab
+	// expected: by
+	pattern8 := [][]rune{
+		[]rune("select"),
+		[]rune("committer"),
+		[]rune("from"),
+		[]rune("commits"),
+		[]rune("where"),
+		[]rune("committer"),
+		[]rune("="),
+		[]rune(`"K"`),
+		[]rune("order"),
+		[]rune(""),
+	}
+	assertSuggestsQuery(t, pattern8, []string{"by"})
+}
+
+// tiny tools
+func assertSuggestsQuery(t *testing.T, inputs [][]rune, expected []string) {
+	result := suggestQuery(inputs, len(inputs[len(inputs)-1]))
+	expectedHash := createHashMap(expected)
+
+	for _, v := range result {
+		_, ok := expectedHash[string(v)]
+		if !ok {
+			t.Errorf("expected: (%s), got: %s", strings.Join(expected, ", "), string(v))
+			break
+		}
+	}
+}
 func createHashMap(s []string) map[string]bool {
 	h := make(map[string]bool, len(s))
 	for _, key := range s {
