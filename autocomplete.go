@@ -273,10 +273,11 @@ func suggestCommands(inputs [][]rune, pos int) [][]rune {
 }
 
 func getPartsFromSlice(focused string, candidacy []string) [][]rune {
-	idx, isContained := isContained(focused, candidacy)
-	if isContained {
+	idx, ok := isContained(focused, candidacy)
+	if ok {
 		var suggests [][]rune
 		for i, v := range candidacy {
+			// Create slices other than what was focused
 			if i != idx {
 				suggests = append(suggests, []rune(v))
 			}
