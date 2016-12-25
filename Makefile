@@ -6,7 +6,7 @@ GIT2GO_VERSION=master
 all: prepare build
 
 test: 
-	@go test ./lexical/ ./parser/ ./semantical ./runtime
+	@go test . ./lexical/ ./parser/ ./semantical ./runtime
 
 clean:
 	@rm -rf ./libgit2
