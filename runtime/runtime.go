@@ -3,11 +3,12 @@ package runtime
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
-	"github.com/crackcomm/go-clitable"
+	"github.com/olekukonko/tablewriter"
 	"encoding/json"
 )
 
@@ -55,7 +56,7 @@ type RuntimeVisitor struct {
 }
 
 type TableData struct {
-	rows []tableRow
+	rows   []tableRow
 	fields []string
 }
 
@@ -117,11 +118,18 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 }
 
 func printTable(tableData *TableData) {
-	table := clitable.New(tableData.fields)
-	for _, r := range tableData.rows {
-		table.AddRow(r)
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetAutoFormatHeaders(false)
+	table.SetHeader(tableData.fields)
+	table.SetRowLine(true)
+	for _, row := range tableData.rows {
+		rowData := make([]string, len(tableData.fields))
+		for i, field := range tableData.fields {
+			rowData[i] = fmt.Sprintf("%v", row[field])
+		}
+		table.Append(rowData)
 	}
-	table.Print()
+	table.Render()
 }
 
 func printJson(tableData *TableData) error {
