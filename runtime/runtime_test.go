@@ -1,10 +1,10 @@
 package runtime
 
 import (
-	"path/filepath"
-	"testing"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
+	"path/filepath"
+	"testing"
 )
 
 func TestErrorWithInvalidTables(t *testing.T) {

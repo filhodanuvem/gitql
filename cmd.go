@@ -101,7 +101,7 @@ func runQuery(query, folder, typeFormat string) error {
 		return err
 	}
 
-	return runtime.Run(ast, &typeFormat);
+	return runtime.Run(ast, &typeFormat)
 }
 
 func (cmd *Gitql) parseCommandLine() error {

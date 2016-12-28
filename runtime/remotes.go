@@ -7,9 +7,9 @@ import (
 	"github.com/cloudson/gitql/parser"
 )
 
-func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error){
-  s := n.Child.(*parser.NodeSelect)
-  where := s.Where
+func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
+	s := n.Child.(*parser.NodeSelect)
+	where := s.Where
 
 	remoteNames, err := builder.repo.ListRemotes()
 	if err != nil {
@@ -43,27 +43,27 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 			}
 			rows = append(rows, newRow)
 
-      counter = counter + 1
-      if !usingOrder && counter > s.Limit {
-      	break
-    	}
-    }
-  }
-  rowsSliced := rows[len(rows)-counter+1:]
-  rowsSliced, err = orderTable(rowsSliced, s.Order)
-  if err != nil {
-  	return nil, err
-  }
-  if usingOrder {
-    if counter > s.Limit {
-        counter = s.Limit
-    }
-    rowsSliced = rowsSliced[0:counter]
-  }
-  tableData := new(TableData)
-  tableData.rows = rowsSliced
-  tableData.fields = fields
-  return tableData, nil
+			counter = counter + 1
+			if !usingOrder && counter > s.Limit {
+				break
+			}
+		}
+	}
+	rowsSliced := rows[len(rows)-counter+1:]
+	rowsSliced, err = orderTable(rowsSliced, s.Order)
+	if err != nil {
+		return nil, err
+	}
+	if usingOrder {
+		if counter > s.Limit {
+			counter = s.Limit
+		}
+		rowsSliced = rowsSliced[0:counter]
+	}
+	tableData := new(TableData)
+	tableData.rows = rowsSliced
+	tableData.fields = fields
+	return tableData, nil
 }
 
 func metadataRemote(identifier string, object *git.Remote) string {
