@@ -2,6 +2,7 @@ package semantical
 
 import (
 	"fmt"
+
 	"github.com/cloudson/gitql/lexical"
 	"github.com/cloudson/gitql/parser"
 )

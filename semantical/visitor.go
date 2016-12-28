@@ -16,5 +16,5 @@ type Visitor interface {
 }
 
 type SemanticalVisitor struct {
-    Visitor
+	Visitor
 }

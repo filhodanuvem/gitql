@@ -1,8 +1,9 @@
 package runtime
 
 import (
-	"github.com/cloudson/gitql/parser"
 	"reflect"
+
+	"github.com/cloudson/gitql/parser"
 )
 
 func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) error {
