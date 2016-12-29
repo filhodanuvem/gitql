@@ -54,10 +54,8 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	if err != nil {
 		return nil, err
 	}
-	if usingOrder {
-		if counter > s.Limit {
-			counter = s.Limit
-		}
+	if usingOrder && counter > s.Limit {
+		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
 	}
 	tableData := new(TableData)
