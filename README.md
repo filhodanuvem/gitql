@@ -44,10 +44,10 @@ As an example, this is the `commits` table:
 
 ## Example Commands
 * `select hash, author, message from commits limit 3`  
-* `select hash, message from commits where 'hell' in full_message or 'Fuck' in full_message`  
+* `select hash, message from commits where 'mistake' in full_message or 'typo' in full_message`  
 * `select hash, message, author_email from commits where author = 'cloudson'`  
 * `select date, message from commits where date < '2014-04-10' `  
-* `select message from commits where 'hell' in message order by date asc`
+* `select message from commits where 'mistake' in message order by date asc`
 
 ## Questions?
 
