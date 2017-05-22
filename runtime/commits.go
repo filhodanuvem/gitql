@@ -64,14 +64,9 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
 	}
-	if !fieldContains(s.Fields, s.Order.Field) {
-		for _, row := range rowsSliced {
-			delete(row, s.Order.Field)
-		}
-	}
 	tableData := new(TableData)
 	tableData.rows = rowsSliced
-	tableData.fields = fields
+	tableData.fields = s.Fields
 	return tableData, nil
 }
 
