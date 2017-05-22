@@ -26,6 +26,10 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	usingOrder := false
 	if s.Order != nil {
 		usingOrder = true
+		// Check if the order by field is in the selected fields. If not, add them to selected fields list
+		if !fieldContains(fields, s.Order.Field) {
+			fields = append(fields, s.Order.Field)
+		}
 	}
 	fn := func(object *git.Commit) bool {
 		builder.setCommit(object)
@@ -55,14 +59,30 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	if err != nil {
 		return nil, err
 	}
+
 	if usingOrder && counter > s.Limit {
 		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
+	}
+	if !fieldContains(s.Fields, s.Order.Field) {
+		for _, row := range rowsSliced {
+			delete(row, s.Order.Field)
+		}
 	}
 	tableData := new(TableData)
 	tableData.rows = rowsSliced
 	tableData.fields = fields
 	return tableData, nil
+}
+
+// fieldContains checks the array of strings for the given field name.
+func fieldContains(arr []string, element string) bool {
+	for _, fieldInSelect := range arr {
+		if fieldInSelect == element {
+			return true
+		}
+	}
+	return false
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
