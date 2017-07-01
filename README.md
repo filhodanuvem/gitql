@@ -12,6 +12,7 @@ See more [here](https://asciinema.org/a/8863)
 ## Requirements 
 - Go  
 - cmake  
+- pkg-config  
 
 ## Install
 - `go get -u -d github.com/cloudson/gitql`
