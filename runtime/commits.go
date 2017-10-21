@@ -7,6 +7,7 @@ import (
 
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/utilities"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
@@ -26,6 +27,10 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	usingOrder := false
 	if s.Order != nil {
 		usingOrder = true
+		// Check if the order by field is in the selected fields. If not, add them to selected fields list
+		if !utilities.IsFieldPresentInArray(fields, s.Order.Field) {
+			fields = append(fields, s.Order.Field)
+		}
 	}
 	fn := func(object *git.Commit) bool {
 		builder.setCommit(object)
@@ -55,13 +60,14 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	if err != nil {
 		return nil, err
 	}
+
 	if usingOrder && counter > s.Limit {
 		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
 	}
 	tableData := new(TableData)
 	tableData.rows = rowsSliced
-	tableData.fields = fields
+	tableData.fields = s.Fields
 	return tableData, nil
 }
 
