@@ -23,6 +23,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	if s.WildCard {
 		fields = builder.possibleTables[s.Tables[0]]
 	}
+	resultFields := fields // These are the fields in output with wildcards expanded
 	rows := make([]tableRow, s.Limit)
 	usingOrder := false
 	if s.Order != nil {
@@ -67,7 +68,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	}
 	tableData := new(TableData)
 	tableData.rows = rowsSliced
-	tableData.fields = s.Fields
+	tableData.fields = resultFields
 	return tableData, nil
 }
 
