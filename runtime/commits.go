@@ -7,6 +7,7 @@ import (
 
 	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/utilities"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
@@ -27,7 +28,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	if s.Order != nil {
 		usingOrder = true
 		// Check if the order by field is in the selected fields. If not, add them to selected fields list
-		if !fieldContains(fields, s.Order.Field) {
+		if !utilities.IsFieldPresentInArray(fields, s.Order.Field) {
 			fields = append(fields, s.Order.Field)
 		}
 	}
@@ -68,16 +69,6 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	tableData.rows = rowsSliced
 	tableData.fields = s.Fields
 	return tableData, nil
-}
-
-// fieldContains checks the array of strings for the given field name.
-func fieldContains(arr []string, element string) bool {
-	for _, fieldInSelect := range arr {
-		if fieldInSelect == element {
-			return true
-		}
-	}
-	return false
 }
 
 func metadataCommit(identifier string, object *git.Commit) string {
