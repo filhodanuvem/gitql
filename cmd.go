@@ -29,7 +29,7 @@ type Gitql struct {
 
 func (cmd *Gitql) Run() int {
 	if err := unwrap(cmd.execute()); err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprintln(os.Stderr, err.Error())
 		return 1
 	}
 	return 0
