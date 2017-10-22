@@ -54,3 +54,31 @@ func TestSortOrdering(t *testing.T) {
 		}
 	}
 }
+
+func TestRowLimitsCount(t *testing.T) {
+	query := "select hash, date from commits order by date desc limit 3"
+	tableData := getTableForQuery(query, "../", t)
+
+	if len(tableData.rows) > 3 {
+		t.Error("Got more rows than the limit ")
+	}
+}
+
+func TestWildcardFieldsCount(t *testing.T) {
+	query := "select * from branches"
+	table := getTableForQuery(query, "../", t)
+	if len(table.fields) != 3 {
+		t.Errorf("Branches has 3 fields. Output table got %d fields", len(table.fields))
+	}
+}
+
+func TestSelectedFieldsCount(t *testing.T) {
+	query := "select author, hash from commits"
+	table := getTableForQuery(query, "../", t)
+	if len(table.fields) != 2 {
+		t.Errorf("Selected 2 fields. Output table got %d fields", len(table.fields))
+	}
+	if table.fields[0] != "author" || table.fields[1] != "hash" {
+		t.Errorf("Selected 'author' and 'hash'. Got %v", table.fields)
+	}
+}
