@@ -65,10 +65,10 @@ func TestRowLimitsCount(t *testing.T) {
 }
 
 func TestWildcardFieldsCount(t *testing.T) {
-	query := "select * from branches"
+	query := "select * from commits"
 	table := getTableForQuery(query, "../", t)
-	if len(table.fields) != 3 {
-		t.Errorf("Branches has 3 fields. Output table got %d fields", len(table.fields))
+	if len(table.fields) != 8 {
+		t.Errorf("Commits has 8 fields. Output table got %d fields", len(table.fields))
 	}
 }
 
