@@ -67,7 +67,6 @@ func testAllFieldsFromTable(fields []string, table string) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
