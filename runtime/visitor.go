@@ -1,9 +1,11 @@
 package runtime
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/utilities"
 )
 
 func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) error {
@@ -24,6 +26,11 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) error {
 		} else {
 			n.Fields = builder.possibleTables[proxyTableName]
 			n.WildCard = false
+		}
+
+		err := testAllFieldsInExpr(n.Where, proxyTableName)
+		if err != nil {
+			return err
 		}
 
 		n.Tables[0] = proxy.table
@@ -60,6 +67,26 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) error {
 	// Because we will, at first, discover the current object
 }
 
+func testAllFieldsInExpr(expr parser.NodeExpr, tableName string) error {
+	var err error
+	if expr != nil {
+		switch expr.(type) {
+		case *parser.NodeAnd, *parser.NodeOr:
+			err = testAllFieldsInExpr(expr.LeftValue(), tableName)
+			if err == nil {
+				return testAllFieldsInExpr(expr.RightValue(), tableName)
+			}
+		case *parser.NodeEqual, *parser.NodeGreater, *parser.NodeSmaller, *parser.NodeIn:
+			return testAllFieldsInExpr(expr.LeftValue(), tableName)
+		case *parser.NodeId:
+			field := expr.(*parser.NodeId).Value()
+			if !utilities.IsFieldPresentInArray(builder.possibleTables[tableName], field) {
+				return fmt.Errorf("Table '%s' has not field '%s'", tableName, field)
+			}
+		}
+	}
+	return err
+}
 func testAllFieldsFromTable(fields []string, table string) error {
 	for _, f := range fields {
 		err := builder.UseFieldFromTable(f, table)

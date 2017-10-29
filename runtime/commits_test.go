@@ -29,7 +29,7 @@ func getTableForQuery(query, directory string, t *testing.T) *TableData {
 	visitor := new(RuntimeVisitor)
 	err := visitor.Visit(ast)
 	failTestIfError(err, t)
-
+	findWalkType(ast)
 	tableData, err := walkCommits(ast, visitor)
 	failTestIfError(err, t)
 	return tableData
