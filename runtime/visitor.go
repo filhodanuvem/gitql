@@ -76,7 +76,7 @@ func testAllFieldsInExpr(expr parser.NodeExpr, tableName string) error {
 			if err == nil {
 				return testAllFieldsInExpr(expr.RightValue(), tableName)
 			}
-		case *parser.NodeEqual, *parser.NodeGreater, *parser.NodeSmaller, *parser.NodeIn:
+		case *parser.NodeEqual, *parser.NodeNotEqual, *parser.NodeGreater, *parser.NodeSmaller, *parser.NodeIn:
 			return testAllFieldsInExpr(expr.LeftValue(), tableName)
 		case *parser.NodeId:
 			field := expr.(*parser.NodeId).Value()
