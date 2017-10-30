@@ -82,3 +82,11 @@ func TestSelectedFieldsCount(t *testing.T) {
 		t.Errorf("Selected 'author' and 'hash'. Got %v", table.fields)
 	}
 }
+
+func TestWhereLike(t *testing.T) {
+	query := "select hash, author from commits where hash like '%8813f1c5e6f5d10ef%'"
+	table := getTableForQuery(query, "../", t)
+	if len(table.rows) != 1 {
+		t.Errorf("Expecting 1 row. Got %d rows", len(table.rows))
+	}
+}

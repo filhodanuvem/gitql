@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -66,6 +67,12 @@ type NodeEqual struct {
 type NodeNotEqual struct {
 	leftValue  NodeExpr
 	rightValue NodeExpr
+}
+
+type NodeLike struct {
+	leftValue  NodeExpr
+	rightValue NodeExpr
+	Pattern    *regexp.Regexp
 }
 
 type NodeGreater struct {
@@ -195,6 +202,31 @@ func (n *NodeNotEqual) RightValue() NodeExpr {
 }
 
 func (n *NodeNotEqual) LeftValue() NodeExpr {
+	return n.leftValue
+}
+
+// LIKE
+func (n *NodeLike) Assertion(lvalue string, rvalue string) bool {
+	return n.Pattern.MatchString(lvalue)
+}
+
+func (n *NodeLike) Operator() uint8 {
+	return lexical.T_LIKE
+}
+
+func (n *NodeLike) SetLeftValue(e NodeExpr) {
+	n.leftValue = e
+}
+
+func (n *NodeLike) SetRightValue(e NodeExpr) {
+	n.rightValue = e
+}
+
+func (n *NodeLike) RightValue() NodeExpr {
+	return n.rightValue
+}
+
+func (n *NodeLike) LeftValue() NodeExpr {
 	return n.leftValue
 }
 

@@ -2,7 +2,9 @@ package parser
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 	_ "unicode"
 
 	"github.com/cloudson/gitql/lexical"
@@ -339,7 +341,7 @@ func gWC3(eating bool) (NodeExpr, error) {
 	return expr, nil
 }
 
-// where cond 'equal', 'in' and 'not equal'
+// where cond 'equal', 'in', 'like' and 'not equal'
 func gWC4(eating bool) (NodeExpr, error) {
 	if eating {
 		token, err := lexical.Token()
@@ -373,6 +375,19 @@ func gWC4(eating bool) (NodeExpr, error) {
 		}
 		op.SetRightValue(expr2)
 		return op, nil
+	case lexical.T_LIKE:
+		op := new(NodeLike)
+		op.SetLeftValue(expr)
+		expr2, err2 := gWC4(true)
+		if err2 != nil {
+			return nil, err2
+		}
+		op.SetRightValue(expr2)
+		// Compile the regex while parsing, so that
+		// we don't need to compile for every row
+		rx := strings.Replace(expr2.(*NodeLiteral).Value(), "%", "(.*)", -1)
+		op.Pattern, err2 = regexp.Compile(rx)
+		return op, err2
 	case lexical.T_IN:
 		op := new(NodeIn)
 		op.SetLeftValue(expr)
