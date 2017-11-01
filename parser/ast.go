@@ -182,6 +182,9 @@ func (n *NodeEqual) LeftValue() NodeExpr {
 
 // NOT EQUAL
 func (n *NodeNotEqual) Assertion(lvalue string, rvalue string) bool {
+	if len(lvalue) == 40 {
+		return lvalue[0:len(rvalue)] != rvalue
+	}
 	return lvalue != rvalue
 }
 

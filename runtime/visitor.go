@@ -94,7 +94,6 @@ func testAllFieldsFromTable(fields []string, table string) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -121,6 +120,9 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) error {
 	case reflect.TypeOf(new(parser.NodeLike)):
 		g := n.(*parser.NodeLike)
 		return v.VisitLike(g)
+	case reflect.TypeOf(new(parser.NodeNotEqual)):
+		g := n.(*parser.NodeNotEqual)
+		return v.VisitNotEqual(g)
 	}
 	return nil
 }
@@ -133,6 +135,13 @@ func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) error {
 }
 
 func (v *RuntimeVisitor) VisitLike(n *parser.NodeLike) error {
+  lvalue := n.LeftValue().(*parser.NodeId).Value()
+	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
+	boolRegister = n.Assertion(metadata(lvalue), rvalue)
+	return nil
+}
+
+func (v *RuntimeVisitor) VisitNotEqual(n *parser.NodeNotEqual) error {
 	lvalue := n.LeftValue().(*parser.NodeId).Value()
 	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 	boolRegister = n.Assertion(metadata(lvalue), rvalue)
