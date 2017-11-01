@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -80,5 +81,26 @@ func TestSelectedFieldsCount(t *testing.T) {
 	}
 	if table.fields[0] != "author" || table.fields[1] != "hash" {
 		t.Errorf("Selected 'author' and 'hash'. Got %v", table.fields)
+	}
+}
+
+func TestNotEqualsInWhereLTGT(t *testing.T) {
+	queryData := "select committer, hash from commits limit 1"
+	table := getTableForQuery(queryData, "../", t)
+	firstCommitter := table.rows[0]["committer"].(string)
+	query := fmt.Sprintf("select committer, hash from commits where committer <> '%s' limit 1", firstCommitter)
+	table = getTableForQuery(query, "../", t)
+	if firstCommitter == table.rows[0]["committer"].(string) {
+		t.Errorf("Still got the same committer as the first one. - %s", firstCommitter)
+	}
+}
+func TestNotEqualsInWhere(t *testing.T) {
+	queryData := "select committer, hash from commits limit 1"
+	table := getTableForQuery(queryData, "../", t)
+	firstCommitter := table.rows[0]["committer"].(string)
+	query := fmt.Sprintf("select committer, hash from commits where committer != '%s' limit 1", firstCommitter)
+	table = getTableForQuery(query, "../", t)
+	if firstCommitter == table.rows[0]["committer"].(string) {
+		t.Errorf("Still got the same committer as the first one. - %s", firstCommitter)
 	}
 }

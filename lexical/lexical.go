@@ -142,6 +142,9 @@ func Token() (uint8, *TokenError) {
 			if lexeme == "=" {
 				state = S_SMALLER_OR_EQUAL
 				break
+			} else if lexeme == ">" {
+				char = nextChar()
+				return T_NOT_EQUAL, nil
 			}
 			return T_SMALLER, nil
 		case S_SMALLER_OR_EQUAL:
