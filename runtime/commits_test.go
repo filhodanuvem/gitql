@@ -84,6 +84,16 @@ func TestSelectedFieldsCount(t *testing.T) {
 	}
 }
 
+func TestNotEqualsInWhereLTGT(t *testing.T) {
+	queryData := "select committer, hash from commits limit 1"
+	table := getTableForQuery(queryData, "../", t)
+	firstCommitter := table.rows[0]["committer"].(string)
+	query := fmt.Sprintf("select committer, hash from commits where committer <> '%s' limit 1", firstCommitter)
+	table = getTableForQuery(query, "../", t)
+	if firstCommitter == table.rows[0]["committer"].(string) {
+		t.Errorf("Still got the same committer as the first one. - %s", firstCommitter)
+	}
+}
 func TestNotEqualsInWhere(t *testing.T) {
 	queryData := "select committer, hash from commits limit 1"
 	table := getTableForQuery(queryData, "../", t)
@@ -91,6 +101,6 @@ func TestNotEqualsInWhere(t *testing.T) {
 	query := fmt.Sprintf("select committer, hash from commits where committer != '%s' limit 1", firstCommitter)
 	table = getTableForQuery(query, "../", t)
 	if firstCommitter == table.rows[0]["committer"].(string) {
-		t.Errorf("Strill got the same committer as the first one. - %s", firstCommitter)
+		t.Errorf("Still got the same committer as the first one. - %s", firstCommitter)
 	}
 }
