@@ -25,6 +25,7 @@ const T_PARENTH_L = 22
 const T_PARENTH_R = 23
 const T_IN = 24
 const T_ASC = 25
+const T_LIKE = 26
 const T_EOF = 0
 const T_FUCK = 66
 

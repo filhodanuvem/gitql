@@ -117,16 +117,25 @@ func (v *RuntimeVisitor) VisitExpr(n parser.NodeExpr) error {
 	case reflect.TypeOf(new(parser.NodeIn)):
 		g := n.(*parser.NodeIn)
 		return v.VisitIn(g)
+	case reflect.TypeOf(new(parser.NodeLike)):
+		g := n.(*parser.NodeLike)
+		return v.VisitLike(g)
 	case reflect.TypeOf(new(parser.NodeNotEqual)):
 		g := n.(*parser.NodeNotEqual)
 		return v.VisitNotEqual(g)
 	}
-
 	return nil
 }
 
 func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) error {
 	lvalue := n.LeftValue().(*parser.NodeId).Value()
+	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
+	boolRegister = n.Assertion(metadata(lvalue), rvalue)
+	return nil
+}
+
+func (v *RuntimeVisitor) VisitLike(n *parser.NodeLike) error {
+  lvalue := n.LeftValue().(*parser.NodeId).Value()
 	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 	boolRegister = n.Assertion(metadata(lvalue), rvalue)
 	return nil
@@ -143,9 +152,7 @@ func (v *RuntimeVisitor) VisitGreater(n *parser.NodeGreater) error {
 	lvalue := n.LeftValue().(*parser.NodeId).Value()
 	lvalue = metadata(lvalue)
 	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
-
 	boolRegister = n.Assertion(lvalue, rvalue)
-
 	return nil
 }
 
@@ -153,9 +160,7 @@ func (v *RuntimeVisitor) VisitSmaller(n *parser.NodeSmaller) error {
 	lvalue := n.LeftValue().(*parser.NodeId).Value()
 	lvalue = metadata(lvalue)
 	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
-
 	boolRegister = n.Assertion(lvalue, rvalue)
-
 	return nil
 }
 
@@ -164,7 +169,6 @@ func (v *RuntimeVisitor) VisitOr(n *parser.NodeOr) error {
 	boolLeft := boolRegister
 	v.VisitExpr(n.RightValue())
 	boolRight := boolRegister
-
 	boolRegister = boolLeft || boolRight
 	return nil
 }

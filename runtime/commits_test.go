@@ -84,6 +84,14 @@ func TestSelectedFieldsCount(t *testing.T) {
 	}
 }
 
+func TestWhereLike(t *testing.T) {
+	query := "select hash, author from commits where hash like '%8813f1c5e6f5d10ef%'"
+	table := getTableForQuery(query, "../", t)
+	if len(table.rows) != 1 {
+		t.Errorf("Expecting 1 row. Got %d rows", len(table.rows))
+  }
+}
+
 func TestNotEqualsInWhereLTGT(t *testing.T) {
 	queryData := "select committer, hash from commits limit 1"
 	table := getTableForQuery(queryData, "../", t)
@@ -94,6 +102,7 @@ func TestNotEqualsInWhereLTGT(t *testing.T) {
 		t.Errorf("Still got the same committer as the first one. - %s", firstCommitter)
 	}
 }
+
 func TestNotEqualsInWhere(t *testing.T) {
 	queryData := "select committer, hash from commits limit 1"
 	table := getTableForQuery(queryData, "../", t)
