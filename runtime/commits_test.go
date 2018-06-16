@@ -89,7 +89,7 @@ func TestWhereLike(t *testing.T) {
 	table := getTableForQuery(query, "../", t)
 	if len(table.rows) != 1 {
 		t.Errorf("Expecting 1 row. Got %d rows", len(table.rows))
-  }
+	}
 }
 
 func TestNotEqualsInWhereLTGT(t *testing.T) {
