@@ -135,7 +135,7 @@ func (v *RuntimeVisitor) VisitEqual(n *parser.NodeEqual) error {
 }
 
 func (v *RuntimeVisitor) VisitLike(n *parser.NodeLike) error {
-  lvalue := n.LeftValue().(*parser.NodeId).Value()
+	lvalue := n.LeftValue().(*parser.NodeId).Value()
 	rvalue := n.RightValue().(*parser.NodeLiteral).Value()
 	boolRegister = n.Assertion(metadata(lvalue), rvalue)
 	return nil
