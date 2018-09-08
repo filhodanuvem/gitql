@@ -1,8 +1,9 @@
 language: go
-go: 
-   - 1.5
-   - 1.6 
-   - 1.7 
+go:  
+   - "1.8"
+   - "1.9"
+   - "1.10"
+   - "1.11"
 before_script: 
     - export GOPATH="$HOME/gopath"
     - go get -d -v
