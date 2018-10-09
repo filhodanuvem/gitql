@@ -7,7 +7,7 @@ In a repository path...
 
 ![how to use](howtouse.gif)
 
-See more [here](https://asciinema.org/a/8863)
+See more [here](https://asciinema.org/a/97094)
 
 ## Requirements 
 - Go  
