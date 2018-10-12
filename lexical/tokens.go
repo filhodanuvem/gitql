@@ -27,7 +27,6 @@ const T_IN = 24
 const T_ASC = 25
 const T_LIKE = 26
 const T_NOT = 27
-const T_NOT_OR_T_LIKE = 28
 const T_EOF = 0
 const T_FUCK = 66
 
@@ -61,7 +60,6 @@ func allocMapTokenNames() {
 			T_EOF:              "T_EOF",
 			T_ASC:              "T_ASC",
 			T_NOT: 				"T_NOT",
-			T_NOT_OR_T_LIKE: 	"T_NOT_OR_T_LIKE",
 		}
 	}
 }

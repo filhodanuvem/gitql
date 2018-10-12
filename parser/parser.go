@@ -364,7 +364,7 @@ func gWC4(eating bool) (NodeExpr, error) {
 		}
 		look_ahead = token
 		if look_ahead != lexical.T_LIKE && look_ahead != lexical.T_IN {
-			return nil, throwSyntaxError(lexical.T_NOT_OR_T_LIKE, look_ahead)
+			return nil, throwSyntaxError(lexical.T_NOT, look_ahead)
 		}
 	}
 
