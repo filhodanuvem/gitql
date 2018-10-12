@@ -220,6 +220,8 @@ func lexemeToToken(lexeme string) uint8 {
 		return T_DESC
 	case L_LIKE:
 		return T_LIKE
+	case L_NOT:
+		return T_NOT
 	}
 	return T_ID
 }

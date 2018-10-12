@@ -230,6 +230,154 @@ func TestWhereWithNotEqualCompare(t *testing.T) {
 	}
 }
 
+func TestWhereWithIn(t *testing.T) {
+	New("Select message from commits where 'react' in message")
+
+	ast, err := AST()
+	if err != nil {
+		t.Errorf(err.Error())
+		return
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	w := selectNode.Where
+	if w == nil {
+		t.Errorf("should have where node")
+	}
+
+	if reflect.TypeOf(w) != reflect.TypeOf(new(NodeIn)) {
+		t.Errorf("should be a NodeIn")
+	}
+
+	notBool := w.(*NodeIn).Not
+	if notBool == true {
+		t.Errorf("Not bool should be set to false")
+	}
+
+	lValue := w.LeftValue().(*NodeLiteral)
+	rValue := w.RightValue().(*NodeId)
+	if lValue.Value() != "react" {
+		t.Errorf("LValue should be 'react'")
+	}
+
+	if rValue.Value() != "message" {
+		t.Errorf("RValue should be 'message'")
+	}
+
+
+
+}
+
+func TestWhereWithNotIn(t *testing.T) {
+	New("Select message from commits where 'react' not in message")
+
+	ast, err := AST()
+	if err != nil {
+		t.Errorf(err.Error())
+		return
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	w := selectNode.Where
+	if w == nil {
+		t.Errorf("should have where node")
+	}
+
+	if reflect.TypeOf(w) != reflect.TypeOf(new(NodeIn)) {
+		t.Errorf("should be a NodeIn")
+	}
+
+	notBool := w.(*NodeIn).Not
+	if notBool == false {
+		t.Errorf("Not bool should be set to true")
+	}
+
+	lValue := w.LeftValue().(*NodeLiteral)
+	rValue := w.RightValue().(*NodeId)
+	if lValue.Value() != "react" {
+		t.Errorf("LValue should be 'react'")
+	}
+
+	if rValue.Value() != "message" {
+		t.Errorf("RValue should be 'message'")
+	}
+
+}
+
+func TestWhereWithLike(t *testing.T) {
+	New("Select author, message from commits where message like '%B'")
+
+	ast, err := AST()
+	if err != nil {
+		t.Errorf(err.Error())
+		return
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	w := selectNode.Where
+	if w == nil {
+		t.Errorf("should have where node")
+	}
+
+	if reflect.TypeOf(w) != reflect.TypeOf(new(NodeLike)) {
+		t.Errorf("should be a NodeLike")
+	}
+
+	notBool := w.(*NodeLike).Not
+	if notBool == true {
+		t.Errorf("Not bool should be set to false")
+	}
+
+	lValue := w.LeftValue().(*NodeId)
+	rValue := w.RightValue().(*NodeLiteral)
+	if lValue.Value() != "message" {
+		t.Errorf("LValue should be 'message'")
+	}
+
+	es := `Rvalue should be &B`
+	if rValue.Value() != "%B" {
+		t.Errorf(es)
+	}
+
+}
+
+func TestWhereWithNotLike(t *testing.T) {
+	New("Select author, message from commits where message not like '%B'")
+
+	ast, err := AST()
+	if err != nil {
+		t.Errorf(err.Error())
+		return
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	w := selectNode.Where
+	if w == nil {
+		t.Errorf("should have where node")
+	}
+
+	if reflect.TypeOf(w) != reflect.TypeOf(new(NodeLike)) {
+		t.Errorf("should be a NodeLike")
+	}
+
+	notBool := w.(*NodeLike).Not
+	if notBool == false {
+		t.Errorf("Not bool should be set to true")
+	}
+
+	lValue := w.LeftValue().(*NodeId)
+	rValue := w.RightValue().(*NodeLiteral)
+	if lValue.Value() != "message" {
+		t.Errorf("LValue should be 'message'")
+	}
+
+	es := `Rvalue should be &B`
+	if rValue.Value() != "%B" {
+		t.Errorf(es)
+	}
+
+}
+
 func TestWhereWithGreater(t *testing.T) {
 	New("select * from commits where date > '2014-05-12 00:00:00' ")
 

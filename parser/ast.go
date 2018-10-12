@@ -57,6 +57,7 @@ type NodeAdapterBinToConst struct {
 type NodeIn struct {
 	leftValue  NodeExpr
 	rightValue NodeExpr
+	Not 	   bool
 }
 
 type NodeEqual struct {
@@ -73,6 +74,7 @@ type NodeLike struct {
 	leftValue  NodeExpr
 	rightValue NodeExpr
 	Pattern    *regexp.Regexp
+	Not 	   bool
 }
 
 type NodeGreater struct {
@@ -129,6 +131,9 @@ func (e *NodeEmpty) Run() {
 }
 
 func (n *NodeIn) Assertion(lvalue string, rvalue string) bool {
+	if n.Not {
+		return !strings.Contains(rvalue, lvalue)
+	}
 	return strings.Contains(rvalue, lvalue)
 }
 
@@ -210,6 +215,9 @@ func (n *NodeNotEqual) LeftValue() NodeExpr {
 
 // LIKE
 func (n *NodeLike) Assertion(lvalue string, rvalue string) bool {
+	if n.Not {
+		return !n.Pattern.MatchString(lvalue)
+	}
 	return n.Pattern.MatchString(lvalue)
 }
 
