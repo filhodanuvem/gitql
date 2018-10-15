@@ -341,7 +341,7 @@ func gWC3(eating bool) (NodeExpr, error) {
 	return expr, nil
 }
 
-// where cond 'equal', 'in', 'like' and 'not equal'
+// where cond 'equal', 'in', 'not in', 'like', 'not like' and 'not equal'
 func gWC4(eating bool) (NodeExpr, error) {
 	if eating {
 		token, err := lexical.Token()
@@ -353,6 +353,19 @@ func gWC4(eating bool) (NodeExpr, error) {
 	expr, err := gWC5(false)
 	if err != nil {
 		return nil, err
+	}
+
+	var notBool bool
+	if look_ahead == lexical.T_NOT {
+		notBool = true
+		token, err := lexical.Token()
+		if err != nil {
+			return nil, err
+		}
+		look_ahead = token
+		if look_ahead != lexical.T_LIKE && look_ahead != lexical.T_IN {
+			return nil, throwSyntaxError(lexical.T_NOT, look_ahead)
+		}
 	}
 
 	switch look_ahead {
@@ -387,6 +400,7 @@ func gWC4(eating bool) (NodeExpr, error) {
 		// we don't need to compile for every row
 		rx := strings.Replace(expr2.(*NodeLiteral).Value(), "%", "(.*)", -1)
 		op.Pattern, err2 = regexp.Compile(rx)
+		op.Not = notBool
 		return op, err2
 	case lexical.T_IN:
 		op := new(NodeIn)
@@ -396,6 +410,7 @@ func gWC4(eating bool) (NodeExpr, error) {
 			return nil, err2
 		}
 		op.SetRightValue(expr2)
+		op.Not = notBool
 		return op, nil
 	}
 
