@@ -49,16 +49,16 @@ func AST() (*NodeProgram, error) {
 }
 
 func gProgram() (NodeMain, error) {
-	token, err := lexical.Token()
+	token, tokenError := lexical.Token()
 	look_ahead = token
 
-	if err != nil {
-		return nil, err
+	if tokenError != nil {
+		return nil, tokenError
 	}
 
-	s, err2 := gSelect()
+	s, err := gSelect()
 	if s == nil {
-		return nil, err2
+		return nil, err
 	}
 
 	if look_ahead != lexical.T_EOF {
@@ -72,17 +72,17 @@ func gSelect() (*NodeSelect, error) {
 	if look_ahead != lexical.T_SELECT {
 		return nil, throwSyntaxError(lexical.T_SELECT, look_ahead)
 	}
-	token, err := lexical.Token()
+	token, tokenError := lexical.Token()
 	look_ahead = token
-	if err != nil {
-		return nil, err
+	if tokenError != nil {
+		return nil, tokenError
 	}
 	s := new(NodeSelect)
 
 	// PARAMETERS
-	fields, err2 := gTableParams()
-	if err2 != nil {
-		return nil, err2
+	fields, err := gTableParams()
+	if err != nil {
+		return nil, err
 	}
 
 	if len(fields) == 1 && fields[0] == "*" {
@@ -91,36 +91,35 @@ func gSelect() (*NodeSelect, error) {
 	s.Fields = fields
 
 	// TABLES
-	tables, err4 := gTableNames()
-	if err4 != nil {
-		return nil, err4
+	tables, err := gTableNames()
+	if err != nil {
+		return nil, err
 	}
 	s.Tables = tables
 
 	// WHERE
-	where, err6 := gWhere()
-	if err6 != nil {
-		return nil, err6
+	where, err := gWhere()
+	if err != nil {
+		return nil, err
 	}
 	s.Where = where
 
 	// ORDER BY
-	order, err6 := gOrder()
-	if err6 != nil {
-		return nil, err6
+	order, err := gOrder()
+	if err != nil {
+		return nil, err
 	}
 	s.Order = order
 
 	// LIMIT
-	var err5 error
-	s.Limit, err5 = gLimit()
+	s.Limit, err = gLimit()
 	if s.Limit == -1 {
 		// @todo search default limit from file config
 		s.Limit = 10
 	}
 
-	if err5 != nil {
-		return nil, err5
+	if err != nil {
+		return nil, err
 	}
 
 	return s, nil
@@ -142,9 +141,9 @@ func gTableNames() ([]string, error) {
 	tables := make([]string, 1)
 	tables[0] = lexical.CurrentLexeme
 
-	token2, err2 := lexical.Token()
-	if err2 != nil && token2 != lexical.T_EOF {
-		return nil, err2
+	token2, err := lexical.Token()
+	if err != nil && token2 != lexical.T_EOF {
+		return nil, err
 	}
 	look_ahead = token2
 
@@ -256,9 +255,9 @@ func gLimit() (int, error) {
 	if numberError != nil {
 		return 0, numberError
 	}
-	token2, err2 := lexical.Token()
-	if token2 != lexical.T_EOF && err2 != nil {
-		return 0, err2
+	token2, err := lexical.Token()
+	if token2 != lexical.T_EOF && err != nil {
+		return 0, err
 	}
 	look_ahead = token2
 
@@ -270,14 +269,14 @@ func gWhere() (NodeExpr, error) {
 		return nil, nil
 	}
 
-	token, err := lexical.Token()
-	if err != nil {
-		return nil, err
+	token, tokenError := lexical.Token()
+	if tokenError != nil {
+		return nil, tokenError
 	}
 	look_ahead = token
-	conds, err2 := gWhereConds()
+	conds, err := gWhereConds()
 
-	return conds, err2
+	return conds, err
 }
 
 func gWhereConds() (NodeExpr, error) {
@@ -305,9 +304,9 @@ func gWC2(eating bool) (NodeExpr, error) {
 	if look_ahead == lexical.T_OR {
 		or := new(NodeOr)
 		or.SetLeftValue(expr)
-		expr2, err2 := gWC2(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC2(true)
+		if err != nil {
+			return nil, err
 		}
 		or.SetRightValue(expr2)
 		return or, nil
@@ -331,9 +330,9 @@ func gWC3(eating bool) (NodeExpr, error) {
 	if look_ahead == lexical.T_AND {
 		and := new(NodeAnd)
 		and.SetLeftValue(expr)
-		expr2, err2 := gWC3(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC3(true)
+		if err != nil {
+			return nil, err
 		}
 		and.SetRightValue(expr2)
 		return and, nil
@@ -372,9 +371,9 @@ func gWC4(eating bool) (NodeExpr, error) {
 	case lexical.T_EQUAL:
 		op := new(NodeEqual)
 		op.SetLeftValue(expr)
-		expr2, err2 := gWC4(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC4(true)
+		if err != nil {
+			return nil, err
 		}
 		op.SetRightValue(expr2)
 
@@ -382,32 +381,32 @@ func gWC4(eating bool) (NodeExpr, error) {
 	case lexical.T_NOT_EQUAL:
 		op := new(NodeNotEqual)
 		op.SetLeftValue(expr)
-		expr2, err2 := gWC4(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC4(true)
+		if err != nil {
+			return nil, err
 		}
 		op.SetRightValue(expr2)
 		return op, nil
 	case lexical.T_LIKE:
 		op := new(NodeLike)
 		op.SetLeftValue(expr)
-		expr2, err2 := gWC4(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC4(true)
+		if err != nil {
+			return nil, err
 		}
 		op.SetRightValue(expr2)
 		// Compile the regex while parsing, so that
 		// we don't need to compile for every row
 		rx := strings.Replace(expr2.(*NodeLiteral).Value(), "%", "(.*)", -1)
-		op.Pattern, err2 = regexp.Compile(rx)
+		op.Pattern, err = regexp.Compile(rx)
 		op.Not = notBool
-		return op, err2
+		return op, err
 	case lexical.T_IN:
 		op := new(NodeIn)
 		op.SetLeftValue(expr)
-		expr2, err2 := gWC4(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC4(true)
+		if err != nil {
+			return nil, err
 		}
 		op.SetRightValue(expr2)
 		op.Not = notBool
@@ -437,9 +436,9 @@ func gWC5(eating bool) (NodeExpr, error) {
 		op := new(NodeGreater)
 		op.Equal = (look_ahead == lexical.T_GREATER_OR_EQUAL)
 		op.SetLeftValue(expr)
-		expr2, err2 := gWC5(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC5(true)
+		if err != nil {
+			return nil, err
 		}
 		op.SetRightValue(expr2)
 
@@ -448,9 +447,9 @@ func gWC5(eating bool) (NodeExpr, error) {
 		op := new(NodeSmaller)
 		op.Equal = (look_ahead == lexical.T_SMALLER_OR_EQUAL)
 		op.SetLeftValue(expr)
-		expr2, err2 := gWC5(true)
-		if err2 != nil {
-			return nil, err2
+		expr2, err := gWC5(true)
+		if err != nil {
+			return nil, err
 		}
 		op.SetRightValue(expr2)
 
@@ -462,21 +461,21 @@ func gWC5(eating bool) (NodeExpr, error) {
 
 func rValue() (NodeExpr, error) {
 	if look_ahead == lexical.T_PARENTH_L {
-		token, err := lexical.Token()
-		if err != nil {
-			return nil, err
+		token, tokenError := lexical.Token()
+		if tokenError != nil {
+			return nil, tokenError
 		}
 		look_ahead = token
-		conds, err2 := gWhereConds()
-		if err2 != nil {
-			return nil, err2
+		conds, err := gWhereConds()
+		if err != nil {
+			return nil, err
 		}
 		if look_ahead != lexical.T_PARENTH_R {
 			return nil, throwSyntaxError(lexical.T_PARENTH_R, look_ahead)
 		}
-		token2, err3 := lexical.Token()
-		if token2 != lexical.T_EOF && err3 != nil {
-			return nil, err3
+		token2, tokenError := lexical.Token()
+		if token2 != lexical.T_EOF && tokenError != nil {
+			return nil, tokenError
 		}
 		look_ahead = token2
 
