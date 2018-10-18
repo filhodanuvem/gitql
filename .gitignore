@@ -3,3 +3,4 @@ git2go
 libgit2
 gitql
 .vscode*
+.idea/
