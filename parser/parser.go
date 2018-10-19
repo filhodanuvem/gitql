@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -495,13 +496,9 @@ func rValue() (NodeExpr, error) {
 		return n, nil
 	}
 
-	if look_ahead != lexical.T_LITERAL && look_ahead != lexical.T_NUMERIC {
-		return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
-	}
-
 	lexeme := lexical.CurrentLexeme
 	if look_ahead != lexical.T_LITERAL {
-		return nil, throwSyntaxError(lexical.T_AND, look_ahead)
+		return nil, errors.New("Only Literals and Date are allowed in `where` clause")
 	}
 
 	// @todo inserts IS NULL!
