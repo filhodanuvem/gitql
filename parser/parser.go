@@ -74,6 +74,7 @@ func gSelect() (*NodeSelect, error) {
 		return nil, throwSyntaxError(lexical.T_SELECT, look_ahead)
 	}
 	token, tokenError := lexical.Token()
+
 	look_ahead = token
 	if tokenError != nil {
 		return nil, tokenError
@@ -159,6 +160,9 @@ func gTableParams() ([]string, error) {
 		}
 		look_ahead = token
 		return []string{"*"}, nil
+	} else	if look_ahead == lexical.T_COUNT {
+		result, err := gCount()
+		return result, err
 	}
 	var fields = []string{}
 	if look_ahead == lexical.T_ID {
@@ -173,7 +177,41 @@ func gTableParams() ([]string, error) {
 		return fields, errorSyntax
 	}
 	return nil, throwSyntaxError(lexical.T_ID, look_ahead)
+}
 
+// consume count(*)
+func gCount() ([]string, error) {
+	// by construction, T_COUNT is consumed and stored
+	// in the look_ahead
+	err := gExactlyASpecificToken(lexical.T_COUNT)
+	if err != nil {
+		return nil, err
+	}
+	err = gExactlyASpecificToken(lexical.T_PARENTH_L)
+	if err != nil {
+		return nil, err
+	}
+	err = gExactlyASpecificToken(lexical.T_WILD_CARD)
+	if err != nil {
+		return nil, err
+	}
+	err = gExactlyASpecificToken(lexical.T_PARENTH_R)
+	if err != nil {
+		return nil, err
+	}
+	return []string{"*"}, nil
+}
+
+func gExactlyASpecificToken(expected uint8) error {
+	if look_ahead != expected {
+		return throwSyntaxError(expected, look_ahead)
+	}
+	token, err := lexical.Token()
+	if err != nil {
+		return err
+	}
+	look_ahead = token
+	return nil
 }
 
 func gTableParamsRest(fields *[]string, count int) ([]string, error) {
