@@ -55,6 +55,25 @@ func TestUsingWildCard(t *testing.T) {
 	}
 }
 
+func TestUsingCount(t *testing.T) {
+	New("select count(*) from users")
+	ast, error := AST()
+
+	if error != nil {
+		t.Errorf(error.Error())
+	}
+
+	if ast.Child == nil {
+		t.Errorf("Program is empty")
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	if !selectNode.Count {
+		t.Errorf("Expected count setted")
+	}
+}
+
+
 func TestUsingOneFieldName(t *testing.T) {
 	New("select name from files")
 
@@ -118,6 +137,17 @@ func TestErrorWithUnexpectedComma(t *testing.T) {
 		t.Errorf("Expected error 'Unexpected T_COMMA'")
 	}
 }
+
+func TestErrorWithMalformedCount(t *testing.T) {
+	New("select count(*]")
+
+	_, error := AST()
+
+	if error == nil {
+		t.Errorf("Expected error 'Expected )'")
+	}
+}
+
 
 func TestErrorWithInvalidRootNode(t *testing.T) {
 	New("name from files")

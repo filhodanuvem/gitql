@@ -87,8 +87,13 @@ func gSelect() (*NodeSelect, error) {
 		return nil, err
 	}
 
-	if len(fields) == 1 && fields[0] == "*" {
-		s.WildCard = true
+	if len(fields) == 1 {
+		f0 := fields[0]
+		if f0 == "*" {
+			s.WildCard = true
+		} else if f0 == "#" {
+			s.Count = true
+		}
 	}
 	s.Fields = fields
 
@@ -199,7 +204,7 @@ func gCount() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return []string{"*"}, nil
+	return []string{"#"}, nil
 }
 
 func gExactlyASpecificToken(expected uint8) error {

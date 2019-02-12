@@ -17,7 +17,9 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) error {
 		proxyTableName := n.Tables[0]
 		// refactor tree
 		proxy := builder.proxyTables[proxyTableName]
-		if !n.WildCard {
+		if n.Count {
+			// do nothing
+		} else	if !n.WildCard {
 			err := testAllFieldsFromTable(n.Fields, proxyTableName)
 			if err != nil {
 				return err
@@ -62,7 +64,12 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) error {
 	if err != nil {
 		return err
 	}
-	return testAllFieldsFromTable(n.Fields, table)
+	if n.Count {
+		n.Fields = []string{COUNT_FIELD_NAME}
+	}else{
+		err = testAllFieldsFromTable(n.Fields, table)
+	}
+	return err
 	// Why not visit expression right now ?
 	// Because we will, at first, discover the current object
 }

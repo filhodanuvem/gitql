@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"strconv"
 	"log"
 	"strings"
 
@@ -26,7 +27,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	resultFields := fields // These are the fields in output with wildcards expanded
 	rows := make([]tableRow, s.Limit)
 	usingOrder := false
-	if s.Order != nil {
+	if s.Order != nil && !s.Count {
 		usingOrder = true
 		// Check if the order by field is in the selected fields. If not, add them to selected fields list
 		if !utilities.IsFieldPresentInArray(fields, s.Order.Field) {
@@ -38,12 +39,13 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		boolRegister = true
 		visitor.VisitExpr(where)
 		if boolRegister {
-			newRow := make(tableRow)
-			for _, f := range fields {
-				newRow[f] = metadataCommit(f, object)
+			if !s.Count {
+				newRow := make(tableRow)
+				for _, f := range fields {
+					newRow[f] = metadataCommit(f, object)
+				}
+				rows = append(rows, newRow)
 			}
-			rows = append(rows, newRow)
-
 			counter = counter + 1
 		}
 		if !usingOrder && counter > s.Limit {
@@ -55,6 +57,13 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	err := builder.walk.Iterate(fn)
 	if err != nil {
 		fmt.Printf(err.Error())
+	}
+	if s.Count {
+		newRow := make(tableRow)
+		// counter was started from 1!
+		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter-1)
+		counter = 2
+		rows = append(rows, newRow)
 	}
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced, err = orderTable(rowsSliced, s.Order)

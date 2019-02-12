@@ -23,6 +23,7 @@ type NodeProgram struct {
 
 type NodeSelect struct {
 	WildCard bool
+	Count    bool
 	Fields   []string
 	Tables   []string
 	Where    NodeExpr
