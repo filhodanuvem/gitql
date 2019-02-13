@@ -98,7 +98,7 @@ func TestSmallerWithDate(t *testing.T) {
 }
 
 func TestSmallerWithDateWithoutTime(t *testing.T) {
-	parser.New("select * from commits where date > '2013-03-14'")
+	parser.New("select count(*) from commits where date > '2013-03-14'")
 	ast, parserErr := parser.AST()
 	if parserErr != nil {
 		t.Fatalf(parserErr.Error())

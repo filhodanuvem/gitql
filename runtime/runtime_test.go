@@ -130,3 +130,29 @@ func TestNotFoundCommitWithInStatementAndSorting(t *testing.T) {
 		t.Errorf(errGit.Error())
 	}
 }
+
+func TestFoundCommitsWithSevenInHash(t *testing.T) {
+	folder, errFile := filepath.Abs("../")
+
+	if errFile != nil {
+		t.Errorf(errFile.Error())
+	}
+
+	query := "select count(*) from commits where '7' in hash order by date desc limit 1000"
+
+	parser.New(query)
+	ast, errGit := parser.AST()
+	if errGit != nil {
+		t.Errorf(errGit.Error())
+	}
+	ast.Path = &folder
+	errGit = semantical.Analysis(ast)
+	if errGit != nil {
+		t.Errorf(errGit.Error())
+	}
+
+	typeFormat := "table"
+	if errGit = Run(ast, &typeFormat); errGit != nil {
+		t.Errorf(errGit.Error())
+	}
+}
