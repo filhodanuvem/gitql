@@ -1,4 +1,5 @@
-# Don't run this one directly, use «make install» to run it
+#!/bin/bash 
+
 set -ex
 
 unameOut="$(uname -s)"
