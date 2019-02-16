@@ -48,7 +48,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 			}
 			counter = counter + 1
 		}
-		if !usingOrder && counter > s.Limit {
+		if !usingOrder && !s.Count && counter > s.Limit {
 			return false
 		}
 		return true
@@ -71,7 +71,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		return nil, err
 	}
 
-	if usingOrder && counter > s.Limit {
+	if usingOrder && !s.Count && counter > s.Limit {
 		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
 	}
