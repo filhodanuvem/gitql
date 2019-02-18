@@ -51,7 +51,7 @@ func (v *SemanticalVisitor) VisitSelect(n *parser.NodeSelect) error {
 	}
 
 	if 0 == n.Limit {
-		return throwSemanticalError("Limit should be greater then zero")
+		return throwSemanticalError("Limit should be greater than zero")
 	}
 
 	return nil

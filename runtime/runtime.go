@@ -24,6 +24,10 @@ const (
 	REFERENCE_TYPE_TAG    = "tag"
 )
 
+const (
+	COUNT_FIELD_NAME = "count"
+)
+
 var repo *git.Repository
 var builder *GitBuilder
 var boolRegister bool

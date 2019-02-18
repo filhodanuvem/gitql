@@ -16,6 +16,15 @@ func TestTestAllFieldsInExprBranches(t *testing.T) {
 	}
 }
 
+func TestTestAllFieldsInExprBranchesWithCount(t *testing.T) {
+	query := "select count(*) from branches where name = 'something' and somthing > 'name'"
+	err := parseAndVisitQuery(query, "../", t)
+	if err == nil {
+		t.Error("Expected error, received none")
+	}
+}
+
+
 func TestTestAllFieldsInExprRefs(t *testing.T) {
 	query := "select * from refs where name = 'something' or type = 'asdfasdfsd'"
 	err := parseAndVisitQuery(query, "../", t)

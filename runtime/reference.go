@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"strconv"
 	"log"
 
 	"github.com/cloudson/git2go"
@@ -23,7 +24,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 	}
 	rows := make([]tableRow, s.Limit)
 	usingOrder := false
-	if s.Order != nil {
+	if s.Order != nil && !s.Count {
 		usingOrder = true
 	}
 	for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
@@ -36,16 +37,25 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 			if s.WildCard {
 				fields = builder.possibleTables[s.Tables[0]]
 			}
-			newRow := make(tableRow)
-			for _, f := range fields {
-				newRow[f] = metadataReference(f, object)
+			if !s.Count {
+				newRow := make(tableRow)
+				for _, f := range fields {
+					newRow[f] = metadataReference(f, object)
+				}
+				rows = append(rows, newRow)
 			}
-			rows = append(rows, newRow)
 			counter = counter + 1
 			if !usingOrder && counter > s.Limit {
 				break
 			}
 		}
+	}
+	if s.Count {
+		newRow := make(tableRow)
+		// counter was started from 1!
+		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter-1)
+		counter = 2
+		rows = append(rows, newRow)
 	}
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced, err = orderTable(rowsSliced, s.Order)

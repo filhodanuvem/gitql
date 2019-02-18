@@ -86,7 +86,7 @@ func TestRecognizeTokensWithLexemesOfTwoChars(t *testing.T) {
 
 func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
 	setUp()
-	source = "=    <    >=   != cloudson"
+	source = "=    <    >=   != cloudson count"
 	char = nextChar()
 
 	var token uint8
@@ -105,6 +105,9 @@ func TestRecognizeTokensWithSourceManySpaced(t *testing.T) {
 
 	token, _ = Token()
 	assertToken(t, token, T_ID)
+
+	token, _ = Token()
+	assertToken(t, token, T_COUNT)
 }
 
 func TestErrorUnrecognizeChar(t *testing.T) {
@@ -127,7 +130,7 @@ func TestErrorUnrecognizeChar(t *testing.T) {
 
 func TestReservedWords(t *testing.T) {
 	setUp()
-	source = "SELECT from WHEre in not"
+	source = "SELECT from WHEre in not cOuNt"
 	char = nextChar()
 
 	var token uint8
@@ -146,6 +149,9 @@ func TestReservedWords(t *testing.T) {
 
 	token, _ = Token()
 	assertToken(t, token, T_NOT)
+
+	token, _ = Token()
+	assertToken(t, token, T_COUNT)
 
 	token, _ = Token()
 	assertToken(t, token, T_EOF)
