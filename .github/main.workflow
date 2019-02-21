@@ -1,11 +1,11 @@
 
 workflow "New workflow" {
   on = "push"
-  resolves = ["unit test"]
+  resolves = ["build"]
 }
 
-action "unit test" {
+action "build" {
   uses = "docker://golang:latest"
-  runs = "make test"
+  runs = "go get -u -d github.com/cloudson/gitql"
 }
 
