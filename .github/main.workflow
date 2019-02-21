@@ -1,4 +1,3 @@
-
 workflow "New workflow" {
   on = "push"
   resolves = ["build"]
@@ -6,6 +5,6 @@ workflow "New workflow" {
 
 action "build" {
   uses = "docker://golang:latest"
-  runs = "go get -u -d github.com/cloudson/gitql"
+  runs = "go"
+  args = " get -u -d github.com/cloudson/gitql"
 }
-
