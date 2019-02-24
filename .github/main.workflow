@@ -4,7 +4,5 @@ workflow "New workflow" {
 }
 
 action "build" {
-  uses = "docker://golang:latest"
-  runs = "go"
-  args = " get -u -d github.com/cloudson/gitql"
+  uses = "./.github/functional-tests/"
 }
