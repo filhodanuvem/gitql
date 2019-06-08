@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"log"
 
-	"github.com/cloudson/git2go"
+	"github.com/libgit2/git2go"
 	"github.com/cloudson/gitql/parser"
 )
 
