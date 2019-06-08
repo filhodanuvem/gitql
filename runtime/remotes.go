@@ -12,7 +12,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
 
-	remoteNames, err := builder.repo.ListRemotes()
+	remoteNames, err := builder.repo.Remotes.List()
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		usingOrder = true
 	}
 	for _, remoteName := range remoteNames {
-		object, errRemote := builder.repo.LoadRemote(remoteName)
+		object, errRemote := builder.repo.Remotes.Lookup(remoteName)
 		if errRemote != nil {
 			log.Fatalln(errRemote)
 		}
@@ -41,7 +41,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 			if !s.Count {
 				newRow := make(map[string]interface{})
 				for _, f := range fields {
-					newRow[f] = metadataRemote(f, object)
+					newRow[f] = metadataRemote(f, object, repo)
 				}
 				rows = append(rows, newRow)
 			}
@@ -74,7 +74,7 @@ func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	return tableData, nil
 }
 
-func metadataRemote(identifier string, object *git.Remote) string {
+func metadataRemote(identifier string, object *git.Remote, repo *git.Repository) string {
 	key := ""
 	for key, _ = range builder.tables {
 		break
@@ -92,9 +92,7 @@ func metadataRemote(identifier string, object *git.Remote) string {
 	case "push_url":
 		return object.PushUrl()
 	case "owner":
-		repo := object.Owner()
-		r := &repo
-		return r.Path()
+		return repo.Path()
 	}
 
 	log.Fatalf("Field %s not implemented yet \n", identifier)
