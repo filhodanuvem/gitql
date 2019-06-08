@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudson/gitql/lexical"
+	"github.com/navigaid/gitql/lexical"
 )
 
 type NodeMain interface {
@@ -58,7 +58,7 @@ type NodeAdapterBinToConst struct {
 type NodeIn struct {
 	leftValue  NodeExpr
 	rightValue NodeExpr
-	Not 	   bool
+	Not        bool
 }
 
 type NodeEqual struct {
@@ -75,7 +75,7 @@ type NodeLike struct {
 	leftValue  NodeExpr
 	rightValue NodeExpr
 	Pattern    *regexp.Regexp
-	Not 	   bool
+	Not        bool
 }
 
 type NodeGreater struct {

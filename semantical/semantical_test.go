@@ -3,7 +3,7 @@ package semantical
 import (
 	"testing"
 
-	"github.com/cloudson/gitql/parser"
+	"github.com/navigaid/gitql/parser"
 )
 
 func TestInvalidZeroLimit(t *testing.T) {

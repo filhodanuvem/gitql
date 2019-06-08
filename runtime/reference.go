@@ -1,11 +1,11 @@
 package runtime
 
 import (
-	"strconv"
 	"log"
+	"strconv"
 
 	"github.com/libgit2/git2go"
-	"github.com/cloudson/gitql/parser"
+	"github.com/navigaid/gitql/parser"
 )
 
 func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
@@ -53,7 +53,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 	if s.Count {
 		newRow := make(tableRow)
 		// counter was started from 1!
-		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter-1)
+		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter - 1)
 		counter = 2
 		rows = append(rows, newRow)
 	}

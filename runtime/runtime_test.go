@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	"github.com/cloudson/gitql/parser"
-	"github.com/cloudson/gitql/semantical"
+	"github.com/navigaid/gitql/parser"
+	"github.com/navigaid/gitql/semantical"
 	"path/filepath"
 	"testing"
 )

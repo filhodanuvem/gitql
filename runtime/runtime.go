@@ -7,8 +7,8 @@ import (
 
 	"encoding/json"
 	"github.com/libgit2/git2go"
-	"github.com/cloudson/gitql/parser"
-	"github.com/cloudson/gitql/semantical"
+	"github.com/navigaid/gitql/parser"
+	"github.com/navigaid/gitql/semantical"
 	"github.com/olekukonko/tablewriter"
 )
 

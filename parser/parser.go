@@ -8,7 +8,7 @@ import (
 	"strings"
 	_ "unicode"
 
-	"github.com/cloudson/gitql/lexical"
+	"github.com/navigaid/gitql/lexical"
 )
 
 var look_ahead uint8
@@ -165,7 +165,7 @@ func gTableParams() ([]string, error) {
 		}
 		look_ahead = token
 		return []string{"*"}, nil
-	} else	if look_ahead == lexical.T_COUNT {
+	} else if look_ahead == lexical.T_COUNT {
 		result, err := gCount()
 		return result, err
 	}

@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cloudson/gitql/parser"
-	"github.com/cloudson/gitql/semantical"
+	"github.com/navigaid/gitql/parser"
+	"github.com/navigaid/gitql/semantical"
 )
 
 func TestTestAllFieldsInExprBranches(t *testing.T) {
@@ -23,7 +23,6 @@ func TestTestAllFieldsInExprBranchesWithCount(t *testing.T) {
 		t.Error("Expected error, received none")
 	}
 }
-
 
 func TestTestAllFieldsInExprRefs(t *testing.T) {
 	query := "select * from refs where name = 'something' or type = 'asdfasdfsd'"
