@@ -23,7 +23,7 @@ go:
 cache: ccache
 
 before_script: 
-- choco install -y make cmake ninja || :
+- choco install -y make cmake ninja || true
 - go get -d -v
 - ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $OLDPWD/prepare.sh )
 
