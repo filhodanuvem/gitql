@@ -5,6 +5,8 @@ os:
 - osx
 - windows
 
+dist: xenial
+
 addons:
   apt:
     packages:
