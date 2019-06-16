@@ -22,6 +22,7 @@ GIT2GO_URL=https://github.com/libgit2/git2go.git
 NPROC=$(nproc 2>/dev/null || echo 1)
 ROOT=$PWD
 BASE=$ROOT/static-build
+
 mkdir -p $BASE $BASE/bld $BASE/install
 {
 	git clone --depth 1 -b $ZLIB_VER $ZLIB_URL $ROOT/vendor/zlib || :
@@ -101,4 +102,5 @@ musl(){
 # export GOPATH="/go" 
 # export PATH="$GOPATH/bin:/usr/local/go/bin:$PATH" 
 # cd "$GOPATH/src/github.com/libgit2/git2go"
+export PKG_CONFIG_PATH="$BASE/install/lib/pkgconfig"
 go install -tags "static" . || :
