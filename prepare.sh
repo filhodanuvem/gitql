@@ -94,5 +94,7 @@ shared(){
 # export GOPATH="/go" 
 # export PATH="$GOPATH/bin:/usr/local/go/bin:$PATH" 
 # cd "$GOPATH/src/github.com/libgit2/git2go"
-go install -tags "static" -ldflags "-extldflags '-static'" ./... 
-go run -tags "static" -ldflags "-extldflags '-static'" script/check-MakeGitError-thread-lock.go
+pwd
+cd $ROOT
+go install -tags "static" -ldflags "-extldflags '-static'" ./... || :
+go run -tags "static" -ldflags "-extldflags '-static'" ./script/check-MakeGitError-thread-lock.go || :
