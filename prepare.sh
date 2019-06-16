@@ -45,7 +45,7 @@ musl(){
 
 {
 	ln -sf $ROOT/vendor/zlib $BASE/bld/zlib && cd $BASE/bld/zlib 
-	./configure --prefix=$BASE/install --static
+	./configure --prefix=$BASE/install # --static
 	make -j $NPROC
 	make -j $NPROC install
 }
