@@ -17,7 +17,7 @@ LIBGIT2_VER=v0.28.2
 
 GIT2GO_URL=https://github.com/libgit2/git2go.git
 
-export CC="ccache gcc"
+# export CC="ccache gcc"
 
 NPROC=$(nproc 2>/dev/null || echo 1)
 ROOT=$PWD
@@ -44,57 +44,61 @@ musl(){
 # export LDFLAGS="-L"
 
 {
-	ln -sf $ROOT/vendor/zlib $BASE/bld/zlib && cd $BASE/bld/zlib 
+	ln -sf $ROOT/vendor/zlib $BASE/bld/zlib && pushd $BASE/bld/zlib 
 	./configure --prefix=$BASE/install # --static
 	make -j $NPROC
 	make -j $NPROC install
+	popd
 }
 {
-	mkdir -p $BASE/bld/openssl && cd $BASE/bld/openssl
+	mkdir -p $BASE/bld/openssl && pushd $BASE/bld/openssl
 	# CC="ccache $BASE/install/bin/musl-gcc" 
 	$ROOT/vendor/openssl/config --prefix=$BASE/install --with-zlib-lib=$BASE/install/lib/ --with-zlib-include=$BASE/install/lib/include/ zlib no-tests # no-shared 
 	make -j $NPROC
 	make -j $NPROC install_sw
+	popd
 }
 {
-	ln -sf $ROOT/vendor/libssh2 $BASE/bld/libssh2 && cd $BASE/bld/libssh2
+	ln -sf $ROOT/vendor/libssh2 $BASE/bld/libssh2 && pushd $BASE/bld/libssh2
 	./buildconf
 	./configure --prefix=$BASE/install --disable-shared
 	make -j $NPROC
 	make -j $NPROC install
+	popd
 }
 {
-	ln -sf $ROOT/vendor/curl $BASE/bld/curl && cd $BASE/bld/curl
+	ln -sf $ROOT/vendor/curl $BASE/bld/curl && pushd $BASE/bld/curl
 	./buildconf
 	./configure --with-ssl=$BASE/install --with-libssh2=$BASE/install --prefix=$BASE/install --disable-shared
 	make -j $NPROC
 	make -j $NPROC install
+	popd
 }
 {
-	ln -sf $ROOT/vendor/http-parser $BASE/bld/http-parser && cd $BASE/bld/http-parser
+	ln -sf $ROOT/vendor/http-parser $BASE/bld/http-parser && pushd $BASE/bld/http-parser
 	# skip installing shared libs
 	# make -j $NPROC
 	# make -j $NPROC PREFIX=$BASE/install install
 	make -j $NPROC package
 	cp -v libhttp_parser.a $BASE/install/lib/libhttp_parser.a
+	popd
 }
 shared(){
-	mkdir $BASE/bld/libgit2-shared && cd $BASE/bld/libgit2-shared
-	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="${BASE}/install" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache $ROOT/vendor/libgit2
+	mkdir $BASE/bld/libgit2-shared && pushd $BASE/bld/libgit2-shared
+	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
 	cmake --build . --target install
+	popd
 }
 {
-	mkdir $BASE/bld/libgit2-static && cd $BASE/bld/libgit2-static
-	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${BASE}/install" -DCMAKE_C_COMPILER_LAUNCHER=ccache $ROOT/vendor/libgit2
+	mkdir $BASE/bld/libgit2-static && pushd $BASE/bld/libgit2-static
+	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
 	cmake --build . --target install
+	popd
 }
 
 # export GOPATH="/go" 
 # export PATH="$GOPATH/bin:/usr/local/go/bin:$PATH" 
 # cd "$GOPATH/src/github.com/libgit2/git2go"
-pwd
-cd $ROOT
-go install -tags "static" -ldflags "-extldflags '-static'" ./... || :
-go run -tags "static" -ldflags "-extldflags '-static'" ./script/check-MakeGitError-thread-lock.go || :
+go install -tags static . || :

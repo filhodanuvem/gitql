@@ -25,5 +25,4 @@ before_script:
 - ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $OLDPWD/prepare.sh )
 
 script: 
-- make test
 - env CGO_ENABLED=1 go build --tags "static" -ldflags "-extldflags '-static'" .
