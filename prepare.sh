@@ -53,7 +53,7 @@ musl(){
 {
 	mkdir -p $BASE/bld/openssl && pushd $BASE/bld/openssl
 	# CC="ccache $BASE/install/bin/musl-gcc" 
-	$ROOT/vendor/openssl/config --prefix=$BASE/install --with-zlib-lib=$BASE/install/lib/ --with-zlib-include=$BASE/install/lib/include/ zlib no-tests # no-shared 
+	$ROOT/vendor/openssl/config --prefix=$BASE/install --with-zlib-lib=$BASE/install/lib/ --with-zlib-include=$BASE/install/lib/include/ zlib # no-tests # no-shared 
 	make -j $NPROC
 	make -j $NPROC install_sw
 	popd
@@ -61,7 +61,7 @@ musl(){
 {
 	ln -sf $ROOT/vendor/libssh2 $BASE/bld/libssh2 && pushd $BASE/bld/libssh2
 	./buildconf
-	./configure --prefix=$BASE/install --disable-shared
+	./configure --prefix=$BASE/install # --disable-shared
 	make -j $NPROC
 	make -j $NPROC install
 	popd
@@ -69,7 +69,7 @@ musl(){
 {
 	ln -sf $ROOT/vendor/curl $BASE/bld/curl && pushd $BASE/bld/curl
 	./buildconf
-	./configure --with-ssl=$BASE/install --with-libssh2=$BASE/install --prefix=$BASE/install --disable-shared
+	./configure --with-ssl=$BASE/install --with-libssh2=$BASE/install --prefix=$BASE/install # --disable-shared
 	make -j $NPROC
 	make -j $NPROC install
 	popd
@@ -83,15 +83,15 @@ musl(){
 	cp -v libhttp_parser.a $BASE/install/lib/libhttp_parser.a
 	popd
 }
-shared(){
-	mkdir $BASE/bld/libgit2-shared && pushd $BASE/bld/libgit2-shared
+{
+	mkdir -p $BASE/bld/libgit2-shared && pushd $BASE/bld/libgit2-shared
 	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
 	cmake --build . --target install
 	popd
 }
 {
-	mkdir $BASE/bld/libgit2-static && pushd $BASE/bld/libgit2-static
+	mkdir -p $BASE/bld/libgit2-static && pushd $BASE/bld/libgit2-static
 	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
 	cmake --build . --target install
@@ -101,4 +101,4 @@ shared(){
 # export GOPATH="/go" 
 # export PATH="$GOPATH/bin:/usr/local/go/bin:$PATH" 
 # cd "$GOPATH/src/github.com/libgit2/git2go"
-go install -tags static . || :
+go install -tags "static" . || :
