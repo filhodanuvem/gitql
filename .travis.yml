@@ -1,14 +1,17 @@
 language: go
+
+os:
+- linux
+- osx
+- windows
+
 go:  
-   - "1.8.x"
-   - "1.9.x"
-   - "1.10.x"
-   - "1.11.x"
+- "1.12.x"
+
 before_script: 
-    - export GOPATH="$HOME/gopath"
-    - go get -d -v
-    - make prepare
-    - "export LD_LIBRARY_PATH=$PWD/libgit2/install/lib"
-    - "export PKG_CONFIG_PATH=$PWD/libgit2/install/lib/pkgconfig"
+- go get -d -v
+- ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $OLDPWD/prepare.sh )
+
 script: 
-   - make test
+- make test
+- env CGO_ENABLED=1 go build --tags "static" -ldflags "-extldflags '-static'" .
