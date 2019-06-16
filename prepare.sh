@@ -76,7 +76,7 @@ musl(){
 	# make -j $NPROC
 	# make -j $NPROC PREFIX=$BASE/install install
 	make -j $NPROC package
-	install -D -m 0644 libhttp_parser.a $BASE/install/lib/libhttp_parser.a
+	cp -v libhttp_parser.a $BASE/install/lib/libhttp_parser.a
 }
 shared(){
 	mkdir $BASE/bld/libgit2-shared && cd $BASE/bld/libgit2-shared
