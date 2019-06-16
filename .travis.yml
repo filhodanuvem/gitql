@@ -10,6 +10,8 @@ addons:
     packages:
     - ninja-build
     - pkg-config
+    - libssl1.0
+    - libssl1.0-dev
   homebrew:
     packages:
     - ninja
