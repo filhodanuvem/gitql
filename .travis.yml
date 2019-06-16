@@ -8,10 +8,8 @@ os:
 addons:
   apt:
     packages:
-    - ninja-build=1.7.1-1~ubuntu16.04.1
+    - ninja-build
     - pkg-config
-    sources:
-    - sourceline: deb http://archive.ubuntu.com/ubuntu/ xenial-backports universe
   homebrew:
     packages:
     - ninja
