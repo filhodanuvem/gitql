@@ -8,6 +8,8 @@ os:
 go:  
 - "1.12.x"
 
+cache: ccache
+
 before_script: 
 - go get -d -v
 - ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $OLDPWD/prepare.sh )
