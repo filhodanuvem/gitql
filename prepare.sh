@@ -23,6 +23,11 @@ NPROC=$(nproc 2>/dev/null || echo 1)
 ROOT=$PWD
 BASE=$ROOT/static-build
 
+export CFLAGS="-I$ROOT/static-build/install/include"
+export LDFLAGS="-L$ROOT/static-build/install/lib"
+
+sed -ie 's,giterr_,git_error_,g' `find . -name '*.go'`
+
 mkdir -p $BASE $BASE/bld $BASE/install
 {
 	git clone --depth 1 -b $ZLIB_VER $ZLIB_URL $ROOT/vendor/zlib || :
@@ -33,6 +38,7 @@ mkdir -p $BASE $BASE/bld $BASE/install
 	git clone --depth 1 -b $HTTPPARSER_VER $HTTPPARSER_URL $ROOT/vendor/http-parser || :
 }
 musl(){
+# {
 	rm -rf $ROOT/vendor/musl
 	mkdir -p $ROOT/vendor/musl && curl -sL https://www.musl-libc.org/releases/musl-1.1.22.tar.gz | tar xvzf - --strip=1 -C $ROOT/vendor/musl
 	ln -sf $ROOT/vendor/musl $BASE/bld/musl && cd $ROOT/vendor/musl
@@ -45,6 +51,7 @@ musl(){
 # export LDFLAGS="-L"
 
 {
+# musl(){
 	ln -sf $ROOT/vendor/zlib $BASE/bld/zlib && pushd $BASE/bld/zlib 
 	./configure --prefix=$BASE/install # --static
 	make -j $NPROC
@@ -52,6 +59,7 @@ musl(){
 	popd
 }
 {
+# musl(){
 	mkdir -p $BASE/bld/openssl && pushd $BASE/bld/openssl
 	# CC="ccache $BASE/install/bin/musl-gcc" 
 	$ROOT/vendor/openssl/config --prefix=$BASE/install --with-zlib-lib=$BASE/install/lib/ --with-zlib-include=$BASE/install/lib/include/ zlib # no-tests # no-shared 
@@ -60,6 +68,7 @@ musl(){
 	popd
 }
 {
+# musl(){
 	ln -sf $ROOT/vendor/libssh2 $BASE/bld/libssh2 && pushd $BASE/bld/libssh2
 	./buildconf
 	./configure --prefix=$BASE/install # --disable-shared
@@ -68,6 +77,7 @@ musl(){
 	popd
 }
 {
+# musl(){
 	ln -sf $ROOT/vendor/curl $BASE/bld/curl && pushd $BASE/bld/curl
 	./buildconf
 	./configure --with-ssl=$BASE/install --with-libssh2=$BASE/install --prefix=$BASE/install # --disable-shared
@@ -76,6 +86,7 @@ musl(){
 	popd
 }
 {
+# musl(){
 	ln -sf $ROOT/vendor/http-parser $BASE/bld/http-parser && pushd $BASE/bld/http-parser
 	# skip installing shared libs
 	# make -j $NPROC
@@ -84,7 +95,8 @@ musl(){
 	cp -v libhttp_parser.a $BASE/install/lib/libhttp_parser.a
 	popd
 }
-{
+musl(){
+# {
 	mkdir -p $BASE/bld/libgit2-shared && pushd $BASE/bld/libgit2-shared
 	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
@@ -92,6 +104,7 @@ musl(){
 	popd
 }
 {
+# musl(){
 	mkdir -p $BASE/bld/libgit2-static && pushd $BASE/bld/libgit2-static
 	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
@@ -103,4 +116,5 @@ musl(){
 # export PATH="$GOPATH/bin:/usr/local/go/bin:$PATH" 
 # cd "$GOPATH/src/github.com/libgit2/git2go"
 export PKG_CONFIG_PATH="$BASE/install/lib/pkgconfig"
-go install -tags "static" . || :
+# go install -tags "static" -ldflags "-extldflags -static ${LDFLAGS} -lgit2 ./static-build/install/lib/libgit2.a" . || :
+go install -tags "static" -ldflags "-extldflags -static" .
