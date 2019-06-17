@@ -19,8 +19,7 @@ os:
 dist: xenial
 
 env:
-  global:
-  - RELEASE="gitql-${TRAVIS_OS_NAME}.tar"
+- RELEASE="gitql-${TRAVIS_OS_NAME}.tar"
 
 addons:
   apt:
