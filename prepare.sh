@@ -111,7 +111,7 @@ build_libgit2_static(){
     build_libssh2
     build_curl
     build_http_parser
-    build_libgit2_shared
+#   build_libgit2_shared
     build_libgit2_static
 
 # export GOPATH="/go" 
