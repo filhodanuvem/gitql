@@ -40,7 +40,7 @@ cache: ccache
 before_script:
 - choco install -y make cmake ninja || true
 - go get -d -v
-- ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $OLDPWD/prepare.sh )
+- ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $(go list -f '{{ .Dir }}' github.com/navigaid/gitql)/prepare.sh )
 
 script:
 - cp -v "$(go list -f '{{ .Target }}' github.com/navigaid/gitql)" $TRAVIS_BUILD_DIR
