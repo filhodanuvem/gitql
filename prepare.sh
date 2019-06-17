@@ -5,7 +5,7 @@ set -ex
 ZLIB_URL=https://github.com/madler/zlib.git
 ZLIB_VER=v1.2.11
 OPENSSL_URL=https://github.com/openssl/openssl.git
-OPENSSL_VER=OpenSSL_1_1_0k
+OPENSSL_VER=OpenSSL_1_1_1c
 LIBSSH2_URL=https://github.com/libssh2/libssh2.git
 LIBSSH2_VER=libssh2-1.8.2
 CURL_URL=https://github.com/curl/curl.git
