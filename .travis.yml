@@ -29,3 +29,4 @@ before_script:
 
 script: 
 - go build --tags "static" -ldflags "-extldflags '-static'" .
+- file gitql
