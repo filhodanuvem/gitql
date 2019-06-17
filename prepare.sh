@@ -114,8 +114,61 @@ build_libgit2_static(){
 #   build_libgit2_shared
     build_libgit2_static
 
-# export GOPATH="/go" 
-# export PATH="$GOPATH/bin:/usr/local/go/bin:$PATH" 
-# cd "$GOPATH/src/github.com/libgit2/git2go"
-# go install -tags "static" -ldflags "-extldflags -static ${LDFLAGS} -lgit2 ./static-build/install/lib/libgit2.a" . || :
+
+# https://github.com/cloudson/gitql/blob/master/install.sh
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     machine=Linux
 CGO_ENABLED=1 go install -tags "static" -ldflags "-extldflags -static" .
+CGO_ENABLED=1 go install -tags "static" -ldflags "-extldflags -static" github.com/navigaid/gitql
+;;
+    Darwin*)    machine=Mac
+cat <<'EOF' >git_static.go
+// +build static
+
+package git
+
+/*
+#cgo windows CFLAGS: -I${SRCDIR}/static-build/install/include/
+#cgo windows LDFLAGS: -L${SRCDIR}/static-build/install/lib/ -lgit2 -lwinhttp
+#cgo !windows CFLAGS: -I${SRCDIR}/static-build/install/include/
+#cgo !windows LDFLAGS: -L${SRCDIR}/static-build/install/lib/ ${SRCDIR}/static-build/install/lib/libcrypto.a ${SRCDIR}/static-build/install/lib/libz.a ${SRCDIR}/static-build/install/lib/libgit2.a ${SRCDIR}/static-build/install/lib/libhttp_parser.a ${SRCDIR}/static-build/install/lib/libssl.a ${SRCDIR}/static-build/install/lib/libssh2.a ${SRCDIR}/static-build/install/lib/libcurl.a -liconv -framework CoreFoundation -framework Security
+// -l:libz.a -l:libgit2.a -l:ibhttp_parser.a -l:libssl.a -l:libssh2.a -l:libcurl.a -liconv -framework CoreFoundation -framework Security
+//#cgo !windows LDFLAGS: -L${SRCDIR}/static-build/install/lib/ ${SRCDIR}/static-build/install/lib/libcrypto.a ${SRCDIR}/static-build/install/lib/libz.a ${SRCDIR}/static-build/install/lib/libgit2.a ${SRCDIR}/static-build/install/lib/libhttp_parser.a ${SRCDIR}/static-build/install/lib/libssl.a ${SRCDIR}/static-build/install/lib/libssh2.a ${SRCDIR}/static-build/install/lib/libcurl.a -liconv -framework CoreFoundation -framework Security
+//-lgit2 -lhttp_parser -lz -lcurl -lssh2 -lcrypto -lssl
+//#cgo !windows pkg-config: --static ${SRCDIR}/static-build/install/lib/pkgconfig/libgit2.pc
+#include <git2.h>
+
+#if LIBGIT2_VER_MAJOR != 0 || LIBGIT2_VER_MINOR != 28
+# error "Invalid libgit2 version; this git2go supports libgit2 v0.28"
+#endif
+
+*/
+import "C"
+EOF
+CGO_ENABLED=1 go install -tags "static" .
+CGO_ENABLED=1 go install -tags "static" github.com/navigaid/gitql
+;;
+    CYGWIN*)    machine=Cygwin
+ cp ./libgit2/install/lib/lib*  /usr/local/lib/
+ ldconfig /usr/local/lib >/dev/null 2>&1 || echo "ldconfig not found">/dev/null
+ cp ./gitql /usr/local/bin/gitql
+ ln -s -f /usr/local/bin/gitql /usr/local/bin/git-ql
+ echo "Git is in /usr/local/bin/gitql"
+ echo "You can also use: git ql 'query here'"
+;;
+    MINGW*)     machine=MinGw
+ # Everything here is ugly. But MinGW seem to have no ldconfig, 
+ # no respect to /usr/local/bin, /usr/local/lib
+ cp ./libgit2/install/bin/libgit2.dll  /usr/bin/
+ cp ./gitql.exe /usr/bin/gitql.exe
+ ln -s -f /usr/bin/gitql.exe /usr/bin/git-ql
+ echo "Gitql.exe is in /usr/bin/gitql.exe"
+ echo "You can also use: git ql 'query here'"
+;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
+
+echo $unameOut
+gitql="$(go list -f '{{ .Target }}' github.com/navigaid/gitql)"
+ldd $gitql || otool -L $gitql || true
