@@ -9,7 +9,6 @@ dist: xenial
 
 env: 
   global: 
-  - PATH="/usr/local/opt/ccache/libexec:/usr/lib/ccache:$PATH"
   - RELEASE="gitql-${TRAVIS_OS_NAME}.tar"
 
 addons:
@@ -42,7 +41,7 @@ script:
 deploy:
   api_key:
     secure: vX4KMo8u3YtfMcHZU9OdaI8B2VPoTZGhjkVIsaSJRj78da/rw1qYAh3q/n5WLy3SnKl4dkAhnlEKzMuF1q0dN9mYqVwP1aU8AD2Nm2gtJLB8VKSvTfQsBBePEwBKY1iOaymGl5Oa8kkiwh+QVtkLviQ/9S6nCP7A9CXaWu44rdpLHFyPLCXDqQFU0ZQO/w6nrYaH8nfiq89myhwVr1K/kztaWdk5yv13EIr8WoYVHbv0uiQDeagozc9MuTLjrTVvzqRIrJf95pJwH7V05whcTpaJMf2qmoMGVmgb018ANCzbvANmSR/yZwaU9/Rfv0kJsfynZV6fb2sAPd34yPO0NX8M5/3wyjWIQnWYgyRh51K1CAVr18+WHweySpfUxTiZtwEURIgE1vR2gj1eui94+DIJtmyJ9Fx/wox0aslbYLh+G9eQsP8SQmpL/R1UcGMYBIKvyc0iCwAb8rpHcuebcb1e2hvN8fHkW9q9a6DlAiR6gt/ax+yq5NLeBDgwu5QiW+G0vEPrhDm75qrdFMPEVRxo5whUWweVQfZLshnF40BMX3RTWn5KuahfIhKpd/tRVcHI99YuCEtGwN6qd/nEAs3fKzwjFcM11y55hoaH2hgh37549R6V3pMUcsjBEr+jErlGRUm98nd+hPGhWayXuMoPqNZZwBzosV3hc7zDFV8=
-  file: $BUILD_NAME.tar
+  file: $RELEASE
   name: "0x${TRAVIS_COMMIT}"
   prerelease: true
   provider: releases
