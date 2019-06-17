@@ -35,7 +35,7 @@ script:
 - env
 - gitql="$(go list -f '{{ .Target }}' github.com/navigaid/gitql)"
 - cp -v $gitql $TRAVIS_BUILD_DIR
-- tar cf $RELEASE $gitql
+- tar cf $RELEASE gitql
 
 
 deploy:
