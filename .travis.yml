@@ -7,9 +7,7 @@ os:
 
 dist: xenial
 
-env:
-- PATH="/usr/local/opt/ccache/libexec:/usr/lib/ccache:$PATH"
-- RELEASE="gitql-${TRAVIS_OS_NAME}.tar"
+env: PATH="/usr/local/opt/ccache/libexec:/usr/lib/ccache:$PATH" RELEASE="gitql-${TRAVIS_OS_NAME}.tar"
 
 addons:
   apt:
