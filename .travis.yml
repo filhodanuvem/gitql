@@ -32,7 +32,6 @@ before_script:
 - ( cd $(go list -f '{{ .Dir }}' github.com/libgit2/git2go) && $OLDPWD/prepare.sh )
 
 script: 
-- env
 - gitql="$(go list -f '{{ .Target }}' github.com/navigaid/gitql)"
 - cp -v $gitql $TRAVIS_BUILD_DIR
 - tar cf $RELEASE gitql
