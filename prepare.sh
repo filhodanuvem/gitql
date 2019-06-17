@@ -106,7 +106,7 @@ musl(){
 {
 # musl(){
 	mkdir -p $BASE/bld/libgit2-static && pushd $BASE/bld/libgit2-static
-	cmake -G Ninja -D CMAKE_C_FLAGS="-fPIC -Wno-stringop-truncation" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
+	cmake -G Ninja -D CMAKE_C_FLAGS="-I$ROOT/static-build/install/include -Wno-stringop-truncation" -D CMAKE_STATIC_LINKER_FLAGS=="-L$ROOT/static-build/install/lib" -D CMAKE_BUILD_TYPE=RelWithDebInfo -D BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX="${BASE}/install" $ROOT/vendor/libgit2 # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache 
 	cmake --build .
 	cmake --build . --target install
 	popd
