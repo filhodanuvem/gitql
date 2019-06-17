@@ -19,7 +19,7 @@ GIT2GO_URL=https://github.com/libgit2/git2go.git
 
 # export CC="ccache gcc"
 
-NPROC=$(nproc 2>/dev/null || echo 1)
+NPROC=$(nproc 2>/dev/null || sysctl -n hw.physicalcpu 2>/dev/null || printenv NUMBER_OF_PROCESSORS)
 ROOT=$PWD
 BASE=$ROOT/static-build
 
