@@ -27,7 +27,7 @@ export CFLAGS="-I$ROOT/static-build/install/include"
 export LDFLAGS="-L$ROOT/static-build/install/lib"
 export PKG_CONFIG_PATH="$BASE/install/lib/pkgconfig"
 
-sed -ie 's,giterr_,git_error_,g' `find . -name '*.go'`
+sed -i -e 's,giterr_,git_error_,g' `find . -name '*.go'`
 
 mkdir -p $BASE $BASE/bld $BASE/install
 clone(){
