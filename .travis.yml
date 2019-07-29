@@ -36,7 +36,7 @@ go:
 cache: ccache
 
 before_script:
-- choco install -y make cmake ninja || true
+- choco install -y make cmake ninja || ( brew update && brew install ninja ccache ) || true
 - bash prepare.sh
 
 script:
