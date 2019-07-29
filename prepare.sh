@@ -2,6 +2,10 @@
 
 set -ex
 
+GO111MODULE=on go mod download
+GO111MODULE=on go mod vendor
+cd $(GO111MODULE=on GOFLAGS="-mod=vendor" go list -f '{{ .Dir }}' github.com/libgit2/git2go)
+
 ZLIB_URL=https://github.com/madler/zlib.git
 ZLIB_VER=v1.2.11
 OPENSSL_URL=https://github.com/openssl/openssl.git

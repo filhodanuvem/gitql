@@ -37,9 +37,7 @@ cache: ccache
 
 before_script:
 - choco install -y make cmake ninja || true
-- GO111MODULE=on go mod download
-- GO111MODULE=on go mod vendor
-- (cd $(GO111MODULE=on GOFLAGS="-mod=vendor" go list -f '{{ .Dir }}' github.com/libgit2/git2go) && bash $(GO111MODULE=off go list -f '{{ .Dir }}' github.com/navigaid/gitql)/prepare.sh )
+- bash prepare.sh
 
 script:
 - cp -v "$(go list -f '{{ .Target }}' github.com/navigaid/gitql)" $TRAVIS_BUILD_DIR
