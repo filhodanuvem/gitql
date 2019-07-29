@@ -173,5 +173,5 @@ GO111MODULE=off go install -tags "static" github.com/navigaid/gitql
 esac
 
 echo $unameOut
-gitql="$(go list -f '{{ .Target }}' github.com/navigaid/gitql)"
+gitql="$(GO111MODULE=off go list -f '{{ .Target }}' github.com/navigaid/gitql)"
 ldd $gitql || otool -L $gitql || true
