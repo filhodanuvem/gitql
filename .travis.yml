@@ -11,6 +11,8 @@ deploy:
 
 language: go
 
+osx_image: xcode11
+
 os:
 - linux
 - osx
@@ -36,7 +38,7 @@ go:
 cache: ccache
 
 before_script:
-- choco install -y make cmake ninja || ( brew update --debug --verbose --force && brew install ninja ccache ) || true
+- choco install -y make cmake ninja || true
 - bash prepare.sh
 
 script:
