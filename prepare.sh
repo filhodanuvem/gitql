@@ -26,6 +26,9 @@ BASE=$ROOT/static-build
 export CFLAGS="-I$ROOT/static-build/install/include"
 export LDFLAGS="-L$ROOT/static-build/install/lib"
 export PKG_CONFIG_PATH="$BASE/install/lib/pkgconfig"
+# export GOFLAGS="-mod=vendor"
+export CGO_ENABLED=1
+export GO111MODULE=on
 
 sed -i -e 's,giterr_,git_error_,g' `find . -name '*.go'`
 
@@ -119,8 +122,8 @@ build_libgit2_static(){
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux
-CGO_ENABLED=1 go install -tags "static" -ldflags "-extldflags -static" .
-CGO_ENABLED=1 go install -tags "static" -ldflags "-extldflags -static" github.com/navigaid/gitql
+GOFLAGS="-mod=vendor" go install -tags "static" -ldflags "-extldflags -static" github.com/libgit2/git2go
+go install -tags "static" -ldflags "-extldflags -static" github.com/navigaid/gitql
 ;;
     Darwin*)    machine=Mac
 cat <<'EOF' >git_static.go
@@ -146,8 +149,8 @@ package git
 */
 import "C"
 EOF
-CGO_ENABLED=1 go install -tags "static" .
-CGO_ENABLED=1 go install -tags "static" github.com/navigaid/gitql
+GOFLAGS="-mod=vendor" go install -tags "static" github.com/libgit2/git2go
+go install -tags "static" github.com/navigaid/gitql
 ;;
     CYGWIN*)    machine=Cygwin
  cp ./libgit2/install/lib/lib*  /usr/local/lib/
