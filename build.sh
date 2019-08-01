@@ -12,7 +12,7 @@ if [[ $OS_NAME == win32 ]]; then
   apt install -y binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 g++-mingw-w64-i686 gcc-mingw-w64 gcc-mingw-w64-base gcc-mingw-w64-x86-64 gcc-multilib ninja-build cmake build-essential file
 fi
 
-if [[ $OS_NAME == win32 ]]; then
+if [[ $OS_NAME == win64 ]]; then
   apt update
   apt install -y binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 g++-mingw-w64-i686 gcc-mingw-w64 gcc-mingw-w64-base gcc-mingw-w64-x86-64 gcc-multilib ninja-build cmake build-essential file
 fi
