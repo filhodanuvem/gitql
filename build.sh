@@ -4,7 +4,7 @@ set -ex
 
 if [[ $OS_NAME == linux ]]; then
   apt update
-  apt install -y binutils gcc cmake build-essential file
+  apt install -y binutils gcc clang ninja-build cmake build-essential file
 fi
 
 if [[ $OS_NAME == win32 ]]; then
@@ -51,8 +51,7 @@ cmake \
         -DCMAKE_C_FLAGS=-fPIC \
         -DUSE_EXT_HTTP_PARSER=OFF \
         -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-        -DCMAKE_C_COMPILER=gcc \
-        -DWINHTTP=OFF \
+        -DCMAKE_C_COMPILER=clang \
         -DUSE_BUNDLED_ZLIB=ON \
         -DUSE_HTTPS=OFF \
         -DUSE_SSH=OFF \

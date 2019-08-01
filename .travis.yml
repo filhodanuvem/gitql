@@ -22,7 +22,6 @@ before_script:
 - if test $OS_NAME = win64   ; then docker run -it -e OS_NAME -v $PWD:$PWD -w $PWD golang:rc         bash build.sh; fi
 - if test $OS_NAME = osxcross; then docker run -it -e OS_NAME -v $PWD:$PWD -w $PWD navigaid/osxcross bash build.sh; fi
 
-
 script:
 - file gitql*
 - tar cf gitql-${TRAVIS_TAG}-${OS_NAME}.tar gitql*
