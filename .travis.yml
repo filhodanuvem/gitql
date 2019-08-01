@@ -22,10 +22,10 @@ matrix:
     env: OS_NAME=osxcross
 
 before_script:
-- if test $OS_NAME = linux   ; then docker run -it -v $PWD:$PWD -w $PWD golang:rc         bash install.sh; fi
-- if test $OS_NAME = win32   ; then docker run -it -v $PWD:$PWD -w $PWD golang:rc         bash install.sh; fi
-- if test $OS_NAME = win64   ; then docker run -it -v $PWD:$PWD -w $PWD golang:rc         bash install.sh; fi
-- if test $OS_NAME = osxcross; then docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross bash install.sh; fi
+- if test $OS_NAME = linux   ; then docker run -it -v $PWD:$PWD -w $PWD golang:rc         bash build.sh; fi
+- if test $OS_NAME = win32   ; then docker run -it -v $PWD:$PWD -w $PWD golang:rc         bash build.sh; fi
+- if test $OS_NAME = win64   ; then docker run -it -v $PWD:$PWD -w $PWD golang:rc         bash build.sh; fi
+- if test $OS_NAME = osxcross; then docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross bash build.sh; fi
 
 
 script:
