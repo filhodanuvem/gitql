@@ -12,34 +12,6 @@ LIBGIT2_PATH=$GIT2GO_PATH/vendor/libgit2
 LIBGIT2_BUILD=$LIBGIT2_PATH/static-build
 INSTALL=$GIT2GO_PATH/static-build/install
 
-install_deps(){
-  if which pacman; then return; fi
-  case "$OS_NAME" in
-  linux*)
-    apt update
-    apt install -y binutils gcc clang ninja-build cmake build-essential file
-  ;;
-  win32*)
-    apt update
-    apt install -y binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 g++-mingw-w64-i686 gcc-mingw-w64 gcc-mingw-w64-base gcc-mingw-w64-x86-64 gcc-multilib ninja-build cmake build-essential file
-  ;;
-  win64*)
-    apt update
-    apt install -y binutils-mingw-w64-i686 binutils-mingw-w64-x86-64 g++-mingw-w64-i686 gcc-mingw-w64 gcc-mingw-w64-base gcc-mingw-w64-x86-64 gcc-multilib ninja-build cmake build-essential file
-  ;;
-  osxcross*)
-    apt update
-    apt install -y ninja-build cmake build-essential file pkg-config vim
-    wget -qO- https://dl.google.com/go/go1.13beta1.linux-amd64.tar.gz > go.tgz
-    tar xf go.tgz -C /usr/lib
-    export PATH=/usr/lib/go/bin/:$PATH
-  ;;
-  *)
-    echo '[ERROR_UNKNOWN_PLATFORM] please set OS_NAME to one of linux|win32|win64|osxcross'
-  ;;
-  esac
-}
-
 setup_vendor(){
   go mod download
   if ! [[ -d vendor ]]; then
@@ -150,7 +122,6 @@ build(){
 }
 
 main(){
-  install_deps
   setup_vendor
   build
   go build -v --tags static .
