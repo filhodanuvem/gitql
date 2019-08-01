@@ -1,8 +1,3 @@
-language: go
-
-go:
-- "1.13beta1"
-
 services:
 - docker
 
@@ -12,13 +7,13 @@ matrix:
     dist: bionic
     env: OS_NAME=linux
   - os: linux
-    dist: xenial
+    dist: bionic
     env: OS_NAME=win64
   - os: linux
-    dist: xenial
+    dist: bionic
     env: OS_NAME=win32
   - os: linux
-    dist: xenial
+    dist: bionic
     env: OS_NAME=osxcross
 
 before_script:
