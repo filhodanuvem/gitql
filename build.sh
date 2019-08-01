@@ -65,7 +65,7 @@ cmake --build . --target install
 popd
 }
 
-build_libgit2_mingw(){
+build_mingw(){
 mkdir -vp $LIBGIT2_BUILD/{,bld,install}
 mkdir -p $LIBGIT2_BUILD/bld/libgit2-static && pushd $LIBGIT2_BUILD/bld/libgit2-static
 cmake \
@@ -128,14 +128,14 @@ if [[ $OS_NAME == win32 ]]; then
   export GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc
   FLAGS="-lws2_32"
   export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-  build_libgit2_mingw
+  build_mingw
 fi
 
 if [[ $OS_NAME == win64 ]]; then
   export GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc
   FLAGS="-lws2_32"
   export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-  build_libgit2_mingw
+  build_mingw
 fi
 
 if [[ $OS_NAME == osxcross ]]; then
@@ -143,7 +143,7 @@ if [[ $OS_NAME == osxcross ]]; then
   FLAGS=""
   export CFLAGS="-mmacosx-version-min=10.14"
   export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-  build_libgit2_osxcross
+  build_osxcross
 fi
 
 
