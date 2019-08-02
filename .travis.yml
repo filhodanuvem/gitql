@@ -21,7 +21,7 @@ script:
 
 before_deploy:
 - tar czf gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz gitql*
-- shasum -a 256 gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz > gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}tar.gz.checksum.txt
+- shasum -a 256 gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz > gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz.checksum.txt
 
 deploy:
   api_key:
