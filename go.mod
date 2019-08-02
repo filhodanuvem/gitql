@@ -1,4 +1,4 @@
-module github.com/navigaid/gitql
+module github.com/cloudson/gitql
 
 go 1.13
 
