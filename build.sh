@@ -90,13 +90,13 @@ build(){
     build_linux
   ;;
   win32*)
-    export GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc
+    export GOOS=windows GOARCH=386 CC=i686-w64-mingw32-clang
     FLAGS="-lws2_32"
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_mingw
   ;;
   win64*)
-    export GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc
+    export GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-clang
     FLAGS="-lws2_32"
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_mingw
