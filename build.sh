@@ -2,16 +2,6 @@
 
 set -ex
 
-export GO111MODULE="on" GOFLAGS="-mod=vendor" CGO_ENABLED=1
-LIBGIT2_URL=https://github.com/libgit2/libgit2.git
-LIBGIT2_VER=v0.28.2
-
-NPROC=$(nproc 2>/dev/null || echo 4)
-GIT2GO_PATH=$PWD/vendor/github.com/libgit2/git2go
-LIBGIT2_PATH=$GIT2GO_PATH/vendor/libgit2
-LIBGIT2_BUILD=$LIBGIT2_PATH/static-build
-INSTALL=$GIT2GO_PATH/static-build/install
-
 setup_vendor(){
   go mod download
   if ! [[ -d vendor ]]; then
@@ -21,7 +11,7 @@ setup_vendor(){
   git clone --depth 1 -b $LIBGIT2_VER $LIBGIT2_URL $LIBGIT2_PATH || :
 }
 
-build_linux(){
+build_libgit2_linux(){
   cmake \
   -G Ninja \
   -DCMAKE_C_FLAGS=-fPIE \
@@ -38,7 +28,7 @@ build_linux(){
   ${LIBGIT2_PATH}
 }
 
-build_mingw(){
+build_libgit2_windows(){
   cmake \
   -G Ninja \
   -DUSE_EXT_HTTP_PARSER=OFF \
@@ -59,7 +49,7 @@ build_mingw(){
   ${LIBGIT2_PATH}
 }
 
-build_osx(){
+build_libgit2_darwin(){
   cmake -DTHREADSAFE=ON \
   -DBUILD_CLAR=OFF \
   -DBUILD_SHARED_LIBS=OFF \
@@ -78,37 +68,32 @@ build_osx(){
   ${LIBGIT2_PATH}
 }
 
-build(){
+build_libgit2(){
   mkdir -vp $LIBGIT2_BUILD $INSTALL
   pushd $LIBGIT2_BUILD
 
-  case "$TARGET_OS" in
-  linux*)
+  case "$TARGET_OS_ARCH" in
+  linux-amd64*)
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-    build_linux
+    build_libgit2_linux
   ;;
-  win32*)
-    export GOOS=windows GOARCH=386 CC=i686-w64-mingw32-clang
-    FLAGS="-lws2_32"
-    export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-    build_mingw
-  ;;
-  win64*)
-    export GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-clang
-    FLAGS="-lws2_32"
-    export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-    build_mingw
-  ;;
-  osx*)
+  darwin-amd64*)
     export GOOS=darwin GOARCH=amd64 CC=x86_64-apple-darwin18-clang
     FLAGS=""
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-    build_osx
+    build_libgit2_darwin
   ;;
-  *)
-    echo '[ERROR_UNKNOWN_PLATFORM] please set TARGET_OS to one of linux|win32|win64|osx'
+  windows-amd64*)
+    export GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-clang
+    FLAGS="-lws2_32"
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-    build_linux
+    build_libgit2_windows
+  ;;
+  windows-386*)
+    export GOOS=windows GOARCH=386 CC=i686-w64-mingw32-clang
+    FLAGS="-lws2_32"
+    export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
+    build_libgit2_windows
   ;;
   esac
 
@@ -118,30 +103,41 @@ build(){
   popd
 }
 
-go_build(){
-  case "$TARGET_OS" in
-  linux*)
+build_gitql(){
+  case "$TARGET_OS_ARCH" in
+  linux-amd64*)
     go build -v -tags static -ldflags "-extldflags '-static'" .
   ;;
-  win32*)
-    go build -v -tags static -ldflags "-extldflags '-static'" .
-  ;;
-  win64*)
-    go build -v -tags static -ldflags "-extldflags '-static'" .
-  ;;
-  osx*)
+  darwin-amd64*)
     # MacOS doesn’t support fully static binaries, see 
     # https://stackoverflow.com/questions/3801011/ld-library-not-found-for-lcrt0-o-on-osx-10-6-with-gcc-clang-static-flag
     # this is the best we could possibly do
     go build -v -tags static .
   ;;
+  windows-amd64*)
+    go build -v -tags static -ldflags "-extldflags '-static'" .
+  ;;
+  windows-386*)
+    go build -v -tags static -ldflags "-extldflags '-static'" .
+  ;;
   esac
 }
 
 main(){
+  export TARGET_OS_ARCH="${1:-linux-amd64}"
+  export GO111MODULE="on" GOFLAGS="-mod=vendor" CGO_ENABLED=1
+  export LIBGIT2_URL=https://github.com/libgit2/libgit2.git
+  export LIBGIT2_VER=v0.28.2
+
+  export NPROC=$(nproc 2>/dev/null || echo 4)
+  export GIT2GO_PATH=$PWD/vendor/github.com/libgit2/git2go
+  export LIBGIT2_PATH=$GIT2GO_PATH/vendor/libgit2
+  export LIBGIT2_BUILD=$LIBGIT2_PATH/static-build
+  export INSTALL=$GIT2GO_PATH/static-build/install
+
   setup_vendor
-  build
-  go_build
+  build_libgit2
+  build_gitql
 }
 
-main
+main "$@"
