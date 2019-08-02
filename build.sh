@@ -59,7 +59,7 @@ build_mingw(){
   ${LIBGIT2_PATH}
 }
 
-build_osxcross(){
+build_osx(){
   cmake -DTHREADSAFE=ON \
   -DBUILD_CLAR=OFF \
   -DBUILD_SHARED_LIBS=OFF \
@@ -82,7 +82,7 @@ build(){
   mkdir -vp $LIBGIT2_BUILD $INSTALL
   pushd $LIBGIT2_BUILD
 
-  case "$OS_NAME" in
+  case "$TARGET_OS" in
   linux*)
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_linux
@@ -99,14 +99,14 @@ build(){
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_mingw
   ;;
-  osxcross*)
+  osx*)
     export GOOS=darwin GOARCH=amd64 CC=x86_64-apple-darwin18-clang
     FLAGS=""
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
-    build_osxcross
+    build_osx
   ;;
   *)
-    echo '[ERROR_UNKNOWN_PLATFORM] please set OS_NAME to one of linux|win32|win64|osxcross'
+    echo '[ERROR_UNKNOWN_PLATFORM] please set TARGET_OS to one of linux|win32|win64|osx'
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_linux
   ;;
@@ -118,10 +118,30 @@ build(){
   popd
 }
 
+go_build(){
+  case "$TARGET_OS" in
+  linux*)
+    go build -v --tags static -ldflags "-extldflags '-static'" .
+  ;;
+  win32*)
+    go build -v --tags static -ldflags "-extldflags '-static'" .
+  ;;
+  win64*)
+    go build -v --tags static -ldflags "-extldflags '-static'" .
+  ;;
+  osx*)
+    # MacOS doesn’t support fully static binaries, see 
+    # https://stackoverflow.com/questions/3801011/ld-library-not-found-for-lcrt0-o-on-osx-10-6-with-gcc-clang-static-flag
+    # this is the best we could possibly do
+    go build -v --tags static -ldflags .
+  ;;
+  esac
+}
+
 main(){
   setup_vendor
   build
-  go build -v --tags static .
+  go_build
 }
 
 main

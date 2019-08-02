@@ -5,28 +5,28 @@ matrix:
   include:
   - os: linux
     dist: bionic
-    env: OS_NAME=linux
+    env: TARGET_OS=linux
   - os: linux
     dist: bionic
-    env: OS_NAME=win64
+    env: TARGET_OS=win64
   - os: linux
     dist: bionic
-    env: OS_NAME=win32
+    env: TARGET_OS=win32
   - os: linux
     dist: bionic
-    env: OS_NAME=osxcross
+    env: TARGET_OS=osx
 
 before_script:
-- docker run -it -e OS_NAME -v $PWD:$PWD -w $PWD navigaid/osxcross bash build.sh
+- docker run -it -e TARGET_OS -v $PWD:$PWD -w $PWD navigaid/osxcross bash build.sh
 
 script:
 - file gitql*
-- tar cf gitql-${TRAVIS_TAG}-${OS_NAME}.tar gitql*
+- tar cf gitql-${TRAVIS_TAG}-${TARGET_OS}.tar gitql*
 
 deploy:
   api_key:
     secure: YdM/HjLuNXXgJu4M1Vc66yORh4BeOP36D+jLy3sbE3h4c00QyCV8NEmmJOCjH/c+YZsJsESmvdSxhKxFcaRHvWslUyV9LiG6H0xRXJAsd295aBC7KVPOJEyoNcIKDT02Axh9y5DRIH3Jk4jI6lxVkU5m4ewR8LWwrkXQS1lGTDLrtrGB1ymmbmjKmxbM/ZkyVS98cPB/QKA+P6GxO2KkQzfJ8ExfEa/SOWUxxytSa14Brypd3RHIVsCmQUcgZEEsChUdQsddPLDe8tgKFMnOvWF6U+B9yoltMU99g61sdiLBMS4MSRViivSmPZCUEmzukasCwPP0jzZ1KfZGP2YLy+WBDBGCl0Qs6lz2/ItSSqW24K+60duKox9QiGqMObXBvorMo/07n1Liao6SP1RYM6eghmObviplxth8LEruVR1AHRYCrbPTU0z6RV1r+5MLTzilIUB5ZyU6OCBr8siLjvomdvss0+dYXUQa2bBLcWwb3dnrTEUy8Bjv9WHSOKM2QwmTF52RsLV5LHIRBw2rQVMa+VVvDBzpzCqmtCgUYxeOw4/rb8T0sPeRQFX2vMi58kdwBdXOjxbBF/x1LIIVGcM8WVY58x3XnVXgxU3irFqUcT5tSKk7f0LIm+CVKijmEoBMs8jwmShJZyHkGp7MwHPB3lrphN/gn3bHeJDepZ4=
-  file: gitql-${TRAVIS_TAG}-${OS_NAME}.tar
+  file: gitql-${TRAVIS_TAG}-${TARGET_OS}.tar
   name: "0x${TRAVIS_COMMIT}"
   prerelease: true
   provider: releases
