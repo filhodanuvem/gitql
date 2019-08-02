@@ -24,6 +24,7 @@ setup_vendor(){
 build_linux(){
   cmake \
   -G Ninja \
+  -DCMAKE_C_FLAGS=-fPIE \
   -DUSE_EXT_HTTP_PARSER=OFF \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DCMAKE_C_COMPILER=clang \
