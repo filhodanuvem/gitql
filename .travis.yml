@@ -17,7 +17,7 @@ matrix:
     env: OS_NAME=osxcross
 
 before_script:
-- docker run -it -e OS_NAME -v $PWD:$PWD -w $PWD navigaid/gitql:builder bash build.sh
+- docker run -it -e OS_NAME -v $PWD:$PWD -w $PWD navigaid/osxcross bash build.sh
 
 script:
 - file gitql*
