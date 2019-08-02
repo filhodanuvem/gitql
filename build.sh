@@ -50,7 +50,9 @@ build_libgit2_windows(){
 }
 
 build_libgit2_darwin(){
-  cmake -DTHREADSAFE=ON \
+  cmake \
+  -G "Ninja" \
+  -DTHREADSAFE=ON \
   -DBUILD_CLAR=OFF \
   -DBUILD_SHARED_LIBS=OFF \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
@@ -60,8 +62,6 @@ build_libgit2_darwin(){
   -DUSE_HTTPS=OFF \
   -DUSE_SSH=OFF \
   -DCURL=OFF \
-  -G "Ninja" \
-  -DCMAKE_SIZEOF_VOID_P=8 \
   -DCMAKE_C_COMPILER=${CC} \
   -DCMAKE_OSX_SYSROOT=/opt/osxcross/SDK/MacOSX10.14.sdk/ \
   -DCMAKE_SYSTEM_NAME=Darwin \
