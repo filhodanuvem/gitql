@@ -77,7 +77,7 @@ build_libgit2_darwin(){
   -DCMAKE_C_COMPILER=${CC} \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DCMAKE_INSTALL_PREFIX="${LIBGIT2_STATIC_PREFIX}" \
-  -DCMAKE_OSX_SYSROOT=/opt/osxcross/SDK/MacOSX10.14.sdk/ \
+  -DCMAKE_OSX_SYSROOT="${OSX_SDK}" \
   ${LIBGIT2_PATH}
 }
 
@@ -93,7 +93,7 @@ build_libgit2(){
     build_libgit2_linux
   ;;
   darwin/amd64*)
-    export GOOS=darwin GOARCH=amd64 CC=x86_64-apple-darwin18-clang
+    export GOOS=darwin GOARCH=amd64 CC=x86_64-apple-darwin18-clang OSX_SDK=/opt/osxcross/SDK/MacOSX10.14.sdk/
     FLAGS=""
     export CGO_LDFLAGS="${LIBGIT2_STATIC_PREFIX}/lib/libgit2.a -L${LIBGIT2_STATIC_PREFIX}/include ${FLAGS}"
     build_libgit2_darwin
