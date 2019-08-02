@@ -4,7 +4,6 @@ set -ex
 export GO111MODULE="on"
 export GOFLAGS="-mod=vendor"
 export CGO_ENABLED=1
-export GOPROXY="https://proxy.golang.org,https://golang.cn,direct"
 
 setup_vendor(){
   LIBGIT2_URL=https://github.com/libgit2/libgit2.git
