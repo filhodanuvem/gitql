@@ -16,17 +16,16 @@ matrix:
     dist: bionic
     env: TARGET_OS_ARCH=windows/386
 
-before_script:
+script:
 - docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross ./static_build.sh ${TARGET_OS_ARCH}
 
-script:
-- file gitql*
+after_script:
 - tar czf gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz gitql*
 
 deploy:
   api_key:
     secure: YdM/HjLuNXXgJu4M1Vc66yORh4BeOP36D+jLy3sbE3h4c00QyCV8NEmmJOCjH/c+YZsJsESmvdSxhKxFcaRHvWslUyV9LiG6H0xRXJAsd295aBC7KVPOJEyoNcIKDT02Axh9y5DRIH3Jk4jI6lxVkU5m4ewR8LWwrkXQS1lGTDLrtrGB1ymmbmjKmxbM/ZkyVS98cPB/QKA+P6GxO2KkQzfJ8ExfEa/SOWUxxytSa14Brypd3RHIVsCmQUcgZEEsChUdQsddPLDe8tgKFMnOvWF6U+B9yoltMU99g61sdiLBMS4MSRViivSmPZCUEmzukasCwPP0jzZ1KfZGP2YLy+WBDBGCl0Qs6lz2/ItSSqW24K+60duKox9QiGqMObXBvorMo/07n1Liao6SP1RYM6eghmObviplxth8LEruVR1AHRYCrbPTU0z6RV1r+5MLTzilIUB5ZyU6OCBr8siLjvomdvss0+dYXUQa2bBLcWwb3dnrTEUy8Bjv9WHSOKM2QwmTF52RsLV5LHIRBw2rQVMa+VVvDBzpzCqmtCgUYxeOw4/rb8T0sPeRQFX2vMi58kdwBdXOjxbBF/x1LIIVGcM8WVY58x3XnVXgxU3irFqUcT5tSKk7f0LIm+CVKijmEoBMs8jwmShJZyHkGp7MwHPB3lrphN/gn3bHeJDepZ4=
-  file: gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH}.tar.gz
+  file: gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz
   name: "${TRAVIS_TAG:-${TRAVIS_COMMIT}}"
   prerelease: true
   provider: releases

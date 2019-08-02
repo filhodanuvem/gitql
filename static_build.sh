@@ -120,7 +120,7 @@ build_libgit2(){
 build_gitql(){
   case "$TARGET_OS_ARCH" in
   darwin/amd64*)
-    # MacOS doesn’t support fully static binaries, see 
+    # MacOS doesn’t support fully static binaries, see
     # https://stackoverflow.com/questions/3801011/ld-library-not-found-for-lcrt0-o-on-osx-10-6-with-gcc-clang-static-flag
     # this is the best we could possibly do
     go build -v -tags static .
