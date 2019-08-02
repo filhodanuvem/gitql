@@ -4,7 +4,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/libgit2/git2go"
+	git "github.com/libgit2/git2go"
 	"github.com/navigaid/gitql/parser"
 )
 

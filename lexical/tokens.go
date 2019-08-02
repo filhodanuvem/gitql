@@ -60,8 +60,8 @@ func allocMapTokenNames() {
 			T_IN:               "T_IN",
 			T_EOF:              "T_EOF",
 			T_ASC:              "T_ASC",
-			T_NOT: 		           "T_NOT",
-			T_COUNT:   "T_COUNT",
+			T_NOT:              "T_NOT",
+			T_COUNT:            "T_COUNT",
 		}
 	}
 }

@@ -1,10 +1,11 @@
 package runtime
 
 import (
-	"github.com/navigaid/gitql/parser"
-	"github.com/navigaid/gitql/semantical"
 	"path/filepath"
 	"testing"
+
+	"github.com/navigaid/gitql/parser"
+	"github.com/navigaid/gitql/semantical"
 )
 
 func TestErrorWithInvalidTables(t *testing.T) {

@@ -73,7 +73,6 @@ func TestUsingCount(t *testing.T) {
 	}
 }
 
-
 func TestUsingOneFieldName(t *testing.T) {
 	New("select name from files")
 
@@ -147,7 +146,6 @@ func TestErrorWithMalformedCount(t *testing.T) {
 		t.Errorf("Expected error 'Expected )'")
 	}
 }
-
 
 func TestErrorWithInvalidRootNode(t *testing.T) {
 	New("name from files")
@@ -293,8 +291,6 @@ func TestWhereWithIn(t *testing.T) {
 	if rValue.Value() != "message" {
 		t.Errorf("RValue should be 'message'")
 	}
-
-
 
 }
 

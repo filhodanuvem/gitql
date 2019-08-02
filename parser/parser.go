@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	_ "unicode"
 
 	"github.com/navigaid/gitql/lexical"
 )
