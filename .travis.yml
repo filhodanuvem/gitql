@@ -5,23 +5,23 @@ matrix:
   include:
   - os: linux
     dist: bionic
-    env: TARGET_OS_ARCH=linux-amd64
+    env: TARGET_OS_ARCH=linux/amd64
   - os: linux
     dist: bionic
-    env: TARGET_OS_ARCH=darwin-amd64
+    env: TARGET_OS_ARCH=darwin/amd64
   - os: linux
     dist: bionic
-    env: TARGET_OS_ARCH=windows-amd64
+    env: TARGET_OS_ARCH=windows/amd64
   - os: linux
     dist: bionic
-    env: TARGET_OS_ARCH=windows-386
+    env: TARGET_OS_ARCH=windows/386
 
 before_script:
-- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross ./build.sh ${TARGET_OS_ARCH}
+- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross ./static_build.sh ${TARGET_OS_ARCH}
 
 script:
 - file gitql*
-- tar czf gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH}.tar.gz gitql*
+- tar czf gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz gitql*
 
 deploy:
   api_key:
