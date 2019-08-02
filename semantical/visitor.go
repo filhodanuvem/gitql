@@ -1,7 +1,7 @@
 package semantical
 
 import (
-	"github.com/navigaid/gitql/parser"
+	"github.com/cloudson/gitql/parser"
 )
 
 type Visitor interface {

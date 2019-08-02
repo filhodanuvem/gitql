@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/navigaid/gitql/parser"
-	"github.com/navigaid/gitql/semantical"
+	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/semantical"
 )
 
 func failTestIfError(err error, t *testing.T) {

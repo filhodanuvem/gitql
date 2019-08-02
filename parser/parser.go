@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/navigaid/gitql/lexical"
+	"github.com/cloudson/gitql/lexical"
 )
 
 var look_ahead uint8

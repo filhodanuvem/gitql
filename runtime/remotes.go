@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	git "github.com/libgit2/git2go"
-	"github.com/navigaid/gitql/parser"
+	"github.com/cloudson/gitql/parser"
 )
 
 func walkRemotes(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {

@@ -3,8 +3,8 @@ package semantical
 import (
 	"fmt"
 
-	"github.com/navigaid/gitql/lexical"
-	"github.com/navigaid/gitql/parser"
+	"github.com/cloudson/gitql/lexical"
+	"github.com/cloudson/gitql/parser"
 )
 
 func Analysis(ast *parser.NodeProgram) error {

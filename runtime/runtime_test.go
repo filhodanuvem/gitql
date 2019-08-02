@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/navigaid/gitql/parser"
-	"github.com/navigaid/gitql/semantical"
+	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/semantical"
 )
 
 func TestErrorWithInvalidTables(t *testing.T) {

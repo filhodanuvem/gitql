@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/navigaid/gitql/lexical"
+	"github.com/cloudson/gitql/lexical"
 )
 
 type NodeMain interface {

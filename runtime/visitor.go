@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/navigaid/gitql/parser"
-	"github.com/navigaid/gitql/utilities"
+	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/utilities"
 )
 
 func (v *RuntimeVisitor) Visit(n *parser.NodeProgram) error {

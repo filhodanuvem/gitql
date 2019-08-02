@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	git "github.com/libgit2/git2go"
-	"github.com/navigaid/gitql/parser"
-	"github.com/navigaid/gitql/utilities"
+	"github.com/cloudson/gitql/parser"
+	"github.com/cloudson/gitql/utilities"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
