@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/chzyer/readline"
-	"github.com/jessevdk/go-flags"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
 	"github.com/cloudson/gitql/semantical"
+	"github.com/jessevdk/go-flags"
 	"github.com/pkg/errors"
 )
 

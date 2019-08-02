@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	git "github.com/libgit2/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/utilities"
+	git "github.com/libgit2/git2go"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {

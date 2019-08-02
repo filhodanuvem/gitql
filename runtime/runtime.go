@@ -7,9 +7,9 @@ import (
 
 	"encoding/json"
 
-	git "github.com/libgit2/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
+	git "github.com/libgit2/git2go"
 	"github.com/olekukonko/tablewriter"
 )
 
