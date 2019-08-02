@@ -32,5 +32,5 @@ deploy:
   provider: releases
   skip_cleanup: true
   on:
-    all_branches: true
+    tags: true
 
