@@ -121,19 +121,19 @@ build(){
 go_build(){
   case "$TARGET_OS" in
   linux*)
-    go build -v --tags static -ldflags "-extldflags '-static'" .
+    go build -v -tags static -ldflags "-extldflags '-static'" .
   ;;
   win32*)
-    go build -v --tags static -ldflags "-extldflags '-static'" .
+    go build -v -tags static -ldflags "-extldflags '-static'" .
   ;;
   win64*)
-    go build -v --tags static -ldflags "-extldflags '-static'" .
+    go build -v -tags static -ldflags "-extldflags '-static'" .
   ;;
   osx*)
     # MacOS doesn’t support fully static binaries, see 
     # https://stackoverflow.com/questions/3801011/ld-library-not-found-for-lcrt0-o-on-osx-10-6-with-gcc-clang-static-flag
     # this is the best we could possibly do
-    go build -v --tags static .
+    go build -v -tags static .
   ;;
   esac
 }
