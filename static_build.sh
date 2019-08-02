@@ -29,6 +29,7 @@ build_libgit2_linux(){
   -DUSE_BUNDLED_ZLIB=ON \
   -DUSE_HTTPS=OFF \
   -DUSE_SSH=OFF \
+  -DUSE_ICONV=OFF \
   -DCMAKE_SYSTEM_NAME=Linux \
   -DCMAKE_C_COMPILER=${CC} \
   -DCMAKE_C_FLAGS=-fPIE \
@@ -47,6 +48,7 @@ build_libgit2_windows(){
   -DUSE_BUNDLED_ZLIB=ON \
   -DUSE_HTTPS=OFF \
   -DUSE_SSH=OFF \
+  -DUSE_ICONV=OFF \
   -DWINHTTP=OFF \
   -DCMAKE_SYSTEM_NAME=Windows \
   -DCMAKE_C_COMPILER=${CC} \
@@ -68,6 +70,7 @@ build_libgit2_darwin(){
   -DUSE_BUNDLED_ZLIB=ON \
   -DUSE_HTTPS=OFF \
   -DUSE_SSH=OFF \
+  -DUSE_ICONV=OFF \
   -DWINHTTP=OFF \
   -DCURL=OFF \
   -DCMAKE_SYSTEM_NAME=Darwin \
@@ -134,7 +137,7 @@ main(){
 
   export GIT2GO_PATH="${PWD}/vendor/github.com/libgit2/git2go"
   export LIBGIT2_PATH="${GIT2GO_PATH}/vendor/libgit2"
-  export LIBGIT2_BUILD="${GIT2GO_PATH}/static-build/$(date +'%Y.%m.%d_%H:%M:%S')"
+  export LIBGIT2_BUILD="${GIT2GO_PATH}/static-build/${TARGET_OS_ARCH}"
   export LIBGIT2_STATIC_PREFIX="${GIT2GO_PATH}/static-build/install"
 
   setup_vendor
