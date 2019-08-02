@@ -17,7 +17,7 @@ build_libgit2_linux(){
   -DCMAKE_C_FLAGS=-fPIE \
   -DUSE_EXT_HTTP_PARSER=OFF \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_C_COMPILER=${CC} \
   -DUSE_BUNDLED_ZLIB=ON \
   -DUSE_HTTPS=OFF \
   -DUSE_SSH=OFF \
@@ -37,7 +37,7 @@ build_libgit2_windows(){
   -DUSE_BUNDLED_ZLIB=ON \
   -DUSE_HTTPS=OFF \
   -DUSE_SSH=OFF \
-  -DCMAKE_C_COMPILER=$CC \
+  -DCMAKE_C_COMPILER=${CC} \
   -DBUILD_SHARED_LIBS=OFF \
   -DCMAKE_INSTALL_PREFIX="${INSTALL}" \
   -DBUILD_CLAR=OFF \
@@ -62,7 +62,7 @@ build_libgit2_darwin(){
   -DCURL=OFF \
   -G "Ninja" \
   -DCMAKE_SIZEOF_VOID_P=8 \
-  -DCMAKE_C_COMPILER=$CC \
+  -DCMAKE_C_COMPILER=${CC} \
   -DCMAKE_OSX_SYSROOT=/opt/osxcross/SDK/MacOSX10.14.sdk/ \
   -DCMAKE_SYSTEM_NAME=Darwin \
   ${LIBGIT2_PATH}
@@ -74,6 +74,8 @@ build_libgit2(){
 
   case "$TARGET_OS_ARCH" in
   linux-amd64*)
+    export GOOS=linux GOARCH=amd64 CC=clang
+    FLAGS=""
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_libgit2_linux
   ;;
