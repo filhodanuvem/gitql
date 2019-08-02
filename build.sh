@@ -24,7 +24,6 @@ setup_vendor(){
 build_linux(){
   cmake \
   -G Ninja \
-  -DCMAKE_C_FLAGS=-fPIC \
   -DUSE_EXT_HTTP_PARSER=OFF \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DCMAKE_C_COMPILER=clang \
@@ -63,7 +62,6 @@ build_osxcross(){
   cmake -DTHREADSAFE=ON \
   -DBUILD_CLAR=OFF \
   -DBUILD_SHARED_LIBS=OFF \
-  -DCMAKE_C_FLAGS="-fPIC -mmacosx-version-min=10.14" \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DCMAKE_INSTALL_PREFIX="${INSTALL}" \
   -DWINHTTP=OFF \
@@ -103,7 +101,6 @@ build(){
   osxcross*)
     export GOOS=darwin GOARCH=amd64 CC=x86_64-apple-darwin18-clang
     FLAGS=""
-    export CFLAGS="-mmacosx-version-min=10.14"
     export CGO_LDFLAGS="${INSTALL}/lib/libgit2.a -L${INSTALL}/include ${FLAGS}"
     build_osxcross
   ;;
