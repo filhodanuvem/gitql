@@ -41,7 +41,6 @@ build_linux(){
 build_mingw(){
   cmake \
   -G Ninja \
-  -DCMAKE_C_FLAGS=-fPIC \
   -DUSE_EXT_HTTP_PARSER=OFF \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DWINHTTP=OFF \
