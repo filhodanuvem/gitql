@@ -17,12 +17,12 @@ static-prepare: prepare
 	@(sed -e "$$ d" static_build.sh; echo "build_libgit2") | bash
 
 build: static-prepare
-	@(sed -e "$$ d" static_build.sh; echo build_gitql) | bash
+	@echo "Building..."
+	@(sed -e "$$ d" static_build.sh; echo "build_gitql") | bash
 
-static-build:  static-prepare
+static-build: static-prepare
 	@echo "Building static..."
-	@(sed -e "$$ d" static_build.sh; echo build_gitql) | bash -s \
-		"$(shell go env GOHOSTOS)/$(shell go env GOHOSTARCH)"
+	@env TARGET_OS_ARCH=$(TARGET_OS_ARCH) ./static_build.sh
 	@echo "Ready to go!"
 
 install:

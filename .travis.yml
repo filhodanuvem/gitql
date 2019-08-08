@@ -17,8 +17,10 @@ matrix:
     env: TARGET_OS_ARCH=windows/386
 
 script:
-- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross make test
-- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross ./static_build.sh ${TARGET_OS_ARCH}
+- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross
+  make test
+- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross
+  make TARGET_OS_ARCH=${TARGET_OS_ARCH} static-build
 
 before_deploy:
 - tar czf gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz gitql*

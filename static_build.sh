@@ -10,8 +10,6 @@ export LIBGIT2_PATH="${GIT2GO_PATH}/vendor/libgit2"
 export LIBGIT2_BUILD="${GIT2GO_PATH}/static-build/${TARGET_OS_ARCH}"
 export LIBGIT2_STATIC_PREFIX="${GIT2GO_PATH}/static-build/install"
 
-export TARGET_OS_ARCH="${1}"
-
 setup_vendor(){
   LIBGIT2_URL=https://github.com/libgit2/libgit2.git
   LIBGIT2_VER=v0.28.2
