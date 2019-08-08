@@ -1,8 +1,3 @@
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/lib
-#export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/lib
-#export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/lib/pkgconfig
-#export C_INCLUDE_PATH=$C_INCLUDE_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/include
-
 all: prepare build
 
 test: static-prepare
