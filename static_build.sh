@@ -139,7 +139,7 @@ build_libgit2(){
   ;;
   esac
 
-  cmake --build . -- -j$(nproc)
+  cmake --build . -- -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
   cmake --build . --target install
 
   popd
