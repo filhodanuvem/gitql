@@ -1,27 +1,33 @@
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(PWD)/libgit2/install/lib/pkgconfig
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:$(PWD)/libgit2/install/include
-URL_BASE_GIT2GO=https://github.com/libgit2/git2go/archive
-GIT2GO_VERSION=master
-GOPATH=$(shell go env GOPATH)
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/lib
+#export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/lib
+#export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/lib/pkgconfig
+#export C_INCLUDE_PATH=$C_INCLUDE_PATH:$(PWD)/vendor/github.com/libgit2/git2go/static-build/install/include
 
 all: prepare build
 
-test: 
-	@go test . ./lexical/ ./parser/ ./semantical ./runtime
+test: static-prepare
+	@(sed -e "$$ d" static_build.sh; echo "go test -count=1 \
+		. ./lexical/ ./parser/ ./semantical ./runtime") | bash
 
 clean:
-	@rm -rf ./libgit2
+	@rm -rf ./vendor
 
-prepare: clean
-	@echo "Preparing...\n"
-	@chmod +x $(GOPATH)/src/github.com/cloudson/git2go/script/build-libgit2.sh
-	@$(GOPATH)/src/github.com/cloudson/git2go/script/build-libgit2.sh
+prepare:
+	@echo -n "Preparing... "
+	@test -d ./vendor \
+	&& echo "./vendor already exists, skip preparation." \
+	|| (sed -e "$$ d" static_build.sh; echo "setup_vendor") | bash
 
-build: 
-	@echo "Building..."
-	@go build
+static-prepare: prepare
+	@(sed -e "$$ d" static_build.sh; echo "build_libgit2") | bash
+
+build: static-prepare
+	@(sed -e "$$ d" static_build.sh; echo build_gitql) | bash
+
+static-build:  static-prepare
+	@echo "Building static..."
+	@(sed -e "$$ d" static_build.sh; echo build_gitql) | bash -s \
+		"$(shell go env GOHOSTOS)/$(shell go env GOHOSTARCH)"
 	@echo "Ready to go!"
 
 install:
