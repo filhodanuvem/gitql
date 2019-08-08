@@ -1,6 +1,9 @@
 services:
 - docker
 
+go:
+- 1.13beta1
+
 matrix:
   include:
   - os: linux
