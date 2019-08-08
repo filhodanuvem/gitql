@@ -1,7 +1,7 @@
 all: prepare build
 
 test: static-prepare
-	@(sed -e "$$ d" static_build.sh; echo "go test -count=1 \
+	@(sed -e "$$ d" static_build.sh; echo "go test -tags static -count=1 \
 		. ./lexical/ ./parser/ ./semantical ./runtime") | bash
 
 clean:
