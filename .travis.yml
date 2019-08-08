@@ -1,30 +1,18 @@
 services:
 - docker
 
-matrix:
-  include:
-  - os: linux
-    dist: bionic
-    env: TARGET_OS_ARCH=linux/amd64
-  - os: linux
-    dist: bionic
-    env: TARGET_OS_ARCH=darwin/amd64
-  - os: linux
-    dist: bionic
-    env: TARGET_OS_ARCH=windows/amd64
-  - os: linux
-    dist: bionic
-    env: TARGET_OS_ARCH=windows/386
+env:
+- TARGET_OS_ARCH=linux/amd64
+- TARGET_OS_ARCH=darwin/amd64
+- TARGET_OS_ARCH=windows/amd64
+- TARGET_OS_ARCH=windows/386
 
-script:
-- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross
-  make test
-- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross
-  make TARGET_OS_ARCH=${TARGET_OS_ARCH} static-build
+script: docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross bash -c "make test && make TARGET_OS_ARCH=${TARGET_OS_ARCH} static-build"
 
 before_deploy:
 - tar czf gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz gitql*
-- shasum -a 256 gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz > gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz.checksum.txt
+- shasum -a 256 gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz
+  > gitql-${TRAVIS_TAG:-${TRAVIS_COMMIT}}-${TARGET_OS_ARCH////-}.tar.gz.checksum.txt
 
 deploy:
   api_key:
