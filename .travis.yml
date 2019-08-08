@@ -1,9 +1,6 @@
 services:
 - docker
 
-go:
-- 1.13beta1
-
 matrix:
   include:
   - os: linux
@@ -20,7 +17,7 @@ matrix:
     env: TARGET_OS_ARCH=windows/386
 
 script:
-- make test
+- docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross make test
 - docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross ./static_build.sh ${TARGET_OS_ARCH}
 
 before_deploy:
