@@ -5,6 +5,11 @@ export GO111MODULE="on"
 export GOFLAGS="-mod=vendor"
 export CGO_ENABLED=1
 
+export GIT2GO_PATH="${PWD}/vendor/github.com/libgit2/git2go"
+export LIBGIT2_PATH="${GIT2GO_PATH}/vendor/libgit2"
+export LIBGIT2_BUILD="${GIT2GO_PATH}/static-build/${TARGET_OS_ARCH}"
+export LIBGIT2_STATIC_PREFIX="${GIT2GO_PATH}/static-build/install"
+
 setup_vendor(){
   LIBGIT2_URL=https://github.com/libgit2/libgit2.git
   LIBGIT2_VER=v0.28.2
@@ -15,7 +20,24 @@ setup_vendor(){
     go mod vendor
   fi
 
-  git clone --depth 1 -b $LIBGIT2_VER $LIBGIT2_URL $LIBGIT2_PATH || :
+  git -c advice.detachedHead=false clone --quiet --depth 1 -b $LIBGIT2_VER $LIBGIT2_URL $LIBGIT2_PATH || :
+}
+
+build_libgit2_generic(){
+  cmake \
+  -G Ninja \
+  -DTHREADSAFE=ON \
+  -DBUILD_CLAR=OFF \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DUSE_EXT_HTTP_PARSER=OFF \
+  -DUSE_BUNDLED_ZLIB=ON \
+  -DUSE_HTTPS=OFF \
+  -DUSE_SSH=OFF \
+  -DUSE_ICONV=OFF \
+  -DCMAKE_C_FLAGS=-fPIE \
+  -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
+  -DCMAKE_INSTALL_PREFIX="${LIBGIT2_STATIC_PREFIX}" \
+  ${LIBGIT2_PATH}
 }
 
 build_libgit2_linux(){
@@ -84,6 +106,11 @@ build_libgit2(){
   pushd $LIBGIT2_BUILD
 
   case "$TARGET_OS_ARCH" in
+  "")
+    FLAGS=""
+    export CGO_LDFLAGS="${LIBGIT2_STATIC_PREFIX}/lib/libgit2.a -L${LIBGIT2_STATIC_PREFIX}/include ${FLAGS}"
+    build_libgit2_generic
+  ;;
   linux/amd64*)
     export GOOS=linux GOARCH=amd64 CC=clang
     FLAGS=""
@@ -110,34 +137,34 @@ build_libgit2(){
   ;;
   esac
 
-  cmake --build . -- -j$(nproc)
-  cmake --build . --target install
+  cmake --build . -- -j$(nproc 2>/dev/null || sysctl -n hw.ncpu) && cmake --build . --target install &>/dev/null
 
   popd
 }
 
 build_gitql(){
   case "$TARGET_OS_ARCH" in
+  windows/amd64*)
+  ;&
+  windows/386*)
+  ;&
+  linux/amd64*)
+    go build -v -tags static -ldflags '-extldflags -static' .
+  ;;
   darwin/amd64*)
-    # MacOS doesn’t support fully static binaries, see
+    # MacOS doesn't support fully static binaries, see
     # https://stackoverflow.com/questions/3801011/ld-library-not-found-for-lcrt0-o-on-osx-10-6-with-gcc-clang-static-flag
     # this is the best we could possibly do
-    go build -v -tags static .
-  ;;
+  ;&
+  "")
+  ;&
   *)
-    go build -v -tags static -ldflags '-extldflags -static' .
+    go build -v -tags static .
   ;;
   esac
 }
 
 main(){
-  export TARGET_OS_ARCH="${1:-linux/amd64}"
-
-  export GIT2GO_PATH="${PWD}/vendor/github.com/libgit2/git2go"
-  export LIBGIT2_PATH="${GIT2GO_PATH}/vendor/libgit2"
-  export LIBGIT2_BUILD="${GIT2GO_PATH}/static-build/${TARGET_OS_ARCH}"
-  export LIBGIT2_STATIC_PREFIX="${GIT2GO_PATH}/static-build/install"
-
   setup_vendor
   build_libgit2
   build_gitql

@@ -1,28 +1,31 @@
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$(PWD)/libgit2/install/lib/pkgconfig
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:$(PWD)/libgit2/install/include
-URL_BASE_GIT2GO=https://github.com/libgit2/git2go/archive
-GIT2GO_VERSION=master
-GOPATH=$(shell go env GOPATH)
-
-all: prepare build
-
-test: 
-	@go test . ./lexical/ ./parser/ ./semantical ./runtime
+all: test build
 
 clean:
-	@rm -rf ./libgit2
+	@rm -rf ./vendor
 
-prepare: clean
-	@echo "Preparing...\n"
-	@chmod +x $(GOPATH)/src/github.com/cloudson/git2go/script/build-libgit2.sh
-	@$(GOPATH)/src/github.com/cloudson/git2go/script/build-libgit2.sh
+prepare-vendor:
+	@echo "Preparing vendor..."
+	@test -d ./vendor \
+	&& echo "./vendor already exists, skip preparation." \
+	|| (sed -e "$$ d" static_build.sh; echo "setup_vendor") | bash
 
-build: 
-	@echo "Building..."
-	@go build
+prepare-libgit2: prepare-vendor
+	@echo "Preparing libgit2..."
+	@(sed -e "$$ d" static_build.sh; echo "build_libgit2") | bash
+
+test: prepare-libgit2
+	@echo "Testing..."
+	@(sed -e "$$ d" static_build.sh; echo "go test -tags static -count=1 \
+		. ./lexical/ ./parser/ ./semantical ./runtime") | bash
+
+static-build:
+	@echo "Building static binary..."
+	@env TARGET_OS_ARCH=$(TARGET_OS_ARCH) ./static_build.sh
 	@echo "Ready to go!"
 
+build: static-build
+
 install:
-	@bash install.sh
+	@install -m 755 -v gitql /usr/local/bin/gitql
+	@git config --global alias.ql '! gitql'
+	@echo "You can now use: git ql 'query here'"
