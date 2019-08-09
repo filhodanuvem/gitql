@@ -1,3 +1,5 @@
+.PHONY: all clean prepare-vendor prepare-libgit2 test static-build build install
+
 all: test build
 
 clean:
