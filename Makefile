@@ -1,29 +1,29 @@
-all: prepare build
-
-test: static-prepare
-	@(sed -e "$$ d" static_build.sh; echo "go test -tags static -count=1 \
-		. ./lexical/ ./parser/ ./semantical ./runtime") | bash
+all: test static-build
 
 clean:
 	@rm -rf ./vendor
 
-prepare:
-	@echo -n "Preparing... "
+prepare-vendor:
+	@echo "Preparing vendor..."
 	@test -d ./vendor \
 	&& echo "./vendor already exists, skip preparation." \
 	|| (sed -e "$$ d" static_build.sh; echo "setup_vendor") | bash
 
-static-prepare: prepare
+prepare-libgit2: prepare-vendor
+	@echo "Preparing libgit2..."
 	@(sed -e "$$ d" static_build.sh; echo "build_libgit2") | bash
 
-build: static-prepare
-	@echo "Building..."
-	@(sed -e "$$ d" static_build.sh; echo "build_gitql") | bash
+test: prepare-libgit2
+	@echo "Testing..."
+	@(sed -e "$$ d" static_build.sh; echo "go test -tags static -count=1 \
+		. ./lexical/ ./parser/ ./semantical ./runtime") | bash
 
-static-build: static-prepare
-	@echo "Building static..."
+static-build:
+	@echo "Building static binary..."
 	@env TARGET_OS_ARCH=$(TARGET_OS_ARCH) ./static_build.sh
 	@echo "Ready to go!"
 
 install:
-	@bash install.sh
+	@install -m 755 -v gitql /usr/local/bin/gitql
+	@git config --global alias.ql '! gitql'
+	@echo "You can now use: git ql 'query here'"
