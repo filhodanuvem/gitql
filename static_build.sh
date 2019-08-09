@@ -20,7 +20,7 @@ setup_vendor(){
     go mod vendor
   fi
 
-  git clone --depth 1 -b $LIBGIT2_VER $LIBGIT2_URL $LIBGIT2_PATH || :
+  git -c advice.detachedHead=false clone --quiet --depth 1 -b $LIBGIT2_VER $LIBGIT2_URL $LIBGIT2_PATH || :
 }
 
 build_libgit2_generic(){
@@ -137,8 +137,7 @@ build_libgit2(){
   ;;
   esac
 
-  cmake --build . -- -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
-  cmake --build . --target install
+  cmake --build . -- -j$(nproc 2>/dev/null || sysctl -n hw.ncpu) && cmake --build . --target install &>/dev/null
 
   popd
 }
