@@ -2,7 +2,7 @@
 
 set -ex
 export GO111MODULE="on"
-export GOFLAGS="-mod=vendor"
+export GOFLAGS="-mod=vendor -tags=static"
 export CGO_ENABLED=1
 
 export GIT2GO_PATH="${PWD}/vendor/github.com/libgit2/git2go"
@@ -149,7 +149,7 @@ build_gitql(){
   windows/386*)
   ;&
   linux/amd64*)
-    go build -v -tags static -ldflags '-extldflags -static' .
+    go build -v -ldflags '-extldflags -static' .
   ;;
   darwin/amd64*)
     # MacOS doesn't support fully static binaries, see
@@ -159,7 +159,7 @@ build_gitql(){
   "")
   ;&
   *)
-    go build -v -tags static .
+    go build -v .
   ;;
   esac
 }

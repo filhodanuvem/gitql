@@ -1,7 +1,7 @@
 *.sublime-*
 git2go
 libgit2
-gitql
+gitql*
 .vscode*
 .idea/
 /vendor/
