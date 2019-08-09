@@ -17,7 +17,7 @@ prepare-libgit2: prepare-vendor
 
 test: prepare-libgit2
 	@echo "Testing..."
-	@(sed -e "$$ d" static_build.sh; echo "go test -tags static -count=1 \
+	@(sed -e "$$ d" static_build.sh; echo "go test -count=1 \
 		. ./lexical/ ./parser/ ./semantical ./runtime") | bash
 
 static-build:
