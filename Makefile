@@ -1,4 +1,4 @@
-all: test static-build
+all: test build
 
 clean:
 	@rm -rf ./vendor
@@ -22,6 +22,8 @@ static-build:
 	@echo "Building static binary..."
 	@env TARGET_OS_ARCH=$(TARGET_OS_ARCH) ./static_build.sh
 	@echo "Ready to go!"
+
+build: static-build
 
 install:
 	@install -m 755 -v gitql /usr/local/bin/gitql
