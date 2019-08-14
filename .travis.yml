@@ -7,6 +7,8 @@ env:
 - TARGET_OS_ARCH=windows/amd64
 - TARGET_OS_ARCH=windows/386
 
+before_script: git fetch --unshallow
+
 script: docker run -it -v $PWD:$PWD -w $PWD navigaid/osxcross bash -c "make test && make TARGET_OS_ARCH=${TARGET_OS_ARCH} build"
 
 before_deploy:
