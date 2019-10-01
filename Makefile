@@ -9,7 +9,7 @@ GOPATH=$(shell go env GOPATH)
 all: prepare build
 
 test: 
-	@go test . ./lexical/ ./parser/ ./semantical ./runtime
+	@go test -count=1 -v ./parser/ ./lexical/ ./utilities/ ./semantical/ 
 
 clean:
 	@rm -rf ./libgit2
@@ -21,8 +21,4 @@ prepare: clean
 
 build: 
 	@echo "Building..."
-	@go build
-	@echo "Ready to go!"
-
-install:
 	@bash install.sh
