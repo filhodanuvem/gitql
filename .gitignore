@@ -4,3 +4,4 @@ libgit2
 gitql
 .vscode*
 .idea/
+vendor
