@@ -1,11 +1,9 @@
 name: CI
 on: [push]
 jobs:
-   test:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest]
-    runs-on: ${{ matrix.platform }}
+  build-linux:
+    name: Build linux
+    runs-on: ubuntu-latest
     steps:
     - name: Set up Go 1.12
       uses: actions/setup-go@v1
@@ -27,5 +25,37 @@ jobs:
         GOPATH: /home/runner/work/cloudson/go
         TARGET_OS_ARCH: linux/amd64
       run: | 
-        ./install.sh 
+        make build
+        ./gitql -v
+
+  build-mac:
+    name: Build mac
+    runs-on: macos-latest
+    steps:
+    - name: Set up Go 1.12
+      uses: actions/setup-go@v1
+      with:
+        version: 1.12
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+      with:
+        path: go/src/github.com/cloudson/gitql
+    
+    - name: Run tests
+      run: | 
+        make test
+
+    - name: Build mac
+      env:
+        TARGET_OS_ARCH: darwin/amd64
+      run: | 
+        brew install pkg-config gcc
+        export PKG_CONFIG_PATH=${PWD}/libgit2/install/lib/pkgconfig:/usr/local/opt/openssl/lib/pkgconfig
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
+        echo ${PKG_CONFIG_PATH}
+        make build-dynamic || true
+        pkg-config --version
+        openssl version
         ./gitql -v
