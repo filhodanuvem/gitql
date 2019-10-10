@@ -54,7 +54,7 @@ jobs:
         brew install pkg-config gcc
         export PKG_CONFIG_PATH=${PWD}/libgit2/install/lib/pkgconfig:/usr/local/opt/openssl/lib/pkgconfig
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-        echo ${PKG_CONFIG_PATH}
+        export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
         make build-dynamic || true
         pkg-config --version
         openssl version

@@ -1,9 +1,7 @@
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-# export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
-export C_INCLUDE_PATH=$C_INCLUDE_PATH:$(PWD)/libgit2/install/include
-URL_BASE_GIT2GO=https://github.com/libgit2/git2go/archive
-GIT2GO_VERSION=master
+export LD_LIBRARY_PATH=$(PWD)/libgit2/install/lib
+export DYLD_LIBRARY_PATH=$(PWD)/libgit2/install/lib
+export PKG_CONFIG_PATH=${PWD}/libgit2/install/lib/pkgconfig:/usr/local/opt/openssl/lib/pkgconfig
+export C_INCLUDE_PATH=$(PWD)/libgit2/install/include
 GOPATH=$(shell go env GOPATH)
 
 all: build
@@ -25,12 +23,10 @@ prepare-dynamic: clean
 	@curl https://raw.githubusercontent.com/cloudson/git2go/original_libgit2/script/install-libgit2.sh >> install-libgit2.sh
 	@chmod +x ./install-libgit2.sh
 	@bash ./install-libgit2.sh
-	@ls ${PWD}/libgit2/install/lib/pkgconfig
-	@echo $(PKG_CONFIG_PATH)
 
 build-dynamic: prepare-dynamic
-	@pwd
-	@ls ${PWD}/libgit2/install/lib/pkgconfig
-	@echo $(PKG_CONFIG_PATH)
 	@go get -v -d . 
+	@echo ${LD_LIBRARY_PATH}
+	@echo ${DYLD_LIBRARY_PATH}
+	@ls ${DYLD_LIBRARY_PATH}
 	@go build
