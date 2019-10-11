@@ -1,7 +1,7 @@
-Gitql [![Build Status](https://travis-ci.org/cloudson/gitql.png)](https://travis-ci.org/cloudson/gitql)
+Gitql ![](https://github.com/cloudson/gitql/workflows/CI/badge.svg)
 ===============
 
-Gitql is a Git query language.  
+Gitql is a Git query language.
 
 In a repository path...
 
@@ -14,12 +14,26 @@ See more [here](https://asciinema.org/a/97094)
 - cmake  
 - pkg-config  
 
-## Install
-- `go get -u -d github.com/cloudson/gitql`
-- `cd $GOPATH/src/github.com/cloudson/gitql`
-- `make`
-- `sudo make install`
+## How to install
+### linux/amd64 
 
+We support static compiling for linux architetures, so you can access the [releases page](https://github.com/cloudson/gitql/releases). If you want to compile itself, take a look in the dockerfile to
+understand the whole process. 
+
+### darwin/amd64
+
+We **do not** support yet static compiling. You need to have pkg-config as dependencies, so after install that, run
+
+```bash
+# Inside this repository folder
+export PKG_CONFIG_PATH=${PWD}/libgit2/install/lib/pkgconfig:/usr/local/opt/openssl/lib/pkgconfig
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
+make build-dynamic
+```
+
+You can always take a look in our [github actions file](./.github/workflows/ci.yml) to understand
+how we build it in the ci server.
 
 ## Examples 
 
