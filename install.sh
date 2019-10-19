@@ -71,7 +71,6 @@ build_libgit2_windows(){
   -DUSE_ICONV=OFF \
   -DWINHTTP=OFF \
   -DCMAKE_SYSTEM_NAME=Windows \
-  -DCMAKE_C_COMPILER=${CC} \
   -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
   -DCMAKE_INSTALL_PREFIX="${LIBGIT2_STATIC_PREFIX}" \
   -DWIN32=ON \
@@ -123,7 +122,8 @@ build_libgit2(){
     build_libgit2_darwin
   ;;
   windows/amd64*)
-    export GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-clang
+    export GOOS=windows GOARCH=amd64 
+    # CC=x86_64-w64-mingw32-clang
     FLAGS="-lws2_32"
     export CGO_LDFLAGS="${LIBGIT2_STATIC_PREFIX}/lib/libgit2.a -L${LIBGIT2_STATIC_PREFIX}/include ${FLAGS}"
     build_libgit2_windows
