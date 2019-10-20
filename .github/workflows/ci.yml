@@ -27,6 +27,11 @@ jobs:
       run: | 
         make build
         ./gitql -v
+    - uses: actions/upload-artifact@master
+      name: Generating artifact
+      with:
+        name: gitql-linux64
+        path: ./gitql
 
   build-mac:
     name: Build mac
@@ -57,7 +62,12 @@ jobs:
         export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
         make build-dynamic || true
         ./gitql -v
-    
+    - uses: actions/upload-artifact@master
+      name: Generating artifact
+      with:
+        name: gitql-mac64
+        path: ./gitql
+
   build-windows:
     name: Build windows
     runs-on: windows-2019
@@ -80,8 +90,12 @@ jobs:
         TARGET_OS_ARCH: windows/amd64
       run: | 
         choco install ninja vcredist2017
-        ls %ALLUSERSPROFILE%\MinGW\bin
         set PATH=%HOMEDRIVE%\mingw64\bin;%PATH%
-        echo %PATH%
         make build
-        gitql -v
+        .\gitql.exe -v
+
+    - uses: actions/upload-artifact@master
+      name: Generating artifact
+      with:
+        name: gitql-win64
+        path: .\gitql.exe

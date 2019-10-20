@@ -15,10 +15,12 @@ See more [here](https://asciinema.org/a/97094)
 - pkg-config  
 
 ## How to install
+
+We support static compiling for linux and windows platform (amd64), so you can access the [releases page](https://github.com/cloudson/gitql/releases) and just grab the binary. If you want to compile itself follow the instructions below: 
+
 ### linux/amd64 
 
-We support static compiling for linux architetures, so you can access the [releases page](https://github.com/cloudson/gitql/releases). If you want to compile itself, take a look in the dockerfile to
-understand the whole process. 
+Read the dockerfile to understand the whole process. 
 
 ### darwin/amd64
 
@@ -32,8 +34,18 @@ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
 make build-dynamic
 ```
 
+### windows/amd64
+
+You need a C compiler, Cmake and Ninja installed. Using chocolately it should be easy 
+
+```bash
+choco install cmake ninja vcredist2017
+set PATH=%HOMEDRIVE%\mingw64\bin;%PATH%
+make build
+```
+
 You can always take a look in our [github actions file](./.github/workflows/ci.yml) to understand
-how we build it in the ci server.
+how we build it in the ci server. If even after try [the binaries](https://github.com/cloudson/gitql/releases) or either compile yourself you couldn't use that. Open an issue. 
 
 ## Examples 
 
@@ -66,7 +78,7 @@ As an example, this is the `commits` table:
 
 ## Questions?
 
-`gitql -h` or open an [issue](https://github.com/cloudson/gitql/issues)
+`gitql` or open an [issue](https://github.com/cloudson/gitql/issues)
 
 Notes:
 * Gitql doesn't want to _kill_ `git log` - it was created just for science! :sweat_smile:
