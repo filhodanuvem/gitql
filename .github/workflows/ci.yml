@@ -27,6 +27,11 @@ jobs:
       run: | 
         make build
         ./gitql -v
+    - uses: actions/upload-artifact@master
+      name: Generating artifact
+      with:
+        name: gitql-linux64
+        path: ./gitql
 
   build-mac:
     name: Build mac
@@ -57,3 +62,40 @@ jobs:
         export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
         make build-dynamic || true
         ./gitql -v
+    - uses: actions/upload-artifact@master
+      name: Generating artifact
+      with:
+        name: gitql-mac64
+        path: ./gitql
+
+  build-windows:
+    name: Build windows
+    runs-on: windows-2019
+    steps:
+    - name: Set up Go 1.12
+      uses: actions/setup-go@v1
+      with:
+        version: 1.12
+      id: go
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v1
+    
+    - name: Run tests
+      run: | 
+        make test
+
+    - name: Build windows
+      env:
+        TARGET_OS_ARCH: windows/amd64
+      run: | 
+        choco install ninja vcredist2017
+        set PATH=%HOMEDRIVE%\mingw64\bin;%PATH%
+        make build
+        .\gitql.exe -v
+
+    - uses: actions/upload-artifact@master
+      name: Generating artifact
+      with:
+        name: gitql-win64
+        path: .\gitql.exe
