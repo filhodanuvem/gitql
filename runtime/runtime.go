@@ -16,7 +16,6 @@ import (
 const (
 	WALK_COMMITS    = 1
 	WALK_REFERENCES = 2
-	WALK_REMOTES    = 3
 )
 
 const (
@@ -47,7 +46,6 @@ type GitBuilder struct {
 	currentWalkType  uint8
 	currentCommit    *git.Commit
 	currentReference *git.Reference
-	currentRemote    *git.Remote
 	walk             *git.RevWalk
 }
 
@@ -116,8 +114,6 @@ func findWalkType(n *parser.NodeProgram) uint8 {
 	switch s.Tables[0] {
 	case "commits":
 		builder.currentWalkType = WALK_COMMITS
-	case "remotes":
-		builder.currentWalkType = WALK_REMOTES
 	case "refs", "tags", "branches":
 		builder.currentWalkType = WALK_REFERENCES
 	}
@@ -248,10 +244,6 @@ func (g *GitBuilder) setReference(object *git.Reference) {
 	g.currentReference = object
 }
 
-func (g *GitBuilder) setRemote(object *git.Remote) {
-	g.currentRemote = object
-}
-
 func (g *GitBuilder) WithTable(tableName string, alias string) error {
 	err := g.isValidTable(tableName)
 	if err != nil {
@@ -294,12 +286,6 @@ func PossibleTables() map[string][]string {
 			"full_name",
 			"type",
 			"hash",
-		},
-		"remotes": {
-			"name",
-			"url",
-			"push_url",
-			"owner",
 		},
 		"tags": {
 			"name",

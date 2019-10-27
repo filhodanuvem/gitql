@@ -3,7 +3,7 @@ on: [push]
 jobs:
   build-linux:
     name: Build linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - name: Set up Go 1.12
       uses: actions/setup-go@v1
@@ -35,7 +35,7 @@ jobs:
 
   build-mac:
     name: Build mac
-    runs-on: macos-latest
+    runs-on: macOS-10.14
     steps:
     - name: Set up Go 1.12
       uses: actions/setup-go@v1
@@ -90,7 +90,6 @@ jobs:
         TARGET_OS_ARCH: windows/amd64
       run: | 
         choco install ninja vcredist2017
-        set PATH=%HOMEDRIVE%\mingw64\bin;%PATH%
         make build
         .\gitql.exe -v
 

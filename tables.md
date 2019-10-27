@@ -14,14 +14,6 @@ Gitql [![Build Status](https://travis-ci.org/cloudson/gitql.png)](https://travis
 | message | 
 | full_message | 
 
-| remotes | 
-| ---------| 
-| name |
-| url | 
-| push_url |  
-| owner |
-
-
 | tags | 
 | ---------| 
 | name |
