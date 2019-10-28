@@ -1,10 +1,10 @@
 package runtime
 
 import (
-	"strconv"
 	"log"
+	"strconv"
 
-	"github.com/cloudson/git2go"
+	git "github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 )
 
@@ -53,7 +53,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 	if s.Count {
 		newRow := make(tableRow)
 		// counter was started from 1!
-		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter-1)
+		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter - 1)
 		counter = 2
 		rows = append(rows, newRow)
 	}
@@ -96,10 +96,6 @@ func metadataReference(identifier string, object *git.Reference) string {
 	case "type":
 		if object.IsBranch() {
 			return REFERENCE_TYPE_BRANCH
-		}
-
-		if object.IsRemote() {
-			return REFERENCE_TYPE_REMOTE
 		}
 
 		if object.IsTag() {

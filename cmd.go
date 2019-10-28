@@ -16,14 +16,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-const Version = "Gitql 1.6.0"
+const Version = "Gitql 2.0.0"
 
 type Gitql struct {
 	Path          string `short:"p" default:"."`
-	Version       bool   `short:"v"`
-	Isinteractive bool   `short:"i"`
-	ShowTables    bool   `long:"show-tables"`
-	TypeFormat    string `long:"type" default:"table"`
+	Help          bool   `short:"h" long:"help"`
+	Version       bool   `short:"v" long:"version"`
+	Isinteractive bool   `short:"i" long:"interactive"`
+	ShowTables    bool   `short:"s"  long:"show-tables"`
+	TypeFormat    string `short:"f" long:"type" default:"table"`
 	Query         string
 }
 
@@ -125,10 +126,11 @@ func (cmd *Gitql) parse(argv []string) error {
 	args, err := p.ParseArgs(argv)
 
 	if err != nil {
+		os.Stderr.Write(cmd.usage())
 		return err
 	}
 
-	if !cmd.Isinteractive && !cmd.Version && !cmd.ShowTables && len(args) == 0 {
+	if cmd.Help || (!cmd.Isinteractive && !cmd.Version && !cmd.ShowTables && len(args) == 0) {
 		os.Stderr.Write(cmd.usage())
 		return errors.New("invalid command line options")
 	}
@@ -144,14 +146,15 @@ func (cmd Gitql) usage() []byte {
 Usage: gitql [flags] [args]
 
 Flags:
-  -i    Enter to interactive mode
-  -p string
+  -i --interactive   Enter to interactive mode
+  -p --path string
         The (optional) path to run gitql (default ".")
-  --show-tables
+  -s --show-tables
         Show all tables
-  --type string
+  -f --type string
 	The output type format {table|json} (default "table")
-  -v    The version of gitql
+  -v --version  The version of gitql
+  -h --help   this help
 Arguments:
   sql: A query to run
 `)
