@@ -7,7 +7,7 @@ import (
 
 	"encoding/json"
 
-	git "github.com/cloudson/git2go"
+	git "github.com/libgit2/git2go/v30"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
 	"github.com/olekukonko/tablewriter"

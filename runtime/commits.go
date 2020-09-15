@@ -2,13 +2,13 @@ package runtime
 
 import (
 	"fmt"
-	"strconv"
 	"log"
+	"strconv"
 	"strings"
 
-	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/utilities"
+	git "github.com/libgit2/git2go/v30"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
@@ -61,7 +61,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 	if s.Count {
 		newRow := make(tableRow)
 		// counter was started from 1!
-		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter-1)
+		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter - 1)
 		counter = 2
 		rows = append(rows, newRow)
 	}

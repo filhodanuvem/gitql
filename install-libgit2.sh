@@ -2,7 +2,7 @@
 
 set -ex
 
-git clone --depth 1 --branch v0.25.0 git://github.com/libgit2/libgit2 libgit2
+git clone --depth 1 --branch v1.0.1 git://github.com/libgit2/libgit2 libgit2
 
 cd libgit2
 # Those files are temporary, should not be in git. To minimize 
