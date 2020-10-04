@@ -24,14 +24,11 @@ jobs:
     
     - name: Run tests
       run: | 
-        make test
+        go test -v ./... 
     
     - name: Build linux
-      env:
-        GOPATH: /home/runner/work/cloudson/go
-        TARGET_OS_ARCH: linux/amd64
       run: | 
-        make build
+        go build . 
         ./gitql -v
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -56,13 +53,11 @@ jobs:
     
     - name: Run tests
       run: | 
-        make test
+        go test -v ./... 
 
     - name: Build mac
-      env:
-        TARGET_OS_ARCH: darwin/amd64
       run: | 
-        make build
+        go build .
         ./gitql -v
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -85,13 +80,11 @@ jobs:
     
     - name: Run tests
       run: | 
-        make test
+        go test -v ./... 
 
     - name: Build windows
-      env:
-        TARGET_OS_ARCH: windows/amd64
       run: | 
-        make build
+        go build .
         .\gitql.exe -v
 
     - uses: actions/upload-artifact@master

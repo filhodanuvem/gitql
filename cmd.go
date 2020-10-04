@@ -16,7 +16,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-const Version = "Gitql 2.0.0"
+const Version = "Gitql 2.1.0"
 
 type Gitql struct {
 	Path          string `short:"p" default:"."`
