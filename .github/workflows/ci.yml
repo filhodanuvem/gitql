@@ -62,11 +62,7 @@ jobs:
       env:
         TARGET_OS_ARCH: darwin/amd64
       run: | 
-        brew install pkg-config
-        export PKG_CONFIG_PATH=${PWD}/libgit2/install/lib/pkgconfig:/usr/local/opt/openssl/lib/pkgconfig
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-        export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(PWD)/libgit2/install/lib
-        make build-dynamic || true
+        make build
         ./gitql -v
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -95,7 +91,6 @@ jobs:
       env:
         TARGET_OS_ARCH: windows/amd64
       run: | 
-        choco install ninja vcredist2017
         make build
         .\gitql.exe -v
 
