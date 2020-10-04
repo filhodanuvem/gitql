@@ -53,7 +53,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 
 			counter = counter + 1
 			if !usingOrder && counter > s.Limit {
-				return fmt.Errorf("limit")
+				return fmt.Errorf("limit") // stop iteration
 			}
 		}
 

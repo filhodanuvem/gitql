@@ -17,10 +17,6 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		return nil, err
 	}
 
-	// builder.walk, _ = repo.Walk()
-	// builder.walk.PushHead()
-	// builder.walk.Sorting(git.SortTime) <- ?
-
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
 
@@ -58,7 +54,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		}
 
 		if !usingOrder && !s.Count && counter > s.Limit {
-			return fmt.Errorf("limit")
+			return fmt.Errorf("limit") // stop iteration
 		}
 
 		return nil
