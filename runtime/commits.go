@@ -105,7 +105,7 @@ func metadataCommit(identifier string, commit *object.Commit) string {
 	case "author_email":
 		return commit.Author.Email
 	case "committer":
-		return commit.Committer.String()
+		return commit.Committer.Name
 	case "committer_email":
 		return commit.Committer.Email
 	case "date":
