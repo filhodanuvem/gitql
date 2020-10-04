@@ -7,9 +7,11 @@ import (
 
 	"encoding/json"
 
-	git "github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -39,14 +41,15 @@ type proxyTable struct {
 }
 
 type GitBuilder struct {
-	tables           map[string]string
-	possibleTables   map[string][]string
-	proxyTables      map[string]*proxyTable
-	repo             *git.Repository
-	currentWalkType  uint8
-	currentCommit    *git.Commit
-	currentReference *git.Reference
-	walk             *git.RevWalk
+	tables          map[string]string
+	possibleTables  map[string][]string
+	proxyTables     map[string]*proxyTable
+	repo            *git.Repository
+	currentWalkType uint8
+	currentCommit   *object.Commit
+
+	currentReference *plumbing.Reference
+	//walk             *object.RevWalk
 }
 
 type RuntimeError struct {
@@ -229,18 +232,18 @@ func proxyTableEntry(t string, f map[string]string) *proxyTable {
 }
 
 func openRepository(path *string) {
-	_repo, err := git.OpenRepositoryExtended(*path, git.RepositoryOpenCrossFs, "")
+	_repo, err := git.PlainOpen(*path)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	repo = _repo
 }
 
-func (g *GitBuilder) setCommit(object *git.Commit) {
+func (g *GitBuilder) setCommit(object *object.Commit) {
 	g.currentCommit = object
 }
 
-func (g *GitBuilder) setReference(object *git.Reference) {
+func (g *GitBuilder) setReference(object *plumbing.Reference) {
 	g.currentReference = object
 }
 

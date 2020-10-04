@@ -2,19 +2,20 @@ package runtime
 
 import (
 	"fmt"
-	"strconv"
 	"log"
+	"strconv"
 	"strings"
 
-	"github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/utilities"
+	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
-	builder.walk, _ = repo.Walk()
-	builder.walk.PushHead()
-	builder.walk.Sorting(git.SortTime)
+	iter, err := repo.CommitObjects()
+	if err != nil {
+		return nil, err
+	}
 
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
@@ -34,37 +35,39 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 			fields = append(fields, s.Order.Field)
 		}
 	}
-	fn := func(object *git.Commit) bool {
-		builder.setCommit(object)
+
+	iter.ForEach(func(commit *object.Commit) error {
+		builder.setCommit(commit)
 		boolRegister = true
 		visitor.VisitExpr(where)
+
 		if boolRegister {
 			if !s.Count {
 				newRow := make(tableRow)
 				for _, f := range fields {
-					newRow[f] = metadataCommit(f, object)
+					newRow[f] = metadataCommit(f, commit)
 				}
+
 				rows = append(rows, newRow)
 			}
 			counter = counter + 1
 		}
-		if !usingOrder && !s.Count && counter > s.Limit {
-			return false
-		}
-		return true
-	}
 
-	err := builder.walk.Iterate(fn)
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
+		if !usingOrder && !s.Count && counter > s.Limit {
+			return fmt.Errorf("limit") // stop iteration
+		}
+
+		return nil
+	})
+
 	if s.Count {
 		newRow := make(tableRow)
 		// counter was started from 1!
-		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter-1)
+		newRow[COUNT_FIELD_NAME] = strconv.Itoa(counter - 1)
 		counter = 2
 		rows = append(rows, newRow)
 	}
+
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced, err = orderTable(rowsSliced, s.Order)
 	if err != nil {
@@ -75,13 +78,15 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
 	}
+
 	tableData := new(TableData)
 	tableData.rows = rowsSliced
 	tableData.fields = resultFields
+
 	return tableData, nil
 }
 
-func metadataCommit(identifier string, object *git.Commit) string {
+func metadataCommit(identifier string, commit *object.Commit) string {
 	key := ""
 	for key, _ = range builder.tables {
 		break
@@ -91,24 +96,26 @@ func metadataCommit(identifier string, object *git.Commit) string {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	switch identifier {
 	case "hash":
-		return object.Id().String()
+		return commit.ID().String()
 	case "author":
-		return object.Author().Name
+		return commit.Author.Name
 	case "author_email":
-		return object.Author().Email
+		return commit.Author.Email
 	case "committer":
-		return object.Committer().Name
+		return commit.Committer.Name
 	case "committer_email":
-		return object.Committer().Email
+		return commit.Committer.Email
 	case "date":
-		return object.Committer().When.Format(parser.Time_YMDHIS)
+		//return object.Committer().When.Format()
+		return commit.Author.When.Format(parser.Time_YMDHIS)
 	case "full_message":
-		return object.Message()
+		return commit.Message
 	case "message":
 		// return first line of a commit message
-		message := object.Message()
+		message := commit.Message
 		r := []rune("\n")
 		idx := strings.IndexRune(message, r[0])
 		if idx != -1 {

@@ -24,7 +24,6 @@ func TestTestAllFieldsInExprBranchesWithCount(t *testing.T) {
 	}
 }
 
-
 func TestTestAllFieldsInExprRefs(t *testing.T) {
 	query := "select * from refs where name = 'something' or type = 'asdfasdfsd'"
 	err := parseAndVisitQuery(query, "../", t)
