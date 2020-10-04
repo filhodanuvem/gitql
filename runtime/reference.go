@@ -1,11 +1,12 @@
 package runtime
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
-	git "github.com/cloudson/git2go"
 	"github.com/cloudson/gitql/parser"
+	"github.com/go-git/go-git/v5/plumbing"
 )
 
 func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
@@ -13,43 +14,52 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 	where := s.Where
 
 	// @TODO make PR with Repository.WalkReference()
-	iterator, err := builder.repo.NewReferenceIterator()
+	iterator, err := builder.repo.References()
 	if err != nil {
 		return nil, err
 	}
+
 	counter := 1
 	fields := s.Fields
 	if s.WildCard {
 		fields = builder.possibleTables[s.Tables[0]]
 	}
+
 	rows := make([]tableRow, s.Limit)
 	usingOrder := false
 	if s.Order != nil && !s.Count {
 		usingOrder = true
 	}
-	for object, inTheEnd := iterator.Next(); inTheEnd == nil; object, inTheEnd = iterator.Next() {
 
-		builder.setReference(object)
+	iterator.ForEach(func(ref *plumbing.Reference) error {
+		builder.setReference(ref)
 		boolRegister = true
 		visitor.VisitExpr(where)
+
 		if boolRegister {
 			fields := s.Fields
+
 			if s.WildCard {
 				fields = builder.possibleTables[s.Tables[0]]
 			}
+
 			if !s.Count {
 				newRow := make(tableRow)
 				for _, f := range fields {
-					newRow[f] = metadataReference(f, object)
+					newRow[f] = metadataReference(f, ref)
 				}
 				rows = append(rows, newRow)
 			}
+
 			counter = counter + 1
 			if !usingOrder && counter > s.Limit {
-				break
+				return fmt.Errorf("limit")
 			}
 		}
-	}
+
+		return nil
+	})
+
 	if s.Count {
 		newRow := make(tableRow)
 		// counter was started from 1!
@@ -57,22 +67,26 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 		counter = 2
 		rows = append(rows, newRow)
 	}
+
 	rowsSliced := rows[len(rows)-counter+1:]
 	rowsSliced, err = orderTable(rowsSliced, s.Order)
 	if err != nil {
 		return nil, err
 	}
+
 	if usingOrder && counter > s.Limit {
 		counter = s.Limit
 		rowsSliced = rowsSliced[0:counter]
 	}
+
 	tableData := new(TableData)
 	tableData.rows = rowsSliced
 	tableData.fields = fields
+
 	return tableData, nil
 }
 
-func metadataReference(identifier string, object *git.Reference) string {
+func metadataReference(identifier string, ref *plumbing.Reference) string {
 	key := ""
 	for key, _ = range builder.tables {
 		break
@@ -84,21 +98,21 @@ func metadataReference(identifier string, object *git.Reference) string {
 	}
 	switch identifier {
 	case "name":
-		return object.Shorthand()
+		return ref.Name().Short()
 	case "full_name":
-		return object.Name()
+		return ref.Name().String()
 	case "hash":
-		target := object.Target()
-		if target == nil {
+		target := ref.Hash()
+		if target.IsZero() {
 			return "NULL"
 		}
 		return target.String()
 	case "type":
-		if object.IsBranch() {
+		if ref.Name().IsBranch() {
 			return REFERENCE_TYPE_BRANCH
 		}
 
-		if object.IsTag() {
+		if ref.Name().IsTag() {
 			return REFERENCE_TYPE_TAG
 		}
 
