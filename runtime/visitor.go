@@ -19,7 +19,7 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) error {
 		proxy := builder.proxyTables[proxyTableName]
 		if n.Count {
 			// do nothing
-		} else	if !n.WildCard {
+		} else if !n.WildCard {
 			err := testAllFieldsFromTable(n.Fields, proxyTableName)
 			if err != nil {
 				return err
@@ -66,7 +66,7 @@ func (v *RuntimeVisitor) VisitSelect(n *parser.NodeSelect) error {
 	}
 	if n.Count {
 		n.Fields = []string{COUNT_FIELD_NAME}
-	}else{
+	} else {
 		err = testAllFieldsFromTable(n.Fields, table)
 	}
 	return err
