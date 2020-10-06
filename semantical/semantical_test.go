@@ -129,7 +129,14 @@ func TestSmallerWithDateWithoutTime(t *testing.T) {
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
+}
 
+func TestRepeatedDistinct(t *testing.T) {
+	parser.New("select distinct distinct author from commits")
+	_, parserErr := parser.AST()
+	if parserErr == nil {
+		t.Fatalf(parserErr.Error())
+	}
 }
 
 // You should not test stupid things like "c" in "cloudson" or 1 = 1 ¬¬
