@@ -17,14 +17,13 @@ See more [here](https://asciinema.org/a/97094)
 
 ## How to install
 
-You can access the [releases page](https://github.com/cloudson/gitql/releases) and just grab the binary. If you want to compile itself just run `go build .`. 
+You can access the [releases page](https://github.com/cloudson/gitql/releases) and just grab the binary. If you want to compile itself just run `go build .`.
 
-## Examples 
+## Examples
 
-`gitql "your query" `   
-or   
+`gitql "your query" `  
+or  
 `git ql "your query" `
-
 
 As an example, this is the `commits` table:
 
@@ -42,10 +41,10 @@ As an example, this is the `commits` table:
 (see more tables [here](tables.md))
 
 ## Example Commands
-* `select hash, author, message from commits limit 3`  
-* `select hash, message from commits where 'hell' in full_message or 'Fuck' in full_message`  
-* `select hash, message, author_email from commits where author = 'cloudson'`  
-* `select date, message from commits where date < '2014-04-10' `  
+* `select hash, author, message from commits limit 3`
+* `select hash, message from commits where 'hell' in full_message or 'Fuck' in full_message`
+* `select hash, message, author_email from commits where author = 'cloudson'`
+* `select date, message from commits where date < '2014-04-10'`
 * `select message from commits where 'hell' in message order by date asc`
 
 ## Questions?
