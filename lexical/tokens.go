@@ -1,6 +1,7 @@
 package lexical
 
 const T_SELECT = 1
+const T_DISTINCT = 29
 const T_FROM = 2
 const T_WHERE = 3
 const T_ORDER = 4
@@ -37,6 +38,7 @@ func allocMapTokenNames() {
 	if len(tokenNameMap) == 0 {
 		tokenNameMap = map[uint8]string{
 			T_SELECT:           "T_SELECT",
+			T_DISTINCT:         "T_DISTINCT",
 			T_FROM:             "T_FROM",
 			T_WHERE:            "T_WHERE",
 			T_ORDER:            "T_ORDER",

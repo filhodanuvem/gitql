@@ -19,6 +19,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
+	distinct := s.Distinct
 
 	counter := 1
 	fields := s.Fields
@@ -26,7 +27,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 	resultFields := fields // These are the fields in output with wildcards expanded
-	rows := make([]tableRow, s.Limit)
+	rows := make([]tableRow, 1)
 	usingOrder := false
 	if s.Order != nil && !s.Count {
 		usingOrder = true
@@ -36,6 +37,8 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		}
 	}
 
+	// holds the seen values so far. field -> (value -> wasSeen)
+	seen := make(map[string]map[string]bool)
 	iter.ForEach(func(commit *object.Commit) error {
 		builder.setCommit(commit)
 		boolRegister = true
@@ -44,13 +47,27 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		if boolRegister {
 			if !s.Count {
 				newRow := make(tableRow)
+
+				isNew := true
 				for _, f := range fields {
-					newRow[f] = metadataCommit(f, commit)
+					data := metadataCommit(f, commit)
+
+					_, ok := seen[f]
+					if !ok {
+						seen[f] = make(map[string]bool)
+					}
+
+					isNew = !seen[f][data]
+
+					newRow[f] = data
+					seen[f][data] = true
 				}
 
-				rows = append(rows, newRow)
+				if isNew || distinct == nil {
+					counter = counter + 1
+					rows = append(rows, newRow)
+				}
 			}
-			counter = counter + 1
 		}
 
 		if !usingOrder && !s.Count && counter > s.Limit {

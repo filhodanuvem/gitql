@@ -55,6 +55,34 @@ func TestUsingWildCard(t *testing.T) {
 	}
 }
 
+func TestUsingDistinct(t *testing.T) {
+	New("select distinct author from commits")
+	ast, error := AST()
+
+	if error != nil {
+		t.Errorf(error.Error())
+	}
+
+	if ast.Child == nil {
+		t.Errorf("Program is empty")
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	if selectNode.Distinct == nil {
+		// TODO fail
+	}
+
+	if len(selectNode.Distinct) != 1 {
+		t.Fatalf("Expected 1 distinct column. Got: %d", len(selectNode.Distinct))
+	}
+
+	actual := selectNode.Distinct[0]
+	expected := "author"
+	if actual != "author" {
+		t.Fatalf("Wrong distinct column. Expected %s, got %s", expected, actual)
+	}
+}
+
 func TestUsingCount(t *testing.T) {
 	New("select count(*) from users")
 	ast, error := AST()

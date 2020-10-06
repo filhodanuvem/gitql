@@ -82,7 +82,7 @@ func gSelect() (*NodeSelect, error) {
 	s := new(NodeSelect)
 
 	// PARAMETERS
-	fields, err := gTableParams()
+	distincts, fields, err := gTableParams()
 	if err != nil {
 		return nil, err
 	}
@@ -95,6 +95,7 @@ func gSelect() (*NodeSelect, error) {
 			s.Count = true
 		}
 	}
+	s.Distinct = distincts
 	s.Fields = fields
 
 	// TABLES
@@ -157,31 +158,44 @@ func gTableNames() ([]string, error) {
 	return tables, nil
 }
 
-func gTableParams() ([]string, error) {
+func gTableParams() ([]string, []string, error) {
 	if look_ahead == lexical.T_WILD_CARD {
 		token, err := lexical.Token()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		look_ahead = token
-		return []string{"*"}, nil
+		return nil, []string{"*"}, nil
 	} else if look_ahead == lexical.T_COUNT {
 		result, err := gCount()
-		return result, err
+		return nil, result, err
 	}
-	var fields = []string{}
-	if look_ahead == lexical.T_ID {
-		fields := append(fields, lexical.CurrentLexeme)
+
+	isDistinct := false
+	if isDistinct = look_ahead == lexical.T_DISTINCT; isDistinct {
 		token, err := lexical.Token()
 		if err != nil {
-			return nil, err
+			return nil, nil, err
+		}
+		look_ahead = token
+	}
+	var fields = []string{}
+	var distincts = []string{}
+	if look_ahead == lexical.T_ID {
+		fields := append(fields, lexical.CurrentLexeme)
+		if isDistinct {
+			distincts = append(distincts, lexical.CurrentLexeme)
+		}
+		token, err := lexical.Token()
+		if err != nil {
+			return nil, nil, err
 		}
 		look_ahead = token
 		fields, errorSyntax := gTableParamsRest(&fields, 1)
 
-		return fields, errorSyntax
+		return distincts, fields, errorSyntax
 	}
-	return nil, throwSyntaxError(lexical.T_ID, look_ahead)
+	return nil, nil, throwSyntaxError(lexical.T_ID, look_ahead)
 }
 
 // consume count(*)

@@ -32,6 +32,19 @@ func TestValidNullLimit(t *testing.T) {
 	}
 }
 
+func TestValiDistinct(t *testing.T) {
+	parser.New("select distinct author from commits")
+	ast, parserErr := parser.AST()
+	if parserErr != nil {
+		t.Fatalf(parserErr.Error())
+	}
+
+	err := Analysis(ast)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+}
+
 func TestChooseRepetitiveFields(t *testing.T) {
 	parser.New("select name, created_at, name from commits")
 	ast, parserErr := parser.AST()
