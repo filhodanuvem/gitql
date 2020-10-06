@@ -2,6 +2,7 @@
 git2go
 libgit2
 gitql
+.DS_Store
 .vscode*
 .idea/
 vendor
