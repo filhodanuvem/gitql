@@ -38,12 +38,12 @@ jobs:
 
   build-mac:
     name: Build mac
-    runs-on: macOS-10.14
+    runs-on: macOS-10.15
     steps:
     - name: Set up Go 1.12
       uses: actions/setup-go@v1
       with:
-        version: 1.12
+        go-version: 1.12
       id: go
 
     - name: Check out code into the Go module directory
@@ -72,7 +72,7 @@ jobs:
     - name: Set up Go 1.12
       uses: actions/setup-go@v1
       with:
-        version: 1.12
+        go-version: 1.12
       id: go
 
     - name: Check out code into the Go module directory
