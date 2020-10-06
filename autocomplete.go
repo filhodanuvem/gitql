@@ -26,6 +26,7 @@ func suggestLatest(focused string, candidacies [][]string) [][]rune {
 func containColumns(focused string) bool {
 	_, ok := isContained(focused, []string{
 		"select", // gitql> select [tab
+		"distinct,",
 		"name,",
 		"url,",
 		"push_url,",
@@ -72,6 +73,7 @@ func suggestQuery(inputs [][]rune, pos int) [][]rune {
 		// gitql> select [tab
 		// In the case where the most recent input is "select"
 		return [][]rune{
+			[]rune("distinct"),
 			[]rune("*"),
 			[]rune("name"),
 			[]rune("url"),

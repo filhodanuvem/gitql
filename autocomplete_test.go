@@ -109,6 +109,7 @@ func TestSuggestQuery(t *testing.T) {
 		[]rune(""),
 	}
 	assertSuggestsQuery(t, pattern2, []string{
+		"distinct",
 		"*",
 		"name",
 		"url",
