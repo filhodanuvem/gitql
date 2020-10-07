@@ -52,8 +52,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 				for _, f := range fields {
 					data := metadataCommit(f, commit)
 
-					_, ok := seen[f]
-					if !ok {
+					if _, ok := seen[f]; !ok {
 						seen[f] = make(map[string]bool)
 					}
 
