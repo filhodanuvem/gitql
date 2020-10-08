@@ -97,7 +97,6 @@ func suggestQuery(inputs [][]rune, pos int) [][]rune {
 		// gitql> select * from [tab
 		// In the case after inputted "from"
 		return [][]rune{
-			[]rune("remotes"),
 			[]rune("tags"),
 			[]rune("branches"),
 			[]rune("commits"),
@@ -106,7 +105,7 @@ func suggestQuery(inputs [][]rune, pos int) [][]rune {
 	} else if focused == "order" {
 		return [][]rune{[]rune("by")}
 	} else if focused == "where" || focused == "by" || focused == "or" || focused == "and" {
-		// gitql> select name from remotes where [tab
+		// gitql> select name from commits where [tab
 		// gitql> select * from commits where committer = "K" order by [tab
 		// gitql> select * from commits where committer = "K" and [tab
 		// In the case is inputted after "where", "by", "and", "or"
@@ -136,13 +135,6 @@ func suggestQuery(inputs [][]rune, pos int) [][]rune {
 				[]rune("full_name"),
 				[]rune("type"),
 				[]rune("hash"),
-			}
-		case "remotes":
-			return [][]rune{
-				[]rune("name"),
-				[]rune("url"),
-				[]rune("push_url"),
-				[]rune("owner"),
 			}
 		case "branches", "tags":
 			return [][]rune{

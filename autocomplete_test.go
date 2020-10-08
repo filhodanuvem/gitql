@@ -163,7 +163,7 @@ func TestSuggestQuery(t *testing.T) {
 	})
 
 	// gitql> select * from [tab
-	// expected: remotes, tags, branches, commits, refs
+	// expected: tags, branches, commits, refs
 	pattern5 := [][]rune{
 		[]rune("select"),
 		[]rune("*"),
@@ -171,24 +171,23 @@ func TestSuggestQuery(t *testing.T) {
 		[]rune(""),
 	}
 	assertSuggestsQuery(t, pattern5, []string{
-		"remotes",
 		"tags",
 		"branches",
 		"commits",
 		"refs",
 	})
 
-	// gitql> select name from remotes where [tab
+	// gitql> select name from refs where [tab
 	// expected: name, url, push_url, owner
 	pattern6 := [][]rune{
 		[]rune("select"),
 		[]rune("name"),
 		[]rune("from"),
-		[]rune("remotes"),
+		[]rune("refs"),
 		[]rune("where"),
 		[]rune(""),
 	}
-	assertSuggestsQuery(t, pattern6, []string{"name", "url", "push_url", "owner"})
+	assertSuggestsQuery(t, pattern6, []string{"name", "full_name", "type", "hash"})
 
 	// gitql> select committer from commits where committer = "K" and [tab
 	// expected: hash, date, author, author_email, committer, committer_email, message, full_message
