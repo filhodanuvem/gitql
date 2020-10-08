@@ -68,18 +68,8 @@ func TestUsingDistinct(t *testing.T) {
 	}
 
 	selectNode := ast.Child.(*NodeSelect)
-	if selectNode.Distinct == nil {
-		// TODO fail
-	}
-
-	if len(selectNode.Distinct) != 1 {
-		t.Fatalf("Expected 1 distinct column. Got: %d", len(selectNode.Distinct))
-	}
-
-	actual := selectNode.Distinct[0]
-	expected := "author"
-	if actual != "author" {
-		t.Fatalf("Wrong distinct column. Expected %s, got %s", expected, actual)
+	if !selectNode.Distinct {
+		t.Errorf("Distinct was expected")
 	}
 }
 

@@ -45,6 +45,14 @@ func TestValiDistinct(t *testing.T) {
 	}
 }
 
+func TestInvaliMultipleDistinct(t *testing.T) {
+	parser.New("select distinct author, distinct date from commits")
+	_, parserErr := parser.AST()
+	if parserErr == nil {
+		t.Fatalf("Expected a parsing error on double distinct")
+	}
+}
+
 func TestChooseRepetitiveFields(t *testing.T) {
 	parser.New("select name, created_at, name from commits")
 	ast, parserErr := parser.AST()

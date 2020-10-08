@@ -19,7 +19,6 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
-	distinct := s.Distinct
 
 	counter := 1
 	fields := s.Fields
@@ -27,7 +26,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 	resultFields := fields // These are the fields in output with wildcards expanded
-	rows := make([]tableRow, 1)
+	rows := make([]tableRow, s.Limit)
 	usingOrder := false
 	if s.Order != nil && !s.Count {
 		usingOrder = true
@@ -62,7 +61,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 					seen[f][data] = true
 				}
 
-				if isNew || distinct == nil {
+				if isNew || !s.Distinct {
 					counter = counter + 1
 					rows = append(rows, newRow)
 				}

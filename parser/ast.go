@@ -24,7 +24,7 @@ type NodeProgram struct {
 type NodeSelect struct {
 	WildCard bool
 	Count    bool
-	Distinct []string
+	Distinct bool
 	Fields   []string
 	Tables   []string
 	Where    NodeExpr
