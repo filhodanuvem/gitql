@@ -130,13 +130,16 @@ func TestErrorUnrecognizeChar(t *testing.T) {
 
 func TestReservedWords(t *testing.T) {
 	setUp()
-	source = "SELECT from WHEre in not cOuNt"
+	source = "SELECT distinct from WHEre in not cOuNt"
 	char = nextChar()
 
 	var token uint8
 
 	token, _ = Token()
 	assertToken(t, token, T_SELECT)
+
+	token, _ = Token()
+	assertToken(t, token, T_DISTINCT)
 
 	token, _ = Token()
 	assertToken(t, token, T_FROM)

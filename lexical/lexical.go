@@ -198,6 +198,8 @@ func lexemeToToken(lexeme string) uint8 {
 	switch strings.ToLower(lexeme) {
 	case L_SELECT:
 		return T_SELECT
+	case L_DISTINCT:
+		return T_DISTINCT
 	case L_FROM:
 		return T_FROM
 	case L_WHERE:

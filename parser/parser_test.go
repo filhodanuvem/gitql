@@ -55,6 +55,24 @@ func TestUsingWildCard(t *testing.T) {
 	}
 }
 
+func TestUsingDistinct(t *testing.T) {
+	New("select distinct author from commits")
+	ast, error := AST()
+
+	if error != nil {
+		t.Errorf(error.Error())
+	}
+
+	if ast.Child == nil {
+		t.Errorf("Program is empty")
+	}
+
+	selectNode := ast.Child.(*NodeSelect)
+	if !selectNode.Distinct {
+		t.Errorf("Distinct was expected")
+	}
+}
+
 func TestUsingCount(t *testing.T) {
 	New("select count(*) from users")
 	ast, error := AST()

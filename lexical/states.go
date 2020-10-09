@@ -15,6 +15,7 @@ const S_NOT_EQUAL = 18
 const S_LITERAL = 19
 const S_LITERAL_2 = 20
 const S_ID = 21
+const S_DISTINCT = 25
 const S_NUMERIC = 22
 const S_PARENTH_L = 23
 const S_PARENTH_R = 24

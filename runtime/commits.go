@@ -36,21 +36,38 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		}
 	}
 
+	// holds the seen values so far. field -> (value -> wasSeen)
+	seen := make(map[string]map[string]bool)
 	iter.ForEach(func(commit *object.Commit) error {
 		builder.setCommit(commit)
 		boolRegister = true
 		visitor.VisitExpr(where)
 
 		if boolRegister {
+			isNew := true
 			if !s.Count {
 				newRow := make(tableRow)
+
 				for _, f := range fields {
-					newRow[f] = metadataCommit(f, commit)
+					data := metadataCommit(f, commit)
+
+					if _, ok := seen[f]; !ok {
+						seen[f] = make(map[string]bool)
+					}
+
+					isNew = !seen[f][data]
+
+					newRow[f] = data
+					seen[f][data] = true
 				}
 
-				rows = append(rows, newRow)
+				if isNew || !s.Distinct {
+					counter = counter + 1
+					rows = append(rows, newRow)
+				}
+			} else {
+				counter = counter + 1
 			}
-			counter = counter + 1
 		}
 
 		if !usingOrder && !s.Count && counter > s.Limit {

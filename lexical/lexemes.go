@@ -1,6 +1,7 @@
 package lexical
 
 const L_SELECT = "select"
+const L_DISTINCT = "distinct"
 const L_FROM = "from"
 const L_WHERE = "where"
 const L_ORDER = "order"
