@@ -38,28 +38,26 @@ func main() {
 				Value:   "table",
 				Usage:   "The output type format {table|json}",
 			},
+			// for backward compatibility
+			&cli.BoolFlag{
+				Name:   "v",
+				Hidden: true,
+			},
+			&cli.StringFlag{
+				Name:   "type",
+				Hidden: true,
+			},
+			&cli.BoolFlag{
+				Name:   "show-tables",
+				Hidden: true,
+			},
 		},
 		Commands: []*cli.Command{
 			{
 				Name:    "show-tables",
 				Aliases: []string{"s"},
 				Usage:   "Show all tables",
-				Action: func(c *cli.Context) error {
-					fmt.Print("Tables: \n\n")
-
-					for tableName, fields := range runtime.PossibleTables() {
-						fmt.Printf("%s\n\t", tableName)
-						for i, field := range fields {
-							comma := "."
-							if i+1 < len(fields) {
-								comma = ", "
-							}
-							fmt.Printf("%s%s", field, comma)
-						}
-						fmt.Println()
-					}
-					return nil
-				},
+				Action:  showTablesCmd,
 			},
 			{
 				Name:    "version",
@@ -72,12 +70,28 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			if c.NArg() == 0 {
+			path, format, interactive := c.String("path"), c.String("format"), c.Bool("interactive")
+
+			// for backward compatibility
+			if c.Bool("v") {
+				fmt.Println(Version)
+				return nil
+			}
+
+			if c.Bool("show-tables") {
+				return showTablesCmd(c)
+			}
+
+			if typ := c.String("type"); typ != "" {
+				format = typ
+			}
+			// ============================
+
+			if c.NArg() == 0 && !interactive {
 				return cli.ShowAppHelp(c)
 			}
 
-			path, format := c.String("path"), c.String("format")
-			if c.Bool("interactive") {
+			if interactive {
 				return runPrompt(path, format)
 			}
 
@@ -86,9 +100,26 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		fmt.Fprintf(os.Stderr, "%s", err)
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(1)
 	}
+}
+
+func showTablesCmd(c *cli.Context) error {
+	fmt.Print("Tables: \n\n")
+
+	for tableName, fields := range runtime.PossibleTables() {
+		fmt.Printf("%s\n\t", tableName)
+		for i, field := range fields {
+			comma := "."
+			if i+1 < len(fields) {
+				comma = ", "
+			}
+			fmt.Printf("%s%s", field, comma)
+		}
+		fmt.Println()
+	}
+	return nil
 }
 
 func runPrompt(folder, typeFormat string) error {
