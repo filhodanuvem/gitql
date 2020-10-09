@@ -44,10 +44,10 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		visitor.VisitExpr(where)
 
 		if boolRegister {
+			isNew := true
 			if !s.Count {
 				newRow := make(tableRow)
 
-				isNew := true
 				for _, f := range fields {
 					data := metadataCommit(f, commit)
 
@@ -65,6 +65,8 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 					counter = counter + 1
 					rows = append(rows, newRow)
 				}
+			} else {
+				counter = counter + 1
 			}
 		}
 
