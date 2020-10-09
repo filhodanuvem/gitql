@@ -40,8 +40,9 @@ func main() {
 			},
 			// for backward compatibility
 			&cli.BoolFlag{
-				Name:   "v",
-				Hidden: true,
+				Name:    "version",
+				Aliases: []string{"v"},
+				Hidden:  true,
 			},
 			&cli.StringFlag{
 				Name:   "type",
@@ -73,7 +74,7 @@ func main() {
 			path, format, interactive := c.String("path"), c.String("format"), c.Bool("interactive")
 
 			// for backward compatibility
-			if c.Bool("v") {
+			if c.Bool("version") {
 				fmt.Println(Version)
 				return nil
 			}
