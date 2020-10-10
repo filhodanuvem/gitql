@@ -46,6 +46,7 @@ As an example, this is the `commits` table:
 * `select hash, message, author_email from commits where author = 'cloudson'`
 * `select date, message from commits where date < '2014-04-10'`
 * `select message from commits where 'hell' in message order by date asc`
+* `select distinct author from commits where date < '2020-01-01'`
 
 ## Questions?
 

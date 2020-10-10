@@ -135,29 +135,11 @@ func TestReservedWords(t *testing.T) {
 
 	var token uint8
 
-	token, _ = Token()
-	assertToken(t, token, T_SELECT)
-
-	token, _ = Token()
-	assertToken(t, token, T_DISTINCT)
-
-	token, _ = Token()
-	assertToken(t, token, T_FROM)
-
-	token, _ = Token()
-	assertToken(t, token, T_WHERE)
-
-	token, _ = Token()
-	assertToken(t, token, T_IN)
-
-	token, _ = Token()
-	assertToken(t, token, T_NOT)
-
-	token, _ = Token()
-	assertToken(t, token, T_COUNT)
-
-	token, _ = Token()
-	assertToken(t, token, T_EOF)
+	tokens := []uint8{T_SELECT, T_DISTINCT, T_FROM, T_WHERE, T_IN, T_NOT, T_COUNT, T_EOF}
+	for i := range tokens {
+		token, _ = Token()
+		assertToken(t, token, tokens[i])
+	}
 }
 
 func TestNotReservedWords(t *testing.T) {
