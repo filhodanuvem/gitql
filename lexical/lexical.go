@@ -226,6 +226,12 @@ func lexemeToToken(lexeme string) uint8 {
 		return T_NOT
 	case L_COUNT:
 		return T_COUNT
+	case L_SHOW:
+		return T_SHOW
+	case L_TABLES:
+		return T_TABLES
+	case L_DATABASES:
+		return T_DATABASES
 	}
 	return T_ID
 }

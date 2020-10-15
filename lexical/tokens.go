@@ -31,6 +31,9 @@ const T_NOT = 27
 const T_COUNT = 28
 const T_EOF = 0
 const T_FUCK = 66
+const T_SHOW = 31
+const T_TABLES = 32
+const T_DATABASES = 33
 
 var tokenNameMap map[uint8]string
 
@@ -64,6 +67,9 @@ func allocMapTokenNames() {
 			T_ASC:              "T_ASC",
 			T_NOT:              "T_NOT",
 			T_COUNT:            "T_COUNT",
+			T_SHOW:             "T_SHOW",
+			T_TABLES:           "T_TABLES",
+			T_DATABASES:        "T_DATABASES",
 		}
 	}
 }
