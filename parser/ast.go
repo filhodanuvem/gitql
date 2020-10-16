@@ -32,6 +32,11 @@ type NodeSelect struct {
 	Limit    int
 }
 
+type NodeShow struct {
+	Tables    bool
+	Databases bool
+}
+
 type NodeExpr interface {
 	Assertion(lvalue, rvalue string) bool
 	Operator() uint8
@@ -125,6 +130,10 @@ type NodeOrder struct {
 }
 
 func (s *NodeSelect) Run() {
+	return
+}
+
+func (s *NodeShow) Run() {
 	return
 }
 
