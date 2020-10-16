@@ -9,6 +9,7 @@ import (
 var source string
 var currentPointer int
 var CurrentLexeme string
+var Command uint8
 
 type TokenError struct {
 	char int32
@@ -33,6 +34,13 @@ var char int32
 
 func New(s string) {
 	source = s
+	currentPointer = 0
+	char = nextChar()
+	var err *TokenError
+	Command, err = Token()
+	if err != nil {
+		Command = T_FUCK
+	}
 	currentPointer = 0
 	char = nextChar()
 }
