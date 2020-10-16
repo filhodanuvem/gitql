@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"encoding/json"
 
@@ -81,7 +82,7 @@ func throwRuntimeError(message string, code uint8) *RuntimeError {
 }
 
 // =========================== Runtime
-func Run(n *parser.NodeProgram, typeFormat *string) error {
+func RunSelect(n *parser.NodeProgram, typeFormat *string) error {
 	builder = GetGitBuilder(n.Path)
 	visitor := new(RuntimeVisitor)
 	err := visitor.Visit(n)
@@ -109,6 +110,36 @@ func Run(n *parser.NodeProgram, typeFormat *string) error {
 		printTable(tableData)
 	}
 
+	return nil
+}
+
+func RunShow(node *parser.NodeProgram) error {
+	s := node.Child.(*parser.NodeShow)
+	if s.Databases {
+		builder = GetGitBuilder(node.Path)
+		fmt.Print("Databases: \n\n")
+		databases, err := PossibleDatabases()
+		if err != nil {
+			return err
+		}
+		for _, database := range databases {
+			fmt.Println(database)
+		}
+		return nil
+	} else if s.Tables {
+		fmt.Print("Tables: \n\n")
+		for tableName, fields := range PossibleTables() {
+			fmt.Printf("%s\n\t", tableName)
+			for i, field := range fields {
+				comma := "."
+				if i+1 < len(fields) {
+					comma = ", "
+				}
+				fmt.Printf("%s%s", field, comma)
+			}
+			fmt.Println()
+		}
+	}
 	return nil
 }
 
@@ -301,6 +332,42 @@ func PossibleTables() map[string][]string {
 			"hash",
 		},
 	}
+}
+
+func PossibleDatabases() ([]string, error) {
+	// local branches
+	iter, err := repo.Branches()
+	if err != nil {
+		return nil, err
+	}
+
+	branches := make([]string, 0)
+	iter.ForEach(func(r *plumbing.Reference) error {
+		if r.Name().IsBranch() {
+			branches = append(branches, r.Name().Short())
+		}
+		return nil
+	})
+
+	// remote branches
+	remote, err := repo.Remote("origin")
+	if err != nil {
+		return nil, err
+	}
+	refList, err := remote.List(&git.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	refPrefix := "refs/heads/"
+	for _, ref := range refList {
+		refName := ref.Name().String()
+		if strings.HasPrefix(refName, refPrefix) {
+			branches = append(branches, "remotes/origin/" + ref.Name().Short())
+		}
+	}
+
+	return branches, nil
 }
 
 func (g *GitBuilder) isValidTable(tableName string) error {

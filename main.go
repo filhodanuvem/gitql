@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/chzyer/readline"
+	"github.com/cloudson/gitql/lexical"
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/runtime"
 	"github.com/cloudson/gitql/semantical"
@@ -108,20 +109,13 @@ func main() {
 }
 
 func showTablesCmd(c *cli.Context) error {
-	fmt.Print("Tables: \n\n")
-
-	for tableName, fields := range runtime.PossibleTables() {
-		fmt.Printf("%s\n\t", tableName)
-		for i, field := range fields {
-			comma := "."
-			if i+1 < len(fields) {
-				comma = ", "
-			}
-			fmt.Printf("%s%s", field, comma)
-		}
-		fmt.Println()
+	prog := &parser.NodeProgram{
+		Child: &parser.NodeShow{
+			Tables: true,
+		},
 	}
-	return nil
+	err := runtime.RunShow(prog)
+	return err
 }
 
 func runPrompt(folder, typeFormat string) error {
@@ -168,9 +162,17 @@ func runQuery(query, folder, typeFormat string) error {
 	}
 
 	ast.Path = &folder
-	if err := semantical.Analysis(ast); err != nil {
-		return err
+	switch lexical.Command {
+	case lexical.T_SELECT:
+		if err := semantical.Analysis(ast); err != nil {
+			return err
+		}
+		err = runtime.RunSelect(ast, &typeFormat)
+		break
+	case lexical.T_SHOW:
+		err = runtime.RunShow(ast)
+		break
 	}
 
-	return runtime.Run(ast, &typeFormat)
+	return err
 }
