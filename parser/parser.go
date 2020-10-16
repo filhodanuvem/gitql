@@ -66,6 +66,8 @@ func gProgram() (NodeMain, error) {
 	case lexical.T_SHOW:
 		node, err = gShow()
 		break
+	default:
+		err = fmt.Errorf("Error: invalid command")
 	}
 	if node == nil || err != nil {
 		return nil, err
