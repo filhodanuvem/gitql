@@ -658,3 +658,55 @@ func TestExtractInvalidDate(t *testing.T) {
 		}
 	}
 }
+
+func TestShowTables(t *testing.T) {
+	New("show tables")
+	ast, err := AST()
+	node := ast.Child.(*NodeShow)
+
+	if err != nil {
+		t.Errorf("Error parsing 'show tables': %v", err)
+	}
+
+	if !node.Tables {
+		t.Errorf("NodeShow.Tables should be true")
+	}
+}
+
+func TestShowDatabases(t *testing.T) {
+	New("show databases")
+	ast, err := AST()
+	node := ast.Child.(*NodeShow)
+
+	if err != nil {
+		t.Errorf("Error parsing 'show databases': %v", err)
+	}
+
+	if !node.Databases {
+		t.Errorf("NodeShow.Databases should be true")
+	}
+}
+
+func TestInvalidShow(t *testing.T) {
+	cases := []string{
+		"show",
+		"show invalid",
+		"show tables show",
+		"show databases show",
+		"show tables show databases",
+	}
+
+	fail := false
+	for _, c := range cases {
+		New(c)
+		_, err := AST()
+		if err == nil {
+			t.Logf("Input '%v' should fail", c)
+			fail = true
+		}
+	}
+
+	if fail {
+		t.Fail()
+	}
+}
