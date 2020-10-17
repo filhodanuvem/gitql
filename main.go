@@ -114,8 +114,7 @@ func showTablesCmd(c *cli.Context) error {
 			Tables: true,
 		},
 	}
-	err := runtime.RunShow(prog)
-	return err
+	return runtime.RunShow(prog)
 }
 
 func runPrompt(folder, typeFormat string) error {
