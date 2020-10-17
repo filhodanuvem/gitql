@@ -108,7 +108,7 @@ func TestCanConvertToTypeFormats(t *testing.T) {
 	}
 
 	typeFormat := "json"
-	Run(ast, &typeFormat)
+	RunSelect(ast, &typeFormat)
 }
 
 func TestNotFoundCommitWithInStatementAndSorting(t *testing.T) {
@@ -133,7 +133,7 @@ func TestNotFoundCommitWithInStatementAndSorting(t *testing.T) {
 	}
 
 	typeFormat := "table"
-	if errGit = Run(ast, &typeFormat); errGit != nil {
+	if errGit = RunSelect(ast, &typeFormat); errGit != nil {
 		t.Errorf(errGit.Error())
 	}
 }
@@ -160,7 +160,7 @@ func TestFoundCommitsWithSevenInHash(t *testing.T) {
 	}
 
 	typeFormat := "table"
-	if errGit = Run(ast, &typeFormat); errGit != nil {
+	if errGit = RunSelect(ast, &typeFormat); errGit != nil {
 		t.Errorf(errGit.Error())
 	}
 }

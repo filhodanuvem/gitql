@@ -57,8 +57,19 @@ func gProgram() (NodeMain, error) {
 		return nil, tokenError
 	}
 
-	s, err := gSelect()
-	if s == nil {
+	var node NodeMain
+	var err error
+	switch look_ahead {
+	case lexical.T_SELECT:
+		node, err = gSelect()
+		break
+	case lexical.T_SHOW:
+		node, err = gShow()
+		break
+	default:
+		err = fmt.Errorf("Error: invalid command")
+	}
+	if node == nil || err != nil {
 		return nil, err
 	}
 
@@ -66,15 +77,11 @@ func gProgram() (NodeMain, error) {
 		return nil, throwSyntaxError(lexical.T_EOF, look_ahead)
 	}
 
-	return s, nil
+	return node, nil
 }
 
 func gSelect() (*NodeSelect, error) {
-	if look_ahead != lexical.T_SELECT {
-		return nil, throwSyntaxError(lexical.T_SELECT, look_ahead)
-	}
 	token, tokenError := lexical.Token()
-
 	look_ahead = token
 	if tokenError != nil {
 		return nil, tokenError
@@ -131,6 +138,28 @@ func gSelect() (*NodeSelect, error) {
 	}
 
 	return s, nil
+}
+
+func gShow() (*NodeShow, error) {
+	var err *lexical.TokenError
+	look_ahead, err = lexical.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	node := new(NodeShow)
+	switch look_ahead {
+	case lexical.T_TABLES:
+		node.Tables = true
+		break
+	case lexical.T_DATABASES:
+		node.Databases = true
+		break
+	default:
+		return nil, fmt.Errorf("Error: can only show tables or databases")
+	}
+	look_ahead, _ = lexical.Token()
+	return node, nil
 }
 
 func gTableNames() ([]string, error) {
