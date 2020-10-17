@@ -156,7 +156,6 @@ func gShow() (*NodeShow, error) {
 		node.Databases = true
 		break
 	default:
-		fmt.Println("huh", look_ahead)
 		return nil, fmt.Errorf("Error: can only show tables or databases")
 	}
 	look_ahead, _ = lexical.Token()
