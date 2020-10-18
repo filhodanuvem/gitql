@@ -24,3 +24,8 @@
   result="$(./gitql -s | grep branches)"
   [ "$result" == "branches" ] 
 }
+
+@test "Check exit code for help" {
+  result="$(./gitql)"
+  [ "$?" == "0" ] 
+}
