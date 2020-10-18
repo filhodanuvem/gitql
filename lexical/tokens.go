@@ -34,6 +34,7 @@ const T_FUCK = 66
 const T_SHOW = 31
 const T_TABLES = 32
 const T_DATABASES = 33
+const T_USE = 34
 
 var tokenNameMap map[uint8]string
 
@@ -70,6 +71,7 @@ func allocMapTokenNames() {
 			T_SHOW:             "T_SHOW",
 			T_TABLES:           "T_TABLES",
 			T_DATABASES:        "T_DATABASES",
+			T_USE:              "T_USE",
 		}
 	}
 }
