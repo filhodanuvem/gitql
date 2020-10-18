@@ -50,9 +50,9 @@ func main() {
 				Hidden: true,
 			},
 			&cli.BoolFlag{
-				Name:   "show-tables",
+				Name:    "show-tables",
 				Aliases: []string{"s"},
-				Hidden: true,
+				Hidden:  true,
 			},
 		},
 		Commands: []*cli.Command{

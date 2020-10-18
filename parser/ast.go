@@ -37,6 +37,10 @@ type NodeShow struct {
 	Databases bool
 }
 
+type NodeUse struct {
+	Branch string
+}
+
 type NodeExpr interface {
 	Assertion(lvalue, rvalue string) bool
 	Operator() uint8
@@ -134,6 +138,10 @@ func (s *NodeSelect) Run() {
 }
 
 func (s *NodeShow) Run() {
+	return
+}
+
+func (u *NodeUse) Run() {
 	return
 }
 
