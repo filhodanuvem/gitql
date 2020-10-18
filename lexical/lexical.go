@@ -113,7 +113,7 @@ func Token() (uint8, *TokenError) {
 			}
 			break
 		case S_ID:
-			for unicode.IsLetter(char) || unicode.IsNumber(char) || string(char) == "_" {
+			for unicode.IsLetter(char) || unicode.IsNumber(char) || string(char) == "_" || string(char) == "-" {
 				lexeme = lexeme + string(char)
 				char = nextChar()
 			}
