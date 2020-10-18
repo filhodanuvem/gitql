@@ -163,10 +163,11 @@ func RunUse(node *parser.NodeProgram) error {
 	}
 
 	refName := plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", u.Branch))
-	err = w.Checkout(&git.CheckoutOptions{
+	cOp := &git.CheckoutOptions{
 		Branch: refName,
 		Create: false,
-	})
+	}
+	err = w.Checkout(cOp)
 	if err != nil {
 		// Try fetching branch from origin and then switching to it.
 		// If it doesn't work, return the original error.
@@ -182,10 +183,7 @@ func RunUse(node *parser.NodeProgram) error {
 		if remoteErr != nil {
 			return err
 		}
-		err = w.Checkout(&git.CheckoutOptions{
-			Branch: refName,
-			Create: false,
-		})
+		err = w.Checkout(cOp)
 	}
 
 	return err
