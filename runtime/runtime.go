@@ -186,6 +186,10 @@ func RunUse(node *parser.NodeProgram) error {
 		err = w.Checkout(cOp)
 	}
 
+	if err == nil {
+		fmt.Println("switched to database", u.Branch)
+	}
+
 	return err
 }
 
