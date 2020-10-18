@@ -11,6 +11,7 @@ import (
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/olekukonko/tablewriter"
@@ -153,11 +154,32 @@ func RunUse(node *parser.NodeProgram) error {
 	}
 
 	refName := plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", u.Branch))
-	return w.Checkout(&git.CheckoutOptions{
+	err = w.Checkout(&git.CheckoutOptions{
 		Branch: refName,
 		Create: false,
-		Force: true,
 	})
+	if err != nil {
+		// Try fetching branch from origin and then switching to it.
+		// If it doesn't work, return the original error.
+		remote, remoteErr := repo.Remote("origin")
+		if remoteErr != nil {
+			return err
+		}
+		remoteErr = remote.Fetch(&git.FetchOptions{
+			RefSpecs: []config.RefSpec{
+				config.RefSpec(fmt.Sprintf("%s:%s", refName, refName)),
+			},
+		})
+		if remoteErr != nil {
+			return err
+		}
+		err = w.Checkout(&git.CheckoutOptions{
+			Branch: refName,
+			Create: false,
+		})
+	}
+
+	return err
 }
 
 func findWalkType(n *parser.NodeProgram) uint8 {
