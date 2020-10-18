@@ -146,20 +146,17 @@ func RunShow(node *parser.NodeProgram) error {
 func RunUse(node *parser.NodeProgram) error {
 	builder = GetGitBuilder(node.Path)
 	u := node.Child.(*parser.NodeUse)
-	branch, err := repo.Branch(u.Branch)
-	if err != nil {
-		return err
-	}
 
 	w, err := repo.Worktree()
 	if err != nil {
 		return err
 	}
 
+	refName := plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", u.Branch))
 	return w.Checkout(&git.CheckoutOptions{
-		Branch: branch.Merge,
+		Branch: refName,
 		Create: false,
-		Force: false,
+		Force: true,
 	})
 }
 
