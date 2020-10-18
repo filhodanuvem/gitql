@@ -710,3 +710,38 @@ func TestInvalidShow(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestUse(t *testing.T) {
+	New("use master")
+	ast, err := AST()
+	node := ast.Child.(*NodeUse)
+
+	if err != nil {
+		t.Errorf("Error parsing 'use master': %v", err)
+	}
+
+	if node.Branch != "master" {
+		t.Errorf("NodeUse.Branch should be 'master', is '%s'", node.Branch)
+	}
+}
+
+func TestInvalidUse(t *testing.T) {
+	cases := []string{
+		"use",
+		"use master extra-param",
+	}
+
+	fail := false
+	for _, c := range cases {
+		New(c)
+		_, err := AST()
+		if err == nil {
+			t.Logf("Input '%v' should fail", c)
+			fail = true
+		}
+	}
+
+	if fail {
+		t.Fail()
+	}
+}
