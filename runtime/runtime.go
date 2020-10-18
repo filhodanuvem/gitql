@@ -153,6 +153,15 @@ func RunUse(node *parser.NodeProgram) error {
 		return err
 	}
 
+	s, err := w.Status()
+	if err != nil {
+		return err
+	}
+
+	if !s.IsClean() {
+		return fmt.Errorf("worktree is not clean")
+	}
+
 	refName := plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", u.Branch))
 	err = w.Checkout(&git.CheckoutOptions{
 		Branch: refName,
