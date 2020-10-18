@@ -171,6 +171,9 @@ func runQuery(query, folder, typeFormat string) error {
 	case lexical.T_SHOW:
 		err = runtime.RunShow(ast)
 		break
+	case lexical.T_USE:
+		err = runtime.RunUse(ast)
+		break
 	}
 
 	return err

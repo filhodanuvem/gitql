@@ -143,6 +143,26 @@ func RunShow(node *parser.NodeProgram) error {
 	return nil
 }
 
+func RunUse(node *parser.NodeProgram) error {
+	builder = GetGitBuilder(node.Path)
+	u := node.Child.(*parser.NodeUse)
+	branch, err := repo.Branch(u.Branch)
+	if err != nil {
+		return err
+	}
+
+	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+
+	return w.Checkout(&git.CheckoutOptions{
+		Branch: branch.Merge,
+		Create: false,
+		Force: false,
+	})
+}
+
 func findWalkType(n *parser.NodeProgram) uint8 {
 	s := n.Child.(*parser.NodeSelect)
 	switch s.Tables[0] {
