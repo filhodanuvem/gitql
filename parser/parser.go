@@ -70,7 +70,7 @@ func gProgram() (NodeMain, error) {
 		node, err = gUse()
 		break
 	default:
-		err = fmt.Errorf("Error: invalid command")
+		err = fmt.Errorf("invalid command")
 	}
 	if node == nil || err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func gShow() (*NodeShow, error) {
 		node.Databases = true
 		break
 	default:
-		return nil, fmt.Errorf("Error: can only show tables or databases")
+		return nil, fmt.Errorf("can only show tables or databases")
 	}
 	look_ahead, _ = lexical.Token()
 	return node, nil
