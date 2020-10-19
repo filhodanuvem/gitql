@@ -5,7 +5,7 @@ setup() {
 }
 
 teardown() {
-  git checkout $branch &> /dev/null 
+  git checkout $branch >&2
 }
 
 @test "Check switching to existing branch" {
