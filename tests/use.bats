@@ -6,6 +6,7 @@ setup() {
 
 @test "Check switching to existing branch" {
   run ./gitql "use $branch"
+  echo $branch
   echo $output
   [ "$status" -eq 0 ]
 }
