@@ -11,6 +11,7 @@ import (
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/semantical"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/olekukonko/tablewriter"
@@ -141,6 +142,55 @@ func RunShow(node *parser.NodeProgram) error {
 		}
 	}
 	return nil
+}
+
+func RunUse(node *parser.NodeProgram) error {
+	builder = GetGitBuilder(node.Path)
+	u := node.Child.(*parser.NodeUse)
+
+	w, err := repo.Worktree()
+	if err != nil {
+		return err
+	}
+
+	s, err := w.Status()
+	if err != nil {
+		return err
+	}
+
+	if !s.IsClean() {
+		return fmt.Errorf("worktree is not clean")
+	}
+
+	refName := plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", u.Branch))
+	cOp := &git.CheckoutOptions{
+		Branch: refName,
+		Create: false,
+	}
+	err = w.Checkout(cOp)
+	if err != nil {
+		// Try fetching branch from origin and then switching to it.
+		// If it doesn't work, return the original error.
+		remote, remoteErr := repo.Remote("origin")
+		if remoteErr != nil {
+			return err
+		}
+		remoteErr = remote.Fetch(&git.FetchOptions{
+			RefSpecs: []config.RefSpec{
+				config.RefSpec(fmt.Sprintf("%s:%s", refName, refName)),
+			},
+		})
+		if remoteErr != nil {
+			return err
+		}
+		err = w.Checkout(cOp)
+	}
+
+	if err == nil {
+		fmt.Println("switched to database", u.Branch)
+	}
+
+	return err
 }
 
 func findWalkType(n *parser.NodeProgram) uint8 {

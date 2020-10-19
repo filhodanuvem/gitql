@@ -50,9 +50,9 @@ func main() {
 				Hidden: true,
 			},
 			&cli.BoolFlag{
-				Name:   "show-tables",
+				Name:    "show-tables",
 				Aliases: []string{"s"},
-				Hidden: true,
+				Hidden:  true,
 			},
 		},
 		Commands: []*cli.Command{
@@ -170,6 +170,9 @@ func runQuery(query, folder, typeFormat string) error {
 		break
 	case lexical.T_SHOW:
 		err = runtime.RunShow(ast)
+		break
+	case lexical.T_USE:
+		err = runtime.RunUse(ast)
 		break
 	}
 

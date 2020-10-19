@@ -66,8 +66,11 @@ func gProgram() (NodeMain, error) {
 	case lexical.T_SHOW:
 		node, err = gShow()
 		break
+	case lexical.T_USE:
+		node, err = gUse()
+		break
 	default:
-		err = fmt.Errorf("Error: invalid command")
+		err = fmt.Errorf("invalid command")
 	}
 	if node == nil || err != nil {
 		return nil, err
@@ -156,8 +159,25 @@ func gShow() (*NodeShow, error) {
 		node.Databases = true
 		break
 	default:
-		return nil, fmt.Errorf("Error: can only show tables or databases")
+		return nil, fmt.Errorf("can only show tables or databases")
 	}
+	look_ahead, _ = lexical.Token()
+	return node, nil
+}
+
+func gUse() (*NodeUse, error) {
+	var err *lexical.TokenError
+	look_ahead, err = lexical.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	node := new(NodeUse)
+	if look_ahead != lexical.T_ID {
+		return nil, throwSyntaxError(lexical.T_ID, look_ahead)
+	}
+
+	node.Branch = lexical.CurrentLexeme
 	look_ahead, _ = lexical.Token()
 	return node, nil
 }

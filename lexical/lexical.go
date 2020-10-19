@@ -113,7 +113,7 @@ func Token() (uint8, *TokenError) {
 			}
 			break
 		case S_ID:
-			for unicode.IsLetter(char) || unicode.IsNumber(char) || string(char) == "_" {
+			for unicode.IsLetter(char) || unicode.IsNumber(char) || string(char) == "_" || string(char) == "-" {
 				lexeme = lexeme + string(char)
 				char = nextChar()
 			}
@@ -240,6 +240,8 @@ func lexemeToToken(lexeme string) uint8 {
 		return T_TABLES
 	case L_DATABASES:
 		return T_DATABASES
+	case L_USE:
+		return T_USE
 	}
 	return T_ID
 }
