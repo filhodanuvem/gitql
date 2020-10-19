@@ -4,10 +4,6 @@ setup() {
   export branch=$(git branch | grep "\*" | cut -d " " -f 2)
 }
 
-teardown() {
-  git checkout $branch &> /dev/null 
-}
-
 @test "Check switching to existing branch" {
   run ./gitql "use $branch"
   [ "$status" -eq 0 ]
