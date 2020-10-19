@@ -1,16 +1,16 @@
 #!/usr/bin/env bats
 
 setup() {
-    export branch=$(git branch --show-current)
+  export branch=$(git branch --show-current)
 }
 
 teardown() {
-    git checkout $branch &> /dev/null 
+  git checkout $branch &> /dev/null 
 }
 
 @test "Check switching to existing branch" {
-    run ./gitql 'use master'
-    [ "$status" -eq 0 ]
+  run ./gitql 'use master'
+  [ "$status" -eq 0 ]
 }
 
 @test "Check switching to nonexistent branch" {
