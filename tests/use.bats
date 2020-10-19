@@ -9,7 +9,7 @@ teardown() {
 }
 
 @test "Check switching to existing branch" {
-  run ./gitql 'use $branch'
+  run ./gitql "use $branch"
   [ "$status" -eq 0 ]
 }
 
