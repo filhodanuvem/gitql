@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 setup() {
-  export branch=$(git branch --show-current)
+  export branch=$(git branch | grep "\*" | cut -d " " -f 2)
 }
 
 teardown() {
