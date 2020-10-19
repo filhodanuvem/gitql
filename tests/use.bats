@@ -2,6 +2,7 @@
 
 setup() {
   export branch=$(git branch | grep "\*" | cut -d " " -f 2)
+  git status >&2
 }
 
 @test "Check switching to existing branch" {
