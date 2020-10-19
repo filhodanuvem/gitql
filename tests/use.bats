@@ -8,6 +8,7 @@ setup() {
   run ./gitql "use $branch"
   echo $branch
   echo $output
+  git status
   [ "$status" -eq 0 ]
 }
 
