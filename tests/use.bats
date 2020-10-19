@@ -1,5 +1,6 @@
 #!/usr/bin/env bats
 
+which git >&2
 setup() {
   export branch=$(git branch | grep "\*" | cut -d " " -f 2)
 }
