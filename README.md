@@ -1,4 +1,10 @@
-Gitql ![](https://github.com/cloudson/gitql/workflows/CI/badge.svg)
+Gitql 
+![](https://github.com/cloudson/gitql/workflows/CI/badge.svg) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/filhodanuvem/gitql)](https://goreportcard.com/report/github.com/filhodanuvem/gitql) 
+[![Open Source Helpers](https://www.codetriage.com/filhodanuvem/gitql/badges/users.svg)](https://www.codetriage.com/filhodanuvem/gitql)
+<a href="https://opensource.org/licenses/MIT">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License MIT">
+</a>
 ===============
 
 Gitql is a Git query language.
