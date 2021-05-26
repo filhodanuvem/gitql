@@ -9,6 +9,10 @@
   run ./gitql 'select distinct author from commits'
   [ "$status" -eq 0 ]
 }
+@test "Select discting should work" {
+  run ./gitql 'select distinct author from commits'
+  [ "$status" -eq 0 ]
+}
 
 @test "Select count should work" {
   run ./gitql 'select count(*) from commits'
