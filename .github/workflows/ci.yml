@@ -31,9 +31,6 @@ jobs:
         go build . 
         ./gitql -v
 
-    - name: Run function tests
-      run: bats --tap ./tests
-
     - uses: actions/upload-artifact@master
       name: Generating artifact
       with:
@@ -64,8 +61,6 @@ jobs:
         go build .
         ./gitql -v
     
-    - name: Run function tests
-      run: bats --tap ./tests
 
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -95,8 +90,6 @@ jobs:
         go build .
         .\gitql.exe -v
 
-    - name: Run function tests
-      run: bats --tap ./tests
 
     - uses: actions/upload-artifact@master
       name: Generating artifact
