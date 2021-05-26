@@ -16,7 +16,7 @@ In a repository path...
 See more [here](https://asciinema.org/a/97094)
 
 ## Reading the code 
-⚠️ This project was created in 2014 as my first go project. Use this project to learn about how to structure go code is not a good idea. You can read a much modern code from mine [here](https://github.com/filhodanuvem/polyglot) or help me guiding this one to the right direction. 
+⚠️ Gitql is my first golang project. If you are a beginner looking for using the project as a guideline (how to organise or make an idiomatic go code), I recommend you [polyglot](https://github.com/filhodanuvem/polyglot) instead. 
 
 ## Requirements 
 - Go  
