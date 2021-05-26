@@ -2,7 +2,7 @@
 
 @test "Check version" {
   result="$(./gitql -v)"
-  [ "$result" == "Gitql 2.1.0" ]
+  [ "$result" == "Gitql 2.2.0" ]
 }
 
 @test "Check table commits on -s" {
@@ -23,4 +23,9 @@
 @test "Check table branches on -s" {
   result="$(./gitql -s | grep branches)"
   [ "$result" == "branches" ] 
+}
+
+@test "Check exit code for help" {
+  result="$(./gitql)"
+  [ "$?" == "0" ] 
 }
