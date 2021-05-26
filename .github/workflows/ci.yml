@@ -18,9 +18,9 @@ jobs:
       id: go
     
     - name: Setup BATS
-      uses: mig4/setup-bats@v1.0.1
+      uses: mig4/setup-bats@v1
       with:
-        bats-version: 1.1.0
+        bats-version: 1.2.1
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
@@ -56,9 +56,9 @@ jobs:
       id: go
     
     - name: Setup BATS
-      uses: mig4/setup-bats@v1.0.1
+      uses: mig4/setup-bats@v1
       with:
-        bats-version: 1.1.0
+        bats-version: 1.2.1
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
@@ -94,9 +94,9 @@ jobs:
       id: go
 
     - name: Setup BATS
-      uses: mig4/setup-bats@v1.0.1
+      uses: mig4/setup-bats@v1
       with:
-        bats-version: 1.1.0
+        bats-version: 1.2.1
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
