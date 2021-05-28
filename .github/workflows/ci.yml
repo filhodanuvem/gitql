@@ -37,7 +37,7 @@ jobs:
         ./gitql -v
 
     - name: Run function tests
-      run: bats -r ./tests
+      run: bats -r ./test
 
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -75,7 +75,7 @@ jobs:
         ./gitql -v
     
     - name: Run function tests
-      run: bats -r ./tests
+      run: bats -r ./test
 
     - uses: actions/upload-artifact@master
       name: Generating artifact
