@@ -39,7 +39,7 @@ setup() {
 }
 
 @test "Select should works with order and limit" {
-  run ./gitql -f json 'select date, message from commits where date < "2021-05-27" order by date desc limit 3'
+  run ./gitql -f json 'select date, message from commits where date < "2021-04-27" order by date desc limit 3'
   assert_output '[{"date":"2021-05-26 23:09:31","message":"Add smoke test about count"},{"date":"2021-05-26 23:06:42","message":"Smoke test on select discinct"},{"date":"2021-05-26 23:04:36","message":"Remove bats for windows"}]'
 }
 
