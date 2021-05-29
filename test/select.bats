@@ -14,8 +14,8 @@ setup() {
 }
 
 @test "Check not like for select" {
-  run ./gitql -f json 'select message from commits where date > "2020-10-04" and date < "2020-10-06" and message not like "update"'
-  assert_output '[{"message":"Remove C dependencies (#95)"},{"message":"Build gitql using go build"},{"message":"Build gitql using go build"},{"message":"Build gitql using go build"},{"message":"Build gitql using go build"},{"message":"Build gitql using go build (#96)"},{"message":"Compile gitql with go-git support"}]'
+  run ./gitql -f json 'select message from commits where date > "2019-10-01" and date < "2019-11-01" and message not like "update"'
+  assert_output '[{"message":"Add github actions"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to dynamic compile for mac"},{"message":"Build for windows on github actions"},{"message":"Generate artifacts after build"},{"message":"Build for windows on github actions"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to release gitql as a static file"}]'
 }
 
 @test "Check in for select" {
@@ -24,13 +24,13 @@ setup() {
 }
 
 @test "Check count for select" {
-  run ./gitql -f json 'select count(*) from commits where date > "2020-10-09" and date < "2020-10-17"'
-  assert_output '[{"count":"17"}]'
+  run ./gitql -f json 'select count(*) from commits where date > "2019-10-09" and date < "2019-10-17"'
+  assert_output '[{"count":"29"}]'
 }
 
 @test "Select distinct should works" {
-  run ./gitql -f json 'select distinct author from commits where date > "2020-10-09" and date < "2020-10-17" order by author asc'
-  assert_output '[{"author":"Claudson Oliveira"},{"author":"Pedro Silva"},{"author":"Simon B"},{"author":"zweihander"}]'
+  run ./gitql -f json 'select distinct author from commits where date > "2019-10-01" and date < "2019-11-01" order by author asc'
+  assert_output '[{"author":"Arumugam Jeganathan"},{"author":"Claudson Oliveira"}]'
 }
 
 @test "Select count should works" {
@@ -39,8 +39,8 @@ setup() {
 }
 
 @test "Select should works with order and limit" {
-  run ./gitql -f json 'select date, message from commits where date < "2021-04-27" order by date desc limit 3'
-  assert_output '[{"date":"2020-10-27 20:42:43","message":"New shiny badges on README (#112)"},{"date":"2020-10-19 15:09:40","message":"Use database command (#110)"},{"date":"2020-10-19 00:35:30","message":"Add functional tests on select"}]'
+  run ./gitql -f json 'select date, message from commits where date < "2020-10-01" order by date desc limit 3'
+  assert_output '[{"date":"2020-09-15 21:12:31","message":"Test libgit2 1.0.1"},{"date":"2020-09-15 21:12:31","message":"Test libgit2 1.0.1"},{"date":"2020-09-15 21:12:31","message":"Test libgit2 1.0.1"}]'
 }
 
 # bugs to be fixed
