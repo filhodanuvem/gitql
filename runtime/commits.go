@@ -8,14 +8,16 @@ import (
 
 	"github.com/cloudson/gitql/parser"
 	"github.com/cloudson/gitql/utilities"
+	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 )
 
 func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, error) {
-	iter, err := repo.CommitObjects()
+	head, err := repo.Head()
 	if err != nil {
 		return nil, err
 	}
+	iter, err := repo.Log(&git.LogOptions{From: head.Hash()})
 
 	s := n.Child.(*parser.NodeSelect)
 	where := s.Where
