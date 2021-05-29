@@ -15,7 +15,7 @@ setup() {
 
 @test "Check not like for select" {
   run ./gitql -f json 'select message from commits where date > "2019-10-01" and date < "2019-11-01" and message not like "update"'
-  assert_output '[{"message":"Add github actions"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to dynamic compile for mac"},{"message":"Build for windows on github actions"},{"message":"Generate artifacts after build"},{"message":"Build for windows on github actions"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to dynamic compile for mac"},{"message":"Add support to release gitql as a static file"}]'
+  assert_output '[{"message":"Update How-To video with new prompts (#89)"},{"message":"Prepare v2.0.0 (#88)"},{"message":"Add support to static binaries (windows/linux amd64)  (#87)"},{"message":"Add install libgit script (#86)"},{"message":"Add support to dynamic compile for mac (#85)"},{"message":"Add support to release gitql as a static file (#84)"}]'
 }
 
 @test "Check in for select" {
@@ -25,7 +25,7 @@ setup() {
 
 @test "Check count for select" {
   run ./gitql -f json 'select count(*) from commits where date > "2019-10-09" and date < "2019-10-17"'
-  assert_output '[{"count":"29"}]'
+  assert_output '[{"count":"2"}]'
 }
 
 @test "Select distinct should works" {
@@ -35,12 +35,12 @@ setup() {
 
 @test "Select count should works" {
   run ./gitql -f json 'select count(*) from commits where date < "2018-01-05"'
-  assert_output '[{"count":"192"}]'
+  assert_output '[{"count":"191"}]'
 }
 
 @test "Select should works with order and limit" {
   run ./gitql -f json 'select date, message from commits where date < "2020-10-01" order by date desc limit 3'
-  assert_output '[{"date":"2020-09-15 21:12:31","message":"Test libgit2 1.0.1"},{"date":"2020-09-15 21:12:31","message":"Test libgit2 1.0.1"},{"date":"2020-09-15 21:12:31","message":"Test libgit2 1.0.1"}]'
+  assert_output '[{"date":"2020-08-05 22:12:16","message":"Update README.md"},{"date":"2020-08-05 22:11:43","message":"Update README.md"},{"date":"2019-11-11 21:35:16","message":"Run tests on pull requests (#91)"}]'
 }
 
 # bugs to be fixed
