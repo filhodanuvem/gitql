@@ -25,6 +25,8 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
       with:
+        submodules: true
+        fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
     
     - name: Run tests
@@ -37,7 +39,7 @@ jobs:
         ./gitql -v
 
     - name: Run function tests
-      run: bats -r ./tests
+      run: bats ./test
 
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -63,6 +65,8 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
       with:
+        submodules: true
+        fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
     
     - name: Run tests
@@ -75,7 +79,7 @@ jobs:
         ./gitql -v
     
     - name: Run function tests
-      run: bats -r ./tests
+      run: bats ./test
 
     - uses: actions/upload-artifact@master
       name: Generating artifact
@@ -95,6 +99,9 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
+      with:
+        fetch-depth: 0
+        submodules: true
     
     - name: Run tests
       run: | 

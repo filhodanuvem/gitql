@@ -6,3 +6,5 @@ gitql
 .vscode*
 .idea/
 vendor
+test/test_helper/
+test/bats/
