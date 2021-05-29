@@ -10,11 +10,14 @@ jobs:
   build-linux:
     name: Build linux
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        go: [ '1.16', '1.15', '1.14' ]   
     steps:
-    - name: Set up Go 1.12
+    - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
       with:
-        go-version: 1.12
+        go-version: ${{ matrix.go }}
       id: go
     
     - name: Setup BATS
@@ -29,14 +32,14 @@ jobs:
         fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
     
-    - name: Run tests
-      run: | 
-        go test -v ./... 
-    
     - name: Build linux
       run: | 
         go build . 
         ./gitql -v
+
+    - name: Run tests
+      run: | 
+        go test -v ./... 
 
     - name: Run function tests
       run: bats ./test
