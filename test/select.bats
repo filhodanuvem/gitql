@@ -29,7 +29,7 @@ setup() {
 }
 
 @test "Select distinct should works" {
-  run ./gitql -f json 'select distinct author from commits where date > "2020-10-09" and date < "2020-10-17" order by date asc'
+  run ./gitql -f json 'select distinct author from commits where date > "2020-10-09" and date < "2020-10-17" order by author asc'
   assert_output '[{"author":"Claudson Oliveira"},{"author":"Pedro Silva"},{"author":"Simon B"},{"author":"zweihander"}]'
 }
 
@@ -40,7 +40,7 @@ setup() {
 
 @test "Select should works with order and limit" {
   run ./gitql -f json 'select date, message from commits where date < "2021-04-27" order by date desc limit 3'
-  assert_output '[{"date":"2021-05-26 23:09:31","message":"Add smoke test about count"},{"date":"2021-05-26 23:06:42","message":"Smoke test on select discinct"},{"date":"2021-05-26 23:04:36","message":"Remove bats for windows"}]'
+  assert_output '[{"date":"2020-10-27 20:42:43","message":"New shiny badges on README (#112)"},{"date":"2020-10-19 15:09:40","message":"Use database command (#110)"},{"date":"2020-10-19 00:35:30","message":"Add functional tests on select"}]'
 }
 
 # bugs to be fixed
