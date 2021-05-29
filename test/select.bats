@@ -29,8 +29,8 @@ setup() {
 }
 
 @test "Select distinct should works" {
-  run ./gitql -f json 'select distinct author from commits where date > "2020-10-09" and date < "2020-10-17"'
-  assert_output '[{"author":"Claudson Oliveira"},{"author":"zweihander"},{"author":"Simon B"},{"author":"Pedro Silva"}]'
+  run ./gitql -f json 'select distinct author from commits where date > "2020-10-09" and date < "2020-10-17" order by date asc'
+  assert_output '[{"author":"Claudson Oliveira"},{"author":"Pedro Silva"},{"author":"Simon B"},{"author":"zweihander"}]'
 }
 
 @test "Select count should works" {
