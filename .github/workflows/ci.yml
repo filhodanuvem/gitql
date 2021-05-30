@@ -7,113 +7,190 @@ on:
     branches:
     - main
 jobs:
-  build-linux:
-    name: Build linux
-    runs-on: ubuntu-18.04
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: [ '1.16', '1.15' ]
+        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
     steps:
-    - name: Set up Go 1.12
+    - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
       with:
-        go-version: 1.12
-      id: go
-    
-    - name: Setup BATS
-      uses: mig4/setup-bats@v1
-      with:
-        bats-version: 1.2.1
+        go-version: ${{ matrix.go }}
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v1
       with:
         submodules: true
         fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
     
-    - name: Run tests
-      run: | 
-        go test -v ./... 
-    
-    - name: Build linux
+    - name: Go build
       run: | 
         go build . 
         ./gitql -v
-
-    - name: Run function tests
-      run: bats ./test
-
-    - uses: actions/upload-artifact@master
-      name: Generating artifact
+    
+    - name: Cache source code
+      uses: actions/cache@v2
+      env:
+        cache-name: source-code
       with:
-        name: gitql-linux64
-        path: ./gitql
-
-  build-mac:
-    name: Build mac
-    runs-on: macOS-10.15
+        path: |
+          ./*
+        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
+  
+  unit:
+    needs:
+      - build 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
-    - name: Set up Go 1.12
+    - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
       with:
-        go-version: 1.12
-      id: go
-    
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 0
+        path: go/src/github.com/cloudson/gitql
+
+    - name: Run unit tests
+      run: | 
+        go test -v ./... 
+
+  functional:
+    needs:
+      - unit
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        os: [ 'ubuntu-20.04', 'macos-10.15' ]
+    steps:
+    - name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: source-code
+      with:
+        path: |
+          ./*
+        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
+  
     - name: Setup BATS
       uses: mig4/setup-bats@v1
       with:
         bats-version: 1.2.1
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
-      with:
-        submodules: true
-        fetch-depth: 0
-        path: go/src/github.com/cloudson/gitql
-    
-    - name: Run tests
+    - name: Run functional tests
       run: | 
-        go test -v ./... 
-
-    - name: Build mac
-      run: | 
-        go build .
-        ./gitql -v
-    
-    - name: Run function tests
-      run: bats ./test
-
-    - uses: actions/upload-artifact@master
-      name: Generating artifact
-      with:
-        name: gitql-mac64
-        path: ./gitql
-
-  build-windows:
-    name: Build windows
-    runs-on: windows-2019
+        ./gitql "use main" 
+        bats ./test
+  
+  upload:
+    needs:
+      - functional
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
-    - name: Set up Go 1.12
-      uses: actions/setup-go@v1
+    - name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: source-code
       with:
-        go-version: 1.12
-      id: go
-
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 0
-        submodules: true
-    
-    - name: Run tests
-      run: | 
-        go test -v ./... 
-
-    - name: Build windows
-      run: | 
-        go build .
-        .\gitql.exe -v
+        path: |
+          ./*
+        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
 
     - uses: actions/upload-artifact@master
-      name: Generating artifact
+      name: Upload binary ${{ runner.os }}
       with:
-        name: gitql-win64
-        path: .\gitql.exe
+        name: gitql-${{ runner.os }}
+        path: ./gitql*
+
+  # build-mac:
+  #   name: Build mac
+  #   runs-on: macOS-10.15
+  #   steps:
+  #   - name: Set up Go 1.12
+  #     uses: actions/setup-go@v1
+  #     with:
+  #       go-version: 1.12
+
+    
+  #   - name: Setup BATS
+  #     uses: mig4/setup-bats@v1
+  #     with:
+  #       bats-version: 1.2.1
+
+  #   - name: Check out code into the Go module directory
+  #     uses: actions/checkout@v1
+  #     with:
+  #       submodules: true
+  #       fetch-depth: 0
+  #       path: go/src/github.com/cloudson/gitql
+    
+  #   - name: Run tests
+  #     run: | 
+  #       go test -v ./... 
+
+  #   - name: Build mac
+  #     run: | 
+  #       go build .
+  #       ./gitql -v
+    
+  #   - name: Run function tests
+  #     run: bats ./test
+
+  #   - uses: actions/upload-artifact@master
+  #     name: Generating artifact
+  #     with:
+  #       name: gitql-mac64
+  #       path: ./gitql
+
+  # build-windows:
+  #   name: Build windows
+  #   runs-on: windows-2019
+  #   steps:
+  #   - name: Set up Go 1.12
+  #     uses: actions/setup-go@v1
+  #     with:
+  #       go-version: 1.12
+
+
+  #   - name: Setup BATS
+  #     uses: mig4/setup-bats@v1
+  #     with:
+  #       bats-version: 1.2.1
+
+  #   - name: Check out code into the Go module directory
+  #     uses: actions/checkout@v1
+  #     with:
+  #       fetch-depth: 0
+  #       submodules: true
+    
+  #   - name: Run tests
+  #     run: | 
+  #       go test -v ./... 
+
+  #   - name: Build windows
+  #     run: | 
+  #       go build .
+  #       .\gitql.exe -v
+
+  #   - name: Run function tests
+  #     run: bats ./test
+
+  #   - uses: actions/upload-artifact@master
+  #     name: Generating artifact
+  #     with:
+  #       name: gitql-win64
+  #       path: .\gitql.exe
