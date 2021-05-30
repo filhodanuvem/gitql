@@ -12,21 +12,21 @@ jobs:
     strategy:
       matrix:
         go: [ '1.16', '1.15', '1.14' ]
-        os: [ 'ubuntu-20.04' ]   
+        os: [ 'ubuntu-20.04', 'macos-10.15' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
       with:
         go-version: ${{ matrix.go }}
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v1
       with:
         submodules: true
         fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
     
-    - name: Build
+    - name: Go build
       run: | 
         go build . 
         ./gitql -v
@@ -47,20 +47,20 @@ jobs:
     strategy:
       matrix:
         go: [ '1.16' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-20.04' ]
+        os: [ 'ubuntu-20.04', 'macos-10.15' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
       with:
         go-version: ${{ matrix.go }}
 
-    - name: Check out code into the Go module directory
+    - name: Check out code
       uses: actions/checkout@v1
       with:
         fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
 
-    - name: Run tests
+    - name: Run unit tests
       run: | 
         go test -v ./... 
 
@@ -71,7 +71,7 @@ jobs:
     strategy:
       matrix:
         go: [ '1.16' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-20.04' ]
+        os: [ 'ubuntu-20.04', 'macos-10.15' ]
     steps:
     - name: Cache node modules
       uses: actions/cache@v2
@@ -87,13 +87,13 @@ jobs:
       with:
         bats-version: 1.2.1
 
-    - name: Run function tests
+    - name: Run functional tests
       run: | 
         ./gitql "use main" 
         bats ./test
 
     - uses: actions/upload-artifact@master
-      name: Generating artifact
+      name: Upload binary
       with:
         name: gitql-linux64
         path: ./gitql
