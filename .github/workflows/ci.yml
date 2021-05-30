@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16', '1.15' ]
+        go: [ '1.16', '1.15', '1.14' ]
         os: [ 'ubuntu-20.04' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
@@ -37,9 +37,7 @@ jobs:
         cache-name: source-code
       with:
         path: |
-          ./gitql
-          ./test/*
-          ./.git/*
+          ./*
         key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
   
   unit:
@@ -48,7 +46,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16', '1.15' ]
+        go: [ '1.16' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
@@ -59,6 +57,7 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
       with:
+        fetch-depth: 0
         path: go/src/github.com/cloudson/gitql
 
     - name: Run tests
@@ -71,7 +70,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16', '1.15' ]
+        go: [ '1.16' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04' ]
     steps:
     - name: Cache node modules
@@ -80,9 +79,7 @@ jobs:
         cache-name: source-code
       with:
         path: |
-          ./gitql
-          ./test/*
-          ./.git/*
+          ./*
         key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
   
     - name: Setup BATS
@@ -92,7 +89,7 @@ jobs:
 
     - name: Run function tests
       run: | 
-        git branch 
+        ./gitql "use main" 
         bats ./test
 
     - uses: actions/upload-artifact@master
