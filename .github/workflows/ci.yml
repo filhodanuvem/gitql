@@ -11,8 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16', '1.15', '1.14' ]
-        os: [ 'ubuntu-20.04', 'macos-10.15' ]   
+        go: [ '1.16', '1.15' ]
+        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
@@ -47,7 +47,7 @@ jobs:
     strategy:
       matrix:
         go: [ '1.16' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-20.04', 'macos-10.15' ]
+        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v1
@@ -91,12 +91,30 @@ jobs:
       run: | 
         ./gitql "use main" 
         bats ./test
+  
+  upload:
+    needs:
+      - functional
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
+    steps:
+    - name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: source-code
+      with:
+        path: |
+          ./*
+        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
 
     - uses: actions/upload-artifact@master
-      name: Upload binary
+      name: Upload binary ${{ runner.os }}
       with:
-        name: gitql-linux64
-        path: ./gitql
+        name: gitql-${{ runner.os }}
+        path: ./gitql*
 
   # build-mac:
   #   name: Build mac
