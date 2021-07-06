@@ -13,7 +13,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const Version = "Gitql 2.2.0"
+const Version = "Gitql 2.2.1"
 
 func main() {
 	app := &cli.App{
