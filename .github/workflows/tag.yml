@@ -22,10 +22,6 @@ jobs:
         name: Set up version.txt
         run: |
           git describe --tags --abbrev=0 | tr -d '\n' > ./version.txt
-          git config --global user.email "github@actions.com"
-          git config --global user.name "Github Actions"
-          git add ./version.txt
-          git commit -m "Upgrade version"
           echo "version found:"
           cat ./version.txt
       -

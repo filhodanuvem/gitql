@@ -8,3 +8,4 @@ gitql
 vendor
 test/test_helper/
 test/bats/
+.version.txt
