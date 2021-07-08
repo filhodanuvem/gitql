@@ -26,3 +26,8 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+release:
+  github:
+    disable: false
+    draft: false
+    name_template: "{{.Tag}}"
