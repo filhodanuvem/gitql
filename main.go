@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -13,13 +14,14 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const Version = "Gitql 2.2.1"
+//go:embed version.txt
+var version string
 
 func main() {
 	app := &cli.App{
 		Name:        "gitql",
 		Usage:       "A git query language",
-		Version:     Version,
+		Version:     version,
 		HideVersion: true,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
@@ -67,7 +69,7 @@ func main() {
 				Aliases: []string{"v"},
 				Usage:   "The version of gitql",
 				Action: func(c *cli.Context) error {
-					fmt.Println(Version)
+					fmt.Printf("Gitql %s\n", version)
 					return nil
 				},
 			},
@@ -77,7 +79,7 @@ func main() {
 
 			// for backward compatibility
 			if c.Bool("version") {
-				fmt.Println(Version)
+				fmt.Printf("Gitql %s\n", version)
 				return nil
 			}
 

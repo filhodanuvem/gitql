@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16', '1.15' ]
+        go: [ '1.16' ]
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
@@ -28,7 +28,8 @@ jobs:
     
     - name: Go build
       run: | 
-        go build . 
+        git rev-parse --short "$GITHUB_SHA" | tr -d '\n' > ./version.txt
+        go build .
         ./gitql -v
     
     - name: Cache source code
