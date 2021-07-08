@@ -69,7 +69,7 @@ func main() {
 				Aliases: []string{"v"},
 				Usage:   "The version of gitql",
 				Action: func(c *cli.Context) error {
-					fmt.Println(version)
+					fmt.Printf("Gitql %s\n", version)
 					return nil
 				},
 			},
@@ -79,7 +79,7 @@ func main() {
 
 			// for backward compatibility
 			if c.Bool("version") {
-				fmt.Println(version)
+				fmt.Printf("Gitql %s\n", version)
 				return nil
 			}
 

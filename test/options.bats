@@ -1,8 +1,16 @@
 #!/usr/bin/env bats
 
-@test "Check version" {
+# test that will fail outside of pipeline because
+# it requires an override of the version.txt
+# you can check how it's done on github actions files.
+@test "Check version with -v" {
   result="$(./gitql -v)"
-  [ "$result" == "Gitql 2.2.0" ]
+  [ "$result" != "Gitql latest" ]
+}
+
+@test "Check version" {
+  result="$(./gitql version)"
+  [ "$result" != "Gitql latest" ]
 }
 
 @test "Check table commits on -s" {

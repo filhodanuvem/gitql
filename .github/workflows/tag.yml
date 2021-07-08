@@ -19,6 +19,12 @@ jobs:
         with:
           go-version: 1.16
       -
+        name: Set up version.txt
+        run: |
+          git describe --tags --abbrev=0 | tr -d '\n' > ./version.txt
+          echo "version found:"
+          cat ./version.txt
+      -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
