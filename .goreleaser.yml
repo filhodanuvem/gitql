@@ -27,7 +27,7 @@ changelog:
       - '^docs:'
       - '^test:'
 release:
-  github:
-    disable: false
-    draft: false
-    name_template: "{{.Tag}}"
+  github: 
+  disable: false
+  draft: false
+  name_template: "{{.Tag}}"
