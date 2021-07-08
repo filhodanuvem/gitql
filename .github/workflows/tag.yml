@@ -21,6 +21,7 @@ jobs:
       -
         name: Set up version.txt
         run: |
+          git update-index --assume-unchanged version.txt
           git describe --tags --abbrev=0 | tr -d '\n' > ./version.txt
           echo "version found:"
           cat ./version.txt
