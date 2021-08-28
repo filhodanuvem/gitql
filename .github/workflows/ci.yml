@@ -90,7 +90,8 @@ jobs:
 
     - name: Run functional tests
       run: | 
-        ./gitql "use main" 
+        git stash -u
+        git checkout main 
         bats ./test
   
   upload:
