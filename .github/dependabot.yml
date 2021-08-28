@@ -1,0 +1,24 @@
+version: 2
+
+updates:
+  # Github Actions updates
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: 'ci:'
+    # Labels on pull requests
+    labels:
+      - 'GitHub dependencies'
+
+  # Go Packages updates
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: 'deps:'
+    # Labels on pull requests
+    labels:
+      - 'Go dependencies'
