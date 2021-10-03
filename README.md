@@ -23,7 +23,7 @@ See more [here](https://asciinema.org/a/97094)
 
 ## How to install
 
-You can access the [releases page](https://github.com/cloudson/gitql/releases) and just grab the binary. If you want to compile itself just run `go build .`.
+You can access the [releases page](https://github.com/cloudson/gitql/releases) and just grab the binary. If you want to compile itself just run `go build .`  .
 
 ## Examples
 
