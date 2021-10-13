@@ -36,47 +36,40 @@ const T_TABLES = 32
 const T_DATABASES = 33
 const T_USE = 34
 
-var tokenNameMap map[uint8]string
-
-func allocMapTokenNames() {
-	if len(tokenNameMap) == 0 {
-		tokenNameMap = map[uint8]string{
-			T_SELECT:           "T_SELECT",
-			T_DISTINCT:         "T_DISTINCT",
-			T_FROM:             "T_FROM",
-			T_WHERE:            "T_WHERE",
-			T_ORDER:            "T_ORDER",
-			T_BY:               "T_BY",
-			T_LIMIT:            "T_LIMIT",
-			T_DESC:             "T_DESC",
-			T_WILD_CARD:        "T_WILD_CARD",
-			T_COMMA:            "T_COMMA",
-			T_SEMICOLON:        "T_SEMICOLON",
-			T_GREATER:          "T_GREATER",
-			T_SMALLER:          "T_SMALLER",
-			T_GREATER_OR_EQUAL: "T_GREATER_OR_EQUAL",
-			T_SMALLER_OR_EQUAL: "T_SMALLER_OR_EQUAL",
-			T_EQUAL:            "T_EQUAL",
-			T_NOT_EQUAL:        "T_NOT_EQUAL",
-			T_LITERAL:          "T_LITERAL",
-			T_NUMERIC:          "T_NUMERIC",
-			T_ID:               "T_ID",
-			T_PARENTH_L:        "T_PARENTH_L",
-			T_PARENTH_R:        "T_PARENTH_R",
-			T_IN:               "T_IN",
-			T_EOF:              "T_EOF",
-			T_ASC:              "T_ASC",
-			T_NOT:              "T_NOT",
-			T_COUNT:            "T_COUNT",
-			T_SHOW:             "T_SHOW",
-			T_TABLES:           "T_TABLES",
-			T_DATABASES:        "T_DATABASES",
-			T_USE:              "T_USE",
-		}
-	}
+var tokenNamesByValue = map[uint8]string{
+	T_SELECT:           "T_SELECT",
+	T_DISTINCT:         "T_DISTINCT",
+	T_FROM:             "T_FROM",
+	T_WHERE:            "T_WHERE",
+	T_ORDER:            "T_ORDER",
+	T_BY:               "T_BY",
+	T_LIMIT:            "T_LIMIT",
+	T_DESC:             "T_DESC",
+	T_WILD_CARD:        "T_WILD_CARD",
+	T_COMMA:            "T_COMMA",
+	T_SEMICOLON:        "T_SEMICOLON",
+	T_GREATER:          "T_GREATER",
+	T_SMALLER:          "T_SMALLER",
+	T_GREATER_OR_EQUAL: "T_GREATER_OR_EQUAL",
+	T_SMALLER_OR_EQUAL: "T_SMALLER_OR_EQUAL",
+	T_EQUAL:            "T_EQUAL",
+	T_NOT_EQUAL:        "T_NOT_EQUAL",
+	T_LITERAL:          "T_LITERAL",
+	T_NUMERIC:          "T_NUMERIC",
+	T_ID:               "T_ID",
+	T_PARENTH_L:        "T_PARENTH_L",
+	T_PARENTH_R:        "T_PARENTH_R",
+	T_IN:               "T_IN",
+	T_EOF:              "T_EOF",
+	T_ASC:              "T_ASC",
+	T_NOT:              "T_NOT",
+	T_COUNT:            "T_COUNT",
+	T_SHOW:             "T_SHOW",
+	T_TABLES:           "T_TABLES",
+	T_DATABASES:        "T_DATABASES",
+	T_USE:              "T_USE",
 }
 
 func TokenName(token uint8) string {
-	allocMapTokenNames()
-	return tokenNameMap[token]
+	return tokenNamesByValue[token]
 }
