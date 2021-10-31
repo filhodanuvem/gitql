@@ -13,19 +13,19 @@ func Analysis(ast *parser.NodeProgram) error {
 	return semantic.Visit(ast)
 }
 
-type SemanticalError struct {
+type semanticalError struct {
 	err   string
 	errNo uint8
 }
 
 func throwSemanticalError(err string) error {
-	end := new(SemanticalError)
+	end := new(semanticalError)
 	end.err = err
 
 	return end
 }
 
-func (e *SemanticalError) Error() string {
+func (e *semanticalError) Error() string {
 	return e.err
 }
 
