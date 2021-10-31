@@ -9,15 +9,15 @@ import (
 	"github.com/cloudson/gitql/lexical"
 )
 
-type NodeMain interface {
+type nodeMain interface {
 	Run()
 }
 
-type NodeEmpty struct {
+type nodeEmpty struct {
 }
 
 type NodeProgram struct {
-	Child NodeMain
+	Child nodeMain
 	Path  *string
 }
 
@@ -50,19 +50,19 @@ type NodeExpr interface {
 	SetRightValue(NodeExpr)
 }
 
-type NodeBinOp interface {
+type nodeBinOp interface {
 	LeftValue() NodeExpr
 	RightValue() NodeExpr
 	SetLeftValue(NodeExpr)
 	SetRightValue(NodeExpr)
 }
 
-type NodeConst interface {
+type nodeConst interface {
 	SetValue(string)
 }
 
-type NodeAdapterBinToConst struct {
-	adapted NodeBinOp
+type nodeAdapterBinToConst struct {
+	adapted nodeBinOp
 }
 
 type NodeIn struct {
@@ -110,7 +110,7 @@ type NodeAnd struct {
 	rightValue NodeExpr
 }
 
-type NodeNumber struct {
+type nodeNumber struct {
 	value      float64
 	leftValue  NodeExpr
 	rightValue NodeExpr
@@ -145,7 +145,7 @@ func (u *NodeUse) Run() {
 	return
 }
 
-func (e *NodeEmpty) Run() {
+func (e *nodeEmpty) Run() {
 	return
 }
 
@@ -409,35 +409,35 @@ func (n *NodeLiteral) Value() string {
 }
 
 // NUMBER
-func (n *NodeNumber) Assertion(lvalue string, rvalue string) bool {
+func (n *nodeNumber) Assertion(lvalue string, rvalue string) bool {
 	return lvalue == rvalue
 }
 
-func (n *NodeNumber) Operator() uint8 {
+func (n *nodeNumber) Operator() uint8 {
 	return lexical.T_NUMERIC
 }
 
-func (n *NodeNumber) SetValue(value string) {
+func (n *nodeNumber) SetValue(value string) {
 	n.value, _ = strconv.ParseFloat(value, 64)
 }
 
-func (n *NodeNumber) SetLeftValue(e NodeExpr) {
+func (n *nodeNumber) SetLeftValue(e NodeExpr) {
 	n.leftValue = e
 }
 
-func (n *NodeNumber) SetRightValue(e NodeExpr) {
+func (n *nodeNumber) SetRightValue(e NodeExpr) {
 	n.rightValue = e
 }
 
-func (n *NodeNumber) RightValue() NodeExpr {
+func (n *nodeNumber) RightValue() NodeExpr {
 	return n.rightValue
 }
 
-func (n *NodeNumber) LeftValue() NodeExpr {
+func (n *nodeNumber) LeftValue() NodeExpr {
 	return n.leftValue
 }
 
-func (n *NodeNumber) Value() float64 {
+func (n *nodeNumber) Value() float64 {
 	return n.value
 }
 
@@ -474,7 +474,7 @@ func (n *NodeId) Value() string {
 	return n.value
 }
 
-func (n *NodeAdapterBinToConst) setAdapted(a NodeBinOp) {
+func (n *nodeAdapterBinToConst) setAdapted(a nodeBinOp) {
 	n.adapted = a
 }
 
