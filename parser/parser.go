@@ -500,7 +500,11 @@ func gWC4(eating bool) (NodeExpr, error) {
 		op.SetRightValue(expr2)
 		// Compile the regex while parsing, so that
 		// we don't need to compile for every row
-		rx := strings.Replace(expr2.(*NodeLiteral).Value(), "%", "(.*)", -1)
+		literal, ok := expr2.(*NodeLiteral)
+		if !ok {
+			return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+		}
+		rx := strings.Replace(literal.Value(), "%", "(.*)", -1)
 		op.Pattern, err = regexp.Compile(rx)
 		op.Not = notBool
 		return op, err

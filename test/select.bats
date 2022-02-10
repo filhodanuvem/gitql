@@ -13,6 +13,11 @@ setup() {
   assert_output '[{"message":"update Dockerfile (#97)"}]'
 }
 
+@test "Check wrong query with double quote" {
+  run ./gitql -f json "select author, message, date from commits where author like "Oliveira""
+  assert_output 'Error: Expected T_LITERAL and found T_EOF'
+}
+
 @test "Check not like for select" {
   run ./gitql -f json 'select message from commits where date > "2019-10-01" and date < "2019-11-01" and message not like "update"'
   assert_output '[{"message":"Update How-To video with new prompts (#89)"},{"message":"Prepare v2.0.0 (#88)"},{"message":"Add support to static binaries (windows/linux amd64)  (#87)"},{"message":"Add install libgit script (#86)"},{"message":"Add support to dynamic compile for mac (#85)"},{"message":"Add support to release gitql as a static file (#84)"}]'
