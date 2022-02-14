@@ -15,7 +15,7 @@ jobs:
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v2.1.5
+      uses: actions/setup-go@v2.2.0
       with:
         go-version: ${{ matrix.go }}
 
@@ -50,7 +50,7 @@ jobs:
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v2.1.5
+      uses: actions/setup-go@v2.2.0
       with:
         go-version: ${{ matrix.go }}
 
