@@ -8,5 +8,5 @@ require (
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/urfave/cli/v2 v2.4.8
+	github.com/urfave/cli/v2 v2.5.1
 )
