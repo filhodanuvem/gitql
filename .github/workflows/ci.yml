@@ -32,7 +32,7 @@ jobs:
         ./gitql -v
     
     - name: Cache source code
-      uses: actions/cache@v3.0.4
+      uses: actions/cache@v3.0.5
       env:
         cache-name: source-code
       with:
@@ -73,7 +73,7 @@ jobs:
         os: [ 'ubuntu-20.04', 'macos-10.15' ]
     steps:
     - name: Cache node modules
-      uses: actions/cache@v3.0.4
+      uses: actions/cache@v3.0.5
       env:
         cache-name: source-code
       with:
@@ -102,7 +102,7 @@ jobs:
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Cache node modules
-      uses: actions/cache@v3.0.4
+      uses: actions/cache@v3.0.5
       env:
         cache-name: source-code
       with:
