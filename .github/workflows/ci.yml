@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ]
+        go: [ '1.18' ]
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
@@ -46,7 +46,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
@@ -69,7 +69,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04', 'macos-10.15' ]
     steps:
     - name: Cache node modules
@@ -98,7 +98,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Cache node modules
