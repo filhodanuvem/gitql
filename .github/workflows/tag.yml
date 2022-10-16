@@ -10,12 +10,12 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       -
         name: Set up Go
-        uses: actions/setup-go@v2.1.4
+        uses: actions/setup-go@v3
         with:
           go-version: 1.16
       -
@@ -27,7 +27,7 @@ jobs:
           cat ./version.txt
       -
         name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v3
         with:
           distribution: goreleaser
           version: latest

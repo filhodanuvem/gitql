@@ -16,12 +16,12 @@ var look_ahead uint8
 const Time_YMD = "2006-01-02"
 const Time_YMDHIS = "2006-01-02 15:04:05"
 
-type SyntaxError struct {
+type syntaxError struct {
 	expected uint8
 	found    uint8
 }
 
-func (e *SyntaxError) Error() string {
+func (e *syntaxError) Error() string {
 	var appendix = ""
 	if e.found == lexical.T_LITERAL || e.found == lexical.T_ID {
 		appendix = fmt.Sprintf("(%s)", lexical.CurrentLexeme)
@@ -30,7 +30,7 @@ func (e *SyntaxError) Error() string {
 }
 
 func throwSyntaxError(expectedToken uint8, foundToken uint8) error {
-	error := new(SyntaxError)
+	error := new(syntaxError)
 	error.expected = expectedToken
 	error.found = foundToken
 
@@ -49,7 +49,7 @@ func AST() (*NodeProgram, error) {
 	return program, err
 }
 
-func gProgram() (NodeMain, error) {
+func gProgram() (nodeMain, error) {
 	token, tokenError := lexical.Token()
 	look_ahead = token
 
@@ -57,7 +57,7 @@ func gProgram() (NodeMain, error) {
 		return nil, tokenError
 	}
 
-	var node NodeMain
+	var node nodeMain
 	var err error
 	switch look_ahead {
 	case lexical.T_SELECT:
@@ -500,7 +500,11 @@ func gWC4(eating bool) (NodeExpr, error) {
 		op.SetRightValue(expr2)
 		// Compile the regex while parsing, so that
 		// we don't need to compile for every row
-		rx := strings.Replace(expr2.(*NodeLiteral).Value(), "%", "(.*)", -1)
+		literal, ok := expr2.(*NodeLiteral)
+		if !ok {
+			return nil, throwSyntaxError(lexical.T_LITERAL, look_ahead)
+		}
+		rx := strings.Replace(literal.Value(), "%", "(.*)", -1)
 		op.Pattern, err = regexp.Compile(rx)
 		op.Not = notBool
 		return op, err

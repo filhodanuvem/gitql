@@ -119,7 +119,7 @@ func RunShow(node *parser.NodeProgram) error {
 	if s.Databases {
 		builder = GetGitBuilder(node.Path)
 		fmt.Print("Databases: \n\n")
-		databases, err := PossibleDatabases()
+		databases, err := possibleDatabases()
 		if err != nil {
 			return err
 		}
@@ -384,7 +384,7 @@ func PossibleTables() map[string][]string {
 	}
 }
 
-func PossibleDatabases() ([]string, error) {
+func possibleDatabases() ([]string, error) {
 	// local branches
 	iter, err := repo.Branches()
 	if err != nil {
@@ -413,7 +413,7 @@ func PossibleDatabases() ([]string, error) {
 	for _, ref := range refList {
 		refName := ref.Name().String()
 		if strings.HasPrefix(refName, refPrefix) {
-			branches = append(branches, "remotes/origin/" + ref.Name().Short())
+			branches = append(branches, "remotes/origin/"+ref.Name().Short())
 		}
 	}
 

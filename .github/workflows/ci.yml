@@ -11,16 +11,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ]
+        go: [ '1.18' ]
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
     steps:
     - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v2.1.4
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
 
     - name: Check out code
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v3
       with:
         submodules: true
         fetch-depth: 0
@@ -32,7 +32,7 @@ jobs:
         ./gitql -v
     
     - name: Cache source code
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.10
       env:
         cache-name: source-code
       with:
@@ -46,16 +46,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v2.1.4
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
 
     - name: Check out code
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -69,11 +69,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.10
       env:
         cache-name: source-code
       with:
@@ -98,11 +98,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.16' ] # Check the binary of the latest go version is enough
+        go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
     steps:
     - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.10
       env:
         cache-name: source-code
       with:
