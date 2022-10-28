@@ -12,17 +12,11 @@ jobs:
     strategy:
       matrix:
         go: [ '1.18' ]
-        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]   
+        os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]   
     steps:
-    - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go }}
-
     - name: Check out code
       uses: actions/checkout@v3
       with:
-        submodules: true
         fetch-depth: 0
     
     - name: Go build
@@ -31,15 +25,6 @@ jobs:
         go build .
         ./gitql -v
     
-    - name: Cache source code
-      uses: actions/cache@v3.0.10
-      env:
-        cache-name: source-code
-      with:
-        path: |
-          ./*
-        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
-  
   unit:
     needs:
       - build 
@@ -47,7 +32,7 @@ jobs:
     strategy:
       matrix:
         go: [ '1.18' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
+        os: [ 'ubuntu-22.04' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v3
@@ -60,8 +45,7 @@ jobs:
         fetch-depth: 0
 
     - name: Run unit tests
-      run: | 
-        go test -v ./... 
+      run: go test -v ./...
 
   functional:
     needs:
@@ -70,17 +54,14 @@ jobs:
     strategy:
       matrix:
         go: [ '1.18' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-20.04', 'macos-10.15' ]
+        os: [ 'ubuntu-22.04', 'macos-12' ]
     steps:
-    - name: Cache node modules
-      uses: actions/cache@v3.0.10
-      env:
-        cache-name: source-code
+    - name: Check out code
+      uses: actions/checkout@v3
       with:
-        path: |
-          ./*
-        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
-  
+        submodules: true
+        fetch-depth: 0
+
     - name: Setup BATS
       uses: mig4/setup-bats@v1
       with:
@@ -89,7 +70,8 @@ jobs:
     - name: Run functional tests
       run: | 
         git stash -u
-        git checkout main 
+        go build .
+        ./gitql -v
         bats ./test
   
   upload:
@@ -99,17 +81,10 @@ jobs:
     strategy:
       matrix:
         go: [ '1.18' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-20.04', 'macos-10.15', 'windows-2019' ]
+        os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]
     steps:
-    - name: Cache node modules
-      uses: actions/cache@v3.0.10
-      env:
-        cache-name: source-code
-      with:
-        path: |
-          ./*
-        key: build-${{ matrix.os }}-${{ matrix.go }}-${{ env.cache-name }}
-
+    - uses: actions/checkout@v3
+    - run: go build .
     - uses: actions/upload-artifact@master
       name: Upload binary ${{ runner.os }}
       with:
