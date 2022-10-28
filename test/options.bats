@@ -5,12 +5,12 @@
 # you can check how it's done on github actions files.
 @test "Check version with -v" {
   result="$(./gitql -v)"
-  [ "$result" != "Gitql latest" ]
+  [ "$result" != "Gitql latest\n" ]
 }
 
 @test "Check version" {
   result="$(./gitql version)"
-  [ "$result" != "Gitql latest" ]
+  [ "$result" != "Gitql latest\n" ]
 }
 
 @test "Check table commits on -s" {
