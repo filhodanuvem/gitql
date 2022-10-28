@@ -54,7 +54,7 @@ jobs:
     strategy:
       matrix:
         go: [ '1.18' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-22.04', 'macos-12' ]
+        os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022'  ]
     steps:
     - name: Check out code
       uses: actions/checkout@v3
