@@ -72,7 +72,8 @@ jobs:
     - name: Run functional tests
       run: | 
         git stash -u
-        git checkout main 
+        git checkout main
+        go build .
         bats ./test
   
   upload:
@@ -84,7 +85,7 @@ jobs:
         go: [ '1.18' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]
     steps:
-    
+    - run: go build .
     - uses: actions/upload-artifact@master
       name: Upload binary ${{ runner.os }}
       with:
