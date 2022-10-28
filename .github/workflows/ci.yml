@@ -74,6 +74,7 @@ jobs:
         git stash -u
         git checkout main
         go build .
+        ./gitql -v
         bats ./test
   
   upload:
