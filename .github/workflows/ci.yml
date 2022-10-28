@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix:
         go: [ '1.18' ] # Check the binary of the latest go version is enough
-        os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]
+        os: [ 'ubuntu-22.04' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
       uses: actions/setup-go@v3
@@ -46,8 +46,7 @@ jobs:
         fetch-depth: 0
 
     - name: Run unit tests
-      run: | 
-        go test -v ./... 
+      run: go test -v ./...
 
   functional:
     needs:
@@ -72,7 +71,6 @@ jobs:
     - name: Run functional tests
       run: | 
         git stash -u
-        git checkout main
         go build .
         ./gitql -v
         bats ./test
