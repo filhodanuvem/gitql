@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.18' ]
+        go: [ '1.20' ]
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]   
     steps:
     - name: Check out code
@@ -31,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.18' ] # Check the binary of the latest go version is enough
+        go: [ '1.20' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-22.04' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
@@ -53,7 +53,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.18' ] # Check the binary of the latest go version is enough
+        go: [ '1.20' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022'  ]
     steps:
     - name: Check out code
@@ -80,7 +80,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: [ '1.18' ] # Check the binary of the latest go version is enough
+        go: [ '1.20' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]
     steps:
     - uses: actions/checkout@v3
