@@ -2,7 +2,7 @@
 # docker build -t gitql .
 # docker run -it --entrypoint /bin/sh gitql:latest
 
-FROM golang:1.18.7-alpine3.16 as builder
+FROM golang:1.20.7-alpine3.18 as builder
 
 WORKDIR /src
 COPY go.mod .
@@ -16,7 +16,7 @@ COPY utilities utilities
 RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/gitql
 
-FROM alpine:3.16
+FROM alpine:3.18
 COPY --from=builder /bin/gitql /bin/
 
 ENTRYPOINT ["gitql"]
