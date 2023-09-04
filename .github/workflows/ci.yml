@@ -15,7 +15,7 @@ jobs:
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]   
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     
@@ -40,7 +40,7 @@ jobs:
         go-version: ${{ matrix.go }}
 
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -57,7 +57,7 @@ jobs:
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022'  ]
     steps:
     - name: Check out code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
         fetch-depth: 0
@@ -83,7 +83,7 @@ jobs:
         go: [ '1.20' ] # Check the binary of the latest go version is enough
         os: [ 'ubuntu-22.04', 'macos-12', 'windows-2022' ]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: go build .
     - uses: actions/upload-artifact@master
       name: Upload binary ${{ runner.os }}
