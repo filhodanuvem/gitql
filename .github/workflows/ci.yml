@@ -35,7 +35,7 @@ jobs:
         os: [ 'ubuntu-22.04' ]
     steps:
     - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go }}
 
