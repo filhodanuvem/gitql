@@ -25,7 +25,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 
-	rows := make([]tableRow, s.Limit)
+	rows := make([]tableRow, 0, s.Limit)
 	usingOrder := false
 	if s.Order != nil && !s.Count {
 		usingOrder = true
@@ -88,7 +88,7 @@ func walkReferences(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData,
 
 func metadataReference(identifier string, ref *plumbing.Reference) string {
 	key := ""
-	for key, _ = range builder.tables {
+	for key = range builder.tables {
 		break
 	}
 	table := key
