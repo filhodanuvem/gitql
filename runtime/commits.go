@@ -28,7 +28,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 		fields = builder.possibleTables[s.Tables[0]]
 	}
 	resultFields := fields // These are the fields in output with wildcards expanded
-	rows := make([]tableRow, s.Limit)
+	rows := make([]tableRow, 0, s.Limit)
 	usingOrder := false
 	if s.Order != nil && !s.Count {
 		usingOrder = true
@@ -107,7 +107,7 @@ func walkCommits(n *parser.NodeProgram, visitor *RuntimeVisitor) (*TableData, er
 
 func metadataCommit(identifier string, commit *object.Commit) string {
 	key := ""
-	for key, _ = range builder.tables {
+	for key = range builder.tables {
 		break
 	}
 	table := key
